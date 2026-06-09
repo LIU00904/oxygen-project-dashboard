@@ -1006,7 +1006,7 @@ h2 {
 .sketch-right .status-select {
   width: 100%;
   height: 36px;
-  border: 1px solid rgba(10, 132, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.62);
   border-radius: 999px;
   color: var(--status-color);
   background: rgba(255, 255, 255, 0.2);

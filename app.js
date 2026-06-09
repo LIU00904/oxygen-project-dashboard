@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v12";
+const STORAGE_KEY = "oxygen-project-dashboard-v13";
 const today = startOfToday();
 
 const statusColors = {
