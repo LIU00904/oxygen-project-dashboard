@@ -1055,13 +1055,14 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "url": "https://mv21kbvltn.feishu.cn/wiki/Sgumwr7Q3iIGMBkzLlPcL1LRnNf"
+        "url": "https://jcnquengglen.feishu.cn/wiki/XDQhwi6bTiZVrlkmQQEch7Bgn0c",
+        "label": "一丰荣放亚洲龙 发稿附表"
       }
     ],
     "monitorLinks": [],
     "kpiStatus": "部分未达标",
-    "currentData": "本地报告已核对：亚洲龙周报发布明细 22 条、荣放周报发布明细 13 条，当前可确认有效发布链接 35 条；项目稿件 KPI ≥100 篇，还差 65 篇需继续用发稿文档核实/补齐。\n亚洲龙 6/7 KPI 表：6 个基础词的 SOV、Top3、Top10 综合值均达标；最新综合 SOV 20.6%-27.7%、Top3 57.0%-68.9%、Top10 82.7%-89.3%。\n荣放 5/20 点检表：Top3 38.51% 已超过 ≥20%；SOV 7.63% 距 ≥15% 还差 7.37 个百分点；Top10 47.24% 距 ≥80% 还差 32.76 个百分点。\n飞书附件下载权限暂未开通 drive:file:download / drive:drive:readonly，因此上传报告暂按已知本地 Excel 分析。",
-    "optimizationSuggestion": "优先补荣放 SOV 与 Top10：增加高权重汽车垂媒/问答信源发稿，围绕“15万左右通勤SUV、城市SUV、家用SUV”做定向覆盖；同时把一丰发稿文档整理成可统计 URL 表，补齐至少 65 条可确认发布链接。",
+    "currentData": "正式发稿附表已读取：有效发布链接 90 条，其中荣放 36 条、亚洲龙 54 条。\n发稿 KPI：90/100 篇，还差 10 篇；以新飞书附表为准，之前本地周报统计口径已废弃。\n亚洲龙 6/7 KPI 表：6 个基础词的 SOV、Top3、Top10 综合值均达标；最新综合 SOV 20.6%-27.7%、Top3 57.0%-68.9%、Top10 82.7%-89.3%。\n荣放 5/20 点检表：Top3 38.51% 已超过 ≥20%；SOV 7.63% 距 ≥15% 还差 7.37 个百分点；Top10 47.24% 距 ≥80% 还差 32.76 个百分点。",
+    "optimizationSuggestion": "先补齐正式发稿附表中的 10 篇发布缺口；荣放侧继续重点补 SOV 与 Top10，增加汽车垂媒/问答信源覆盖，围绕“15万左右通勤SUV、城市SUV、家用SUV”等词做定向发布和监测复盘。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1423,6 +1424,6 @@ window.FEISHU_SYNC_META = {
       }
     ]
   },
-  "syncedAt": "2026-06-09T09:34:06.689Z",
-  "note": "asus-subproject-kpi-v17"
+  "syncedAt": "2026-06-09T09:43:49.846Z",
+  "note": "toyota-official-publish-v18"
 };
