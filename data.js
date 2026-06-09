@@ -1142,11 +1142,11 @@ window.FEISHU_PROJECTS = [
     "id": "recvjW5TB0WiZd",
     "source": "feishu",
     "name": "格力高",
-    "status": "待开始",
+    "status": "进行中",
     "startDate": "2026-06-07",
     "cycleDays": 25,
     "progressPercent": 4,
-    "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
+    "kpi": "收录即可\n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "",
     "manager": "辛味珈",
@@ -1156,9 +1156,9 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [],
     "monitorLinks": [],
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "kpiStatus": "推进中",
+    "currentData": "飞书已核对：项目已于 2026-06-07 开启，当前进度 4%。\nKPI：收录即可；有目标信源；一个月投放 20 篇稿件。\n当前尚未关联发稿链接和监测表，暂无法统计发布数量与收录情况。",
+    "optimizationSuggestion": "优先补充格力高发稿链接和监测表；本月目标为 20 篇稿件，建议按周拆分发布节奏并及时记录目标信源收录情况。",
     "reportLinks": []
   },
   {
@@ -1378,10 +1378,10 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-09T10:00:08.483Z",
+  "syncedAt": "2026-06-09T11:53:26.490Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-and-asus-top1-v20",
+  "note": "glico-started-visual-v23",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",

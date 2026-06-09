@@ -8,6 +8,7 @@ const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v16",
   "oxygen-project-dashboard-v15"
 ];
+const FEISHU_SYNC_API = window.FEISHU_SYNC_API || localStorage.getItem("FEISHU_SYNC_API") || "";
 const today = startOfToday();
 
 const statusColors = {
@@ -129,6 +130,45 @@ function startOfToday() {
 
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+}
+
+function endDateFor(project) {
+  if (!project.startDate || !project.cycleDays) return "";
+  return addDays(dateFrom(project.startDate), Number(project.cycleDays)).toISOString().slice(0, 10);
+}
+
+function projectSyncPayload(project) {
+  return {
+    recordId: project.id,
+    fields: {
+      status: project.status,
+      name: project.name,
+      startDate: project.startDate,
+      endDate: endDateFor(project),
+      kpi: project.kpi,
+      platform: project.platform,
+      notes: project.notes,
+      invoiceStatus: project.invoiceStatus,
+      publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
+      monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
+      optimizationSuggestion: project.optimizationSuggestion
+    }
+  };
+}
+
+async function syncProjectToFeishu(project) {
+  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return;
+  try {
+    const response = await fetch(FEISHU_SYNC_API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(projectSyncPayload(project))
+    });
+    if (!response.ok) throw new Error(await response.text());
+    console.info("已同步飞书", project.name);
+  } catch (error) {
+    console.warn("飞书同步失败，已保存在网页本地", error);
+  }
 }
 
 function initIridescenceBackground() {
@@ -723,7 +763,9 @@ els.saveProjectBtn.addEventListener("click", event => {
   const index = projects.findIndex(item => item.id === formProject.id);
   if (index >= 0) projects[index] = { ...projects[index], ...formProject };
   else projects.unshift(formProject);
+  const savedProject = index >= 0 ? projects[index] : projects[0];
   persist();
+  syncProjectToFeishu(savedProject);
   els.dialog.close();
   render();
 });
@@ -765,6 +807,7 @@ els.board.addEventListener("change", event => {
   if (!project) return;
   project.status = select.value;
   persist();
+  syncProjectToFeishu(project);
   render();
 });
 
@@ -775,6 +818,7 @@ els.board.addEventListener("click", event => {
   if (button.dataset.action === "invoice" && project) {
     project.invoiceStatus = button.dataset.value;
     persist();
+    syncProjectToFeishu(project);
     render();
     return;
   }

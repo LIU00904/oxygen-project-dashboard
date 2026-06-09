@@ -1590,6 +1590,7 @@ dialog::backdrop {
 .top-links,
 .status-nav button,
 .folder-details,
+.sketch-folder,
 .sketch-name,
 .sketch-platform,
 .sketch-progress,
@@ -1628,6 +1629,19 @@ textarea {
     rgba(255, 255, 255, 0.2);
 }
 
+.sketch-folder,
+.folder-details {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.06);
+}
+
+.sketch-folder:hover {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.1);
+}
+
 .tool-btn,
 .tool-icon,
 .ghost-btn,
@@ -1654,6 +1668,24 @@ textarea {
   color: var(--blue);
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(10, 132, 255, 0.22);
+}
+
+.invoice-toggle button.active {
+  color: var(--blue);
+  border-color: rgba(10, 132, 255, 0.24);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.12)),
+    rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 26px rgba(10, 132, 255, 0.1);
+}
+
+.folder-count,
+.folder-links a,
+.folder-empty {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
 }
 
 .progress-track {
