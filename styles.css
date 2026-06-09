@@ -797,8 +797,9 @@ h2 {
   grid-template-areas:
     "left progress right"
     "left progress invoice"
+    "people people people"
     "kpi data suggestion"
-    "material material reportfolder"
+    "folders folders folders"
     ". . edit";
   gap: 18px 20px;
   min-height: 650px;
@@ -911,13 +912,16 @@ h2 {
 }
 
 .sketch-people {
-  min-height: 110px;
+  grid-area: people;
+  min-height: 92px;
+  padding: 18px 20px;
 }
 
 .sketch-people .person-list {
   display: flex;
   flex-wrap: nowrap;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
   overflow-x: auto;
   padding-bottom: 4px;
 }
@@ -927,8 +931,8 @@ h2 {
   flex: 0 0 auto;
   align-items: center;
   gap: 8px;
-  min-height: 34px;
-  padding: 4px 8px;
+  min-height: 40px;
+  padding: 5px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.5);
 }
@@ -994,19 +998,23 @@ h2 {
   grid-area: right;
   display: grid;
   gap: 12px;
-  min-height: 78px;
-  padding: 16px;
+  min-height: 74px;
+  padding: 14px;
   position: relative;
   z-index: 1;
   align-content: center;
+  align-self: start;
+  justify-self: end;
+  width: min(220px, 100%);
 }
 
 .sketch-right .status-select {
-  width: 100%;
-  height: 46px;
+  width: min(180px, 100%);
+  height: 40px;
   border-radius: 999px;
   color: white;
   background: var(--status-color);
+  justify-self: end;
 }
 
 .sketch-invoice {
@@ -1056,6 +1064,15 @@ h2 {
   line-height: 1.6;
 }
 
+.sketch-folders {
+  grid-area: folders;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
 .sketch-folder {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -1065,14 +1082,6 @@ h2 {
   padding: 16px;
   position: relative;
   z-index: 1;
-}
-
-.sketch-material-folder {
-  grid-area: material;
-}
-
-.sketch-report-folder {
-  grid-area: reportfolder;
 }
 
 .glass-icon-btn {
@@ -1507,10 +1516,11 @@ dialog::backdrop {
     grid-template-areas:
       "left progress"
       "right invoice"
+      "people people"
       "kpi data"
       "suggestion suggestion"
-      "material material"
-      "reportfolder edit";
+      "folders folders"
+      ". edit";
     min-height: auto;
   }
 
@@ -1568,13 +1578,17 @@ dialog::backdrop {
       "progress"
       "right"
       "invoice"
+      "people"
       "kpi"
       "data"
       "suggestion"
-      "material"
-      "reportfolder"
+      "folders"
       "edit";
     padding: 20px;
+  }
+
+  .sketch-folders {
+    grid-template-columns: 1fr;
   }
 
   .sketch-kpi,

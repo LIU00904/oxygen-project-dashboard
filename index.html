@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>氧气科技项目管理</title>
-    <link rel="stylesheet" href="./styles.css?v=20260609-glass-v9" />
+    <link rel="stylesheet" href="./styles.css?v=20260609-fix-v10" />
   </head>
   <body>
     <main class="app-shell">
@@ -115,7 +115,7 @@
             <p class="eyebrow">New Project</p>
             <h2>添加 / 编辑项目</h2>
           </div>
-          <button class="icon-btn" value="cancel" aria-label="关闭">×</button>
+          <button class="icon-btn" value="cancel" formnovalidate aria-label="关闭">×</button>
         </div>
         <input type="hidden" id="projectId" />
         <div class="form-grid">
@@ -175,13 +175,13 @@
           <label class="wide">备注（要求） <textarea id="notes"></textarea></label>
         </div>
         <div class="form-actions">
-          <button class="ghost-btn" value="cancel">取消</button>
+          <button class="ghost-btn" value="cancel" formnovalidate>取消</button>
           <button class="primary-btn" id="saveProjectBtn" value="default">保存项目</button>
         </div>
       </form>
     </dialog>
 
-    <script src="./data.js?v=20260609-glass-v9"></script>
-    <script src="./app.js?v=20260609-glass-v9"></script>
+    <script src="./data.js?v=20260609-fix-v10"></script>
+    <script src="./app.js?v=20260609-fix-v10"></script>
   </body>
 </html>

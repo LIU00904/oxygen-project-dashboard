@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v9";
+const STORAGE_KEY = "oxygen-project-dashboard-v10";
 const today = startOfToday();
 
 const statusColors = {
@@ -188,10 +188,6 @@ function render() {
             <span>优化平台</span>
             <strong>${escapeHtml(project.platform || "未填平台")}</strong>
           </div>
-          <div class="sketch-people">
-            <span>项目人员</span>
-            ${renderPeople(project)}
-          </div>
         </section>
 
         <section class="sketch-progress">
@@ -227,21 +223,28 @@ function render() {
           <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
         </section>
 
-        <section class="sketch-folder sketch-material-folder">
-          ${renderResourceFolder("项目资料", "发稿链接 / 监测表", "blue", "▣", [
-            ["发稿链接", project.publishLinks],
-            ["监测表", project.monitorLinks]
-          ])}
-        </section>
-        <section class="sketch-folder sketch-report-folder">
-          ${renderResourceFolder("报告文件", "周报 / 月报 / 结案报告", "purple", "▤", [
-            ["报告", project.reportLinks]
-          ])}
+        <section class="sketch-folders">
+          <div class="sketch-folder sketch-material-folder">
+            ${renderResourceFolder("项目资料", "发稿链接 / 监测表", "blue", "▣", [
+              ["发稿链接", project.publishLinks],
+              ["监测表", project.monitorLinks]
+            ])}
+          </div>
+          <div class="sketch-folder sketch-report-folder">
+            ${renderResourceFolder("报告文件", "周报 / 月报 / 结案报告", "purple", "▤", [
+              ["报告", project.reportLinks]
+            ])}
+          </div>
         </section>
 
         <section class="sketch-invoice">
           <span>开票信息</span>
           ${renderInvoiceToggle(project)}
+        </section>
+
+        <section class="sketch-people">
+          <span>项目人员</span>
+          ${renderPeople(project)}
         </section>
 
         <button class="ghost-btn sketch-edit" data-action="edit" data-id="${project.id}">编辑</button>
@@ -306,12 +309,23 @@ function normalizeLinks(value) {
 function renderCurrentData(project, timing) {
   const progress = Number(timing.progress || 0);
   const gap = Math.max(0, 100 - progress);
-  const data = [
-    project.currentData || `当前完成度 ${progress}%`,
-    progress >= 100 ? "完成度已达到 100%" : `距离 100% 还差 ${gap}%`,
-    project.status === "待开始" ? "待补充启动数据" : "",
-    project.status === "停滞" ? "需要更新停滞原因" : ""
-  ].filter(Boolean);
+  const publishCount = normalizeLinks(project.publishLinks).length;
+  const monitorCount = normalizeLinks(project.monitorLinks).length;
+  const reportCount = normalizeLinks(project.reportLinks).length;
+  const data = [];
+  if (project.status === "进行中") {
+    data.push(progress >= 100 ? "当前进度已到 100%，建议核对是否可转为已完成。" : `当前进度 ${progress}%，距离阶段目标还差 ${gap}%。`);
+  } else if (project.status === "已完成") {
+    data.push("项目已完成，重点检查发稿、监测和报告是否归档齐全。");
+  } else if (project.status === "待开始") {
+    data.push("项目待开始，需要补齐启动时间、KPI、人员与资料入口。");
+  } else if (project.status === "停滞") {
+    data.push("项目处于停滞状态，需要补充停滞原因和下一步处理口径。");
+  }
+  data.push(publishCount ? `已关联 ${publishCount} 个发稿资料入口。` : "尚未关联发稿资料。");
+  data.push(monitorCount ? `已关联 ${monitorCount} 个监测表入口，可继续汇总近一周/近一月趋势。` : "尚未关联监测表，暂无法分析排名与收录趋势。");
+  if (!reportCount) data.push("报告文件待上传到飞书“项目报告文件”字段。");
+  else data.push(`已关联 ${reportCount} 个报告入口。`);
   return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
