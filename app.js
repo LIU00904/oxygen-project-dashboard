@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v13";
+const STORAGE_KEY = "oxygen-project-dashboard-v14";
 const today = startOfToday();
 
 const statusColors = {
@@ -281,8 +281,8 @@ function renderResourceLink(label, links) {
 
 function renderResourceFolder(title, subtitle, color, icon, groups) {
   const links = groups.flatMap(([label, value]) =>
-    normalizeLinks(value).map((item, index) => ({
-      label: `${label}${normalizeLinks(value).length > 1 ? ` ${index + 1}` : ""}`,
+    normalizeLinks(value).map((item, index, group) => ({
+      label: item.label || `${label}${group.length > 1 ? ` ${index + 1}` : ""}`,
       url: item.url
     }))
   );
@@ -308,7 +308,7 @@ function normalizeLinks(value) {
   return list.map(item => {
     if (typeof item === "string") return { label: item, url: item };
     return item;
-  }).filter(item => item && item.url);
+  }).filter(item => item && (item.url || item.label));
 }
 
 function renderCurrentData(project, timing) {

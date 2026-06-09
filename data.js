@@ -51,7 +51,29 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "停滞待处理",
     "currentData": "已关联 1 个监测表入口",
     "optimizationSuggestion": "监测表已关联；项目停滞中，需结合最新监测补充恢复推进或暂停说明。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "氧气科技 西昊GEO SOLUTION1021final.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "F246bPExNomnc3xOJOxcmTkCnDf",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 45365379
+      },
+      {
+        "label": "第二个月【简洁版】 西昊x氧气 GEO月报.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "FckebtwUuoI9kRxcI4gcm1VinPf",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 24023616
+      },
+      {
+        "label": "第三个月 西昊x氧气 GEO月报 1.22-2.22.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "XVPUbINv8obyk8xDka0cdxU2nJr",
+        "fileType": "application/pdf",
+        "size": 3593312
+      }
+    ]
   },
   {
     "id": "recveNaDKVJG3t",
@@ -159,7 +181,78 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "推进中",
     "currentData": "已关联发稿链接，待统计有效发布链接数量。 已关联监测表，需按近一周/近一月汇总趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "太太乐0504-0531监测折线图.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "QNZubWcUDo5vDHxJgo4cXbQTntd",
+        "fileType": "application/pdf",
+        "size": 603268
+      },
+      {
+        "label": "太太乐0511-0517监测折线图.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "H9qSb57f7oR0ILxi8O5cZfDqnDd",
+        "fileType": "application/pdf",
+        "size": 687611
+      },
+      {
+        "label": "太太乐0518-0524监测折线图.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "Y36hbTlmXoau8vxSfyNcoVTknlf",
+        "fileType": "application/pdf",
+        "size": 865416
+      },
+      {
+        "label": "太太乐松茸鲜_GEO_审计报告_(0511-0517).docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "MHj1bx8wjovQbuxCdgicdebRntf",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 23170
+      },
+      {
+        "label": "太太乐0525-0531监测折线图.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "MkBSbo3HvoCjPsxQyIrc1JxlncS",
+        "fileType": "application/pdf",
+        "size": 665018
+      },
+      {
+        "label": "太太乐GEO监测报告（0518-0524）.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "T16cbE1C4owpPYx9YzqcidkXnXg",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 164563
+      },
+      {
+        "label": "太太乐GEO监测报告（0525-0531）.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "AqXHbgDCzoCwfyxJg2wcoWkun4f",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 179670
+      },
+      {
+        "label": "太太乐0601-0607监测折线图.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "IDigbnu0Go6VaOxxzXyckigxnug",
+        "fileType": "application/pdf",
+        "size": 499019
+      },
+      {
+        "label": "太太乐松茸鲜GEO监测报告部分（5月10日）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "SvBJbnte9ogZt8xUBFqcqY70nug",
+        "fileType": "application/pdf",
+        "size": 1020810
+      },
+      {
+        "label": "太太乐GEO监测报告（0601-0607）.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JSHDb1Tm8oEdxCxY1dncXUM1nDg",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 179983
+      }
+    ]
   },
   {
     "id": "recveNplOcrpKw",
@@ -190,7 +283,29 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "已关联 1 个发稿资料入口；已关联 1 个监测表入口",
     "optimizationSuggestion": "发稿和监测资料已关联；下一步统计有效发布链接数，并结合监测表汇总近一周/近一月趋势。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "李锦记月度监测与洞察报告0317.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "KxyLbR3HpoaEL2xkw4EcFSKtn7b",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 20092411
+      },
+      {
+        "label": "李锦记薄盐生抽GEO第二阶段监测报告（３月12日结案）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "BVRCbeIN1oEkz2xFvXWcdLC4ngd",
+        "fileType": "application/pdf",
+        "size": 2202942
+      },
+      {
+        "label": "深演×李锦记月度合作复盘与后续优化建议.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "IHJkbrTQdoTnZvxqLcrc4kL4nsd",
+        "fileType": "application/pdf",
+        "size": 2900913
+      }
+    ]
   },
   {
     "id": "recveNplOcTlEG",
@@ -213,7 +328,15 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "2.6-3.6一汽丰田月报.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "GqGbbpFMWoRpcTxXMPncyJYDnRb",
+        "fileType": "application/pdf",
+        "size": 1708118
+      }
+    ]
   },
   {
     "id": "recveNplOciJ1c",
@@ -858,7 +981,15 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "吴敏飞教授AI语料优化结案报告(2).pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "CvWibY5cooaDPxxtnTVcLNybnRd",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 13684131
+      }
+    ]
   },
   {
     "id": "recvhXr8SD77ql",
@@ -931,7 +1062,57 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "推进中",
     "currentData": "已关联发稿链接，待统计有效发布链接数量。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "亚洲龙-5月14号-GEO截图.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JDOnb6zPlo2tihxcfNncVjzwn5z",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 55134846
+      },
+      {
+        "label": "荣放-5月14号-GEO截图.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "AiXWbDC8jopFdAxkj67cPYYwnUd",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 28867749
+      },
+      {
+        "label": "【亚洲龙】基础词数据&信源-截至6.7.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "W9OCbyuLAoYvR0xEzDBcT5ksnGb",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 1188592
+      },
+      {
+        "label": "一汽丰田-荣放GEO诊断项目-周报0501至0514（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "H926bMbqxoe1bHxNgD7cy0HFnFg",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 583034
+      },
+      {
+        "label": "周报点检-车型GEO优化进展（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "OH1XbAf1KoGBS4xXFHlcqMRInCd",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 16103
+      },
+      {
+        "label": "一汽丰田-亚洲龙GEO诊断项目-周报0511至0517（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WQ1MbrKQWo9niuxwY1AcxNhfn2c",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 586388
+      },
+      {
+        "label": "一丰geo 5月阶段分析.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "NcdzbkqYTogt0xxS9yocvzHcnwh",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 151938
+      }
+    ]
   },
   {
     "id": "recvjhfX2i6zgu",
@@ -1196,7 +1377,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "fetchedAt": "2026-06-09T08:18:21.956Z",
+  "fetchedAt": "2026-06-09T08:34:42.908Z",
   "projectCount": 48,
   "reportCount": 49,
   "invoiceCount": 0,
@@ -1212,5 +1393,34 @@ window.FEISHU_SYNC_META = {
     "监测表",
     "优化建议",
     "报告链接"
-  ]
+  ],
+  "fileSync": {
+    "count": 6,
+    "projects": [
+      {
+        "name": "西昊",
+        "count": 3
+      },
+      {
+        "name": "太太乐松茸鲜",
+        "count": 10
+      },
+      {
+        "name": "李锦记",
+        "count": 3
+      },
+      {
+        "name": "一丰",
+        "count": 1
+      },
+      {
+        "name": "骨科医生",
+        "count": 1
+      },
+      {
+        "name": "一丰 荣放 亚洲龙",
+        "count": 7
+      }
+    ]
+  }
 };
