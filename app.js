@@ -1,4 +1,13 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v21";
+const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
+const LEGACY_STORAGE_KEYS = [
+  "oxygen-project-dashboard-v21",
+  "oxygen-project-dashboard-v20",
+  "oxygen-project-dashboard-v19",
+  "oxygen-project-dashboard-v18",
+  "oxygen-project-dashboard-v17",
+  "oxygen-project-dashboard-v16",
+  "oxygen-project-dashboard-v15"
+];
 const today = startOfToday();
 
 const statusColors = {
@@ -86,11 +95,27 @@ const fields = [
 ];
 
 function loadProjects() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (!saved) return seedProjects;
+  const saved = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
+  if (!saved) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(seedProjects));
+    return seedProjects;
+  }
   try {
     const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : seedProjects;
+    if (!Array.isArray(parsed)) return seedProjects;
+    const savedById = new Map(parsed.map(project => [project.id, project]));
+    const savedByName = new Map(parsed.map(project => [project.name, project]));
+    const merged = seedProjects.map(project => ({
+      ...project,
+      ...(savedById.get(project.id) || savedByName.get(project.name) || {})
+    }));
+    const seedIds = new Set(seedProjects.map(project => project.id));
+    const seedNames = new Set(seedProjects.map(project => project.name));
+    parsed.forEach(project => {
+      if (!seedIds.has(project.id) && !seedNames.has(project.name)) merged.unshift(project);
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    return merged;
   } catch {
     return seedProjects;
   }
@@ -693,11 +718,11 @@ els.dialog.addEventListener("change", event => {
 
 els.saveProjectBtn.addEventListener("click", event => {
   event.preventDefault();
-  const project = collectForm();
-  if (!project.name || !project.startDate || !project.cycleDays) return;
-  const index = projects.findIndex(item => item.id === project.id);
-  if (index >= 0) projects[index] = project;
-  else projects.unshift(project);
+  const formProject = collectForm();
+  if (!formProject.name || !formProject.startDate || !formProject.cycleDays) return;
+  const index = projects.findIndex(item => item.id === formProject.id);
+  if (index >= 0) projects[index] = { ...projects[index], ...formProject };
+  else projects.unshift(formProject);
   persist();
   els.dialog.close();
   render();

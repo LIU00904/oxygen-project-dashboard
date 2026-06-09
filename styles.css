@@ -1735,9 +1735,13 @@ textarea {
 }
 
 @media (max-width: 720px) {
+  body {
+    font-size: 14px;
+  }
+
   .app-shell {
-    width: min(100% - 20px, 1440px);
-    padding-top: 10px;
+    width: min(100% - 14px, 1440px);
+    padding: 8px 0 24px;
   }
 
   .topbar,
@@ -1747,17 +1751,104 @@ textarea {
     flex-direction: column;
   }
 
-  .metrics,
+  .topbar {
+    min-height: auto;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .topbar h1 {
+    font-size: 30px;
+    line-height: 1.08;
+  }
+
+  .subline {
+    margin-bottom: 0;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .metric {
+    min-height: 76px;
+    padding: 12px 10px;
+    border-radius: 18px;
+  }
+
+  .metric span {
+    font-size: 11px;
+  }
+
+  .metric strong {
+    margin-top: 6px;
+    font-size: 22px;
+  }
+
   .detail-grid,
   .people,
   .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .status-nav,
   .row-main,
   .row-content {
     grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    gap: 10px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .view-summary p,
+  .quick-controls {
+    display: none;
+  }
+
+  .workspace {
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .status-sidebar {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .status-sidebar .panel-head {
+    display: none;
+  }
+
+  .status-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  .status-nav button {
+    grid-template-columns: 10px auto auto;
+    min-width: 122px;
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: 999px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  .sidebar-add-btn {
+    min-height: 42px;
+    margin-top: 10px;
+    border-radius: 999px;
+  }
+
+  .page-head {
+    display: none;
   }
 
   .sketch-card {
@@ -1773,22 +1864,112 @@ textarea {
       "suggestion"
       "folders"
       "edit";
-    padding: 20px;
+    gap: 10px;
+    min-height: auto;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .project-row::before {
+    width: 4px;
+  }
+
+  .sketch-left {
+    gap: 10px;
+  }
+
+  .sketch-name,
+  .sketch-platform,
+  .sketch-progress,
+  .sketch-right,
+  .sketch-invoice,
+  .sketch-people,
+  .sketch-folder {
+    min-height: auto;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .sketch-name .project-title {
+    font-size: 26px;
+  }
+
+  .sketch-progress {
+    padding: 14px;
+  }
+
+  .progress-dates strong {
+    font-size: 15px;
+  }
+
+  .progress-dates span {
+    font-size: 24px;
+  }
+
+  .sketch-progress .progress-track {
+    height: 12px;
+    margin: 12px 0;
+  }
+
+  .sketch-right {
+    justify-self: stretch;
+    width: 100%;
+    padding: 6px;
+  }
+
+  .sketch-right .status-select {
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .sketch-people .person-list {
+    gap: 8px;
+  }
+
+  .sketch-people .person-role {
+    padding: 4px 10px;
   }
 
   .sketch-folders {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .sketch-kpi,
   .sketch-data,
   .sketch-suggestion {
     height: auto;
-    min-height: 220px;
+    min-height: 150px;
+    max-height: 260px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .sketch-kpi > span,
+  .sketch-data > span,
+  .sketch-suggestion > span {
+    font-size: 18px;
+  }
+
+  .data-list,
+  .kpi-list {
+    gap: 6px;
+    padding-left: 16px;
+    line-height: 1.45;
+  }
+
+  .folder-details summary {
+    gap: 12px;
+  }
+
+  .glass-icon-btn {
+    width: 3.8em;
+    height: 3.8em;
   }
 
   .sketch-edit {
     width: 100%;
+    min-height: 42px;
   }
 
   .row-content {
