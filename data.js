@@ -395,9 +395,9 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/VzrDwYafWixoRqkTMdHcBKupngx?sheet=DGmpZZ"
       }
     ],
-    "kpiStatus": "推进中",
-    "currentData": "发稿表已读取 2 个工作表，有效发布链接 175 条。\n发稿 KPI：175/150 篇，已达到数量要求。\n监测表已读取 1 个工作表，最新日期 2026-06-02。\n监测表识别到排名数据 50 条，其中 Top3 50 条、Top10 50 条。\n收录/提及相关记录：正向 27 条，未收录 0 条。",
-    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
+    "kpiStatus": "未达标",
+    "currentData": "发稿表已按子项目核对：华硕主板 100/150 篇，还差 50 篇；华硕商城 78/150 篇，还差 72 篇。\n两个子项目均要求各 150 篇，不能按主板+商城合并总数判断达标。\n监测表已读取 1 个工作表，最新日期 2026-06-02。\n监测表识别到排名数据 50 条，其中 Top3 50 条、Top10 50 条；收录/提及相关记录正向 27 条，未收录 0 条。",
+    "optimizationSuggestion": "优先补齐发稿缺口：华硕主板补 50 篇、华硕商城补 72 篇；后续发稿表保持主板/商城分表统计，不再用合并总数判断 KPI。监测表继续按周更新，并补充双周报/月报归档。",
     "reportLinks": []
   },
   {
@@ -1423,6 +1423,6 @@ window.FEISHU_SYNC_META = {
       }
     ]
   },
-  "syncedAt": "2026-06-09T09:30:32.019Z",
-  "note": "ongoing-kpi-analysis-v16"
+  "syncedAt": "2026-06-09T09:34:06.689Z",
+  "note": "asus-subproject-kpi-v17"
 };
