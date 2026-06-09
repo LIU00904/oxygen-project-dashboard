@@ -689,12 +689,21 @@ function renderPeoplePicker(id) {
   const selected = new Set(pickerState[id] || []);
   selectedWrap.innerHTML = selected.size
     ? [...selected].map(name => `
-      <span class="people-chip">
+      <span class="people-chip" title="${escapeHtml(name)}">
         <span class="avatar mini">${escapeHtml(name.slice(0, 1))}</span>
-        ${escapeHtml(name)}
+        <span>${escapeHtml(name)}</span>
+        <button
+          class="chip-remove"
+          data-remove-person="${escapeHtml(name)}"
+          data-remove-field="${id}"
+          type="button"
+          aria-label="移除 ${escapeHtml(name)}"
+        >×</button>
       </span>
     `).join("")
     : `<span class="empty-chip">未选择</span>`;
+  const trigger = document.querySelector(`.people-picker[data-field="${id}"] .picker-trigger`);
+  if (trigger) trigger.textContent = selected.size ? "更改" : "选择";
   optionsWrap.innerHTML = peopleOptions.map(name => `
     <label class="picker-option ${selected.has(name) ? "checked" : ""}">
       <input type="checkbox" data-people-field="${id}" value="${escapeHtml(name)}" ${selected.has(name) ? "checked" : ""} />
@@ -736,7 +745,19 @@ function parseLinks(value = "") {
 els.openFormBtn.addEventListener("click", () => openForm());
 
 els.dialog.addEventListener("click", event => {
+  const remove = event.target.closest("[data-remove-person]");
+  if (remove) {
+    const field = remove.dataset.removeField;
+    pickerState[field] = (pickerState[field] || []).filter(name => name !== remove.dataset.removePerson);
+    renderPeoplePicker(field);
+    return;
+  }
+
   const trigger = event.target.closest(".picker-trigger");
+  if (!trigger && !event.target.closest(".people-picker")) {
+    document.querySelectorAll(".people-picker.open").forEach(item => item.classList.remove("open"));
+    return;
+  }
   if (!trigger) return;
   const picker = trigger.closest(".people-picker");
   document.querySelectorAll(".people-picker.open").forEach(item => {
