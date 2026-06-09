@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>氧气科技项目管理</title>
-    <link rel="stylesheet" href="./styles.css?v=20260609-sync-v6" />
+    <link rel="stylesheet" href="./styles.css?v=20260609-layout-v7" />
   </head>
   <body>
     <main class="app-shell">
@@ -18,7 +18,6 @@
           <button class="icon-btn" id="exportBtn" title="导出数据" aria-label="导出数据">
             <span>↓</span>
           </button>
-          <button class="primary-btn" id="openFormBtn">新增项目</button>
         </div>
       </section>
 
@@ -90,6 +89,10 @@
               <strong data-count="停滞">0</strong>
             </button>
           </nav>
+          <button class="sidebar-add-btn" id="openFormBtn" type="button">
+            <span>＋</span>
+            新增项目
+          </button>
         </aside>
 
         <section class="project-page">
@@ -129,10 +132,34 @@
           <label>周期（天） <input id="cycleDays" type="number" min="1" value="30" required /></label>
           <label>项目 KPI <input id="kpi" /></label>
           <label>优化平台 <input id="platform" placeholder="小红书 / 抖音 / 百度..." /></label>
-          <label>项目经理 <select id="manager" class="people-select" multiple></select></label>
-          <label>写稿 <select id="writer" class="people-select" multiple></select></label>
-          <label>发稿 <select id="publisher" class="people-select" multiple></select></label>
-          <label>监测 <select id="monitor" class="people-select" multiple></select></label>
+          <label>项目经理
+            <div class="people-picker" data-field="manager">
+              <button class="picker-trigger" type="button">选择项目经理</button>
+              <div class="selected-people" data-selected="manager"></div>
+              <div class="picker-options" data-options="manager"></div>
+            </div>
+          </label>
+          <label>写稿
+            <div class="people-picker" data-field="writer">
+              <button class="picker-trigger" type="button">选择写稿人员</button>
+              <div class="selected-people" data-selected="writer"></div>
+              <div class="picker-options" data-options="writer"></div>
+            </div>
+          </label>
+          <label>发稿
+            <div class="people-picker" data-field="publisher">
+              <button class="picker-trigger" type="button">选择发稿人员</button>
+              <div class="selected-people" data-selected="publisher"></div>
+              <div class="picker-options" data-options="publisher"></div>
+            </div>
+          </label>
+          <label>监测
+            <div class="people-picker" data-field="monitor">
+              <button class="picker-trigger" type="button">选择监测人员</button>
+              <div class="selected-people" data-selected="monitor"></div>
+              <div class="picker-options" data-options="monitor"></div>
+            </div>
+          </label>
           <label>开票信息
             <select id="invoiceStatus">
               <option>待确认</option>
@@ -143,7 +170,7 @@
           </label>
           <label class="wide">发稿链接 <textarea id="publishLinks" placeholder="一行一个链接"></textarea></label>
           <label class="wide">监测表 <textarea id="monitorLinks" placeholder="一行一个链接"></textarea></label>
-          <label class="wide">报告链接 <textarea id="reportLinks" placeholder="一行一个链接，可放报告文件或第三方报告地址"></textarea></label>
+          <label class="wide">报告链接 / 飞书报告文件 <textarea id="reportLinks" placeholder="一行一个链接；报告文件本体建议上传到飞书字段：项目报告文件"></textarea></label>
           <label class="wide">优化建议 <textarea id="optimizationSuggestion"></textarea></label>
           <label class="wide">备注（要求） <textarea id="notes"></textarea></label>
         </div>
@@ -154,7 +181,7 @@
       </form>
     </dialog>
 
-    <script src="./data.js?v=20260609-sync-v6"></script>
-    <script src="./app.js?v=20260609-sync-v6"></script>
+    <script src="./data.js?v=20260609-layout-v7"></script>
+    <script src="./app.js?v=20260609-layout-v7"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v6";
+const STORAGE_KEY = "oxygen-project-dashboard-v7";
 const today = startOfToday();
 
 const statusColors = {
@@ -40,6 +40,7 @@ let currentFilter = "all";
 let currentSort = "progress";
 let invoiceOnly = false;
 let compactMode = false;
+let pickerState = {};
 
 const els = {
   board: document.querySelector("#projectBoard"),
@@ -196,10 +197,19 @@ function render() {
           </select>
         </div>
 
-        <div class="assessment-strip">
-          <div class="kpi-verdict ${getVerdictClass(project)}">
-            <span>KPI评估</span>
-            <strong>${escapeHtml(project.kpiStatus || "待评估")}</strong>
+        <div class="row-content">
+          <div class="progress-panel">
+            <span>项目周期</span>
+            <div class="progress-line">
+              <span>${formatDate(timing.start)} → ${formatDate(timing.deadline)}</span>
+              <strong>${timing.progress}%</strong>
+            </div>
+            <div class="progress-track"><div class="progress-fill"></div></div>
+            <div class="cycle-line">周期 ${Number(project.cycleDays || 0)} 天 · ${statusLabel(project, timing.remaining)}</div>
+          </div>
+          <div class="kpi-panel">
+            <span>项目 KPI</span>
+            ${renderKpi(project.kpi)}
           </div>
           <div class="data-summary">
             <span>当前数据</span>
@@ -208,21 +218,6 @@ function render() {
           <div class="suggestion-box">
             <span>优化建议</span>
             <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
-          </div>
-        </div>
-
-        <div class="row-content">
-          <div class="progress-panel">
-            <div class="progress-line">
-              <span>${formatDate(timing.start)} → ${formatDate(timing.deadline)}</span>
-              <strong>${timing.progress}%</strong>
-            </div>
-            <div class="progress-track"><div class="progress-fill"></div></div>
-            <div class="cycle-line">周期 ${Number(project.cycleDays || 0)} 天</div>
-          </div>
-          <div class="kpi-panel">
-            <span>项目 KPI</span>
-            ${renderKpi(project.kpi)}
           </div>
           <div class="people-panel">
             <span>项目人员</span>
@@ -236,7 +231,6 @@ function render() {
 
         <div class="card-actions">
           <button class="ghost-btn" data-action="edit" data-id="${project.id}">编辑</button>
-          <button class="ghost-btn" data-action="delete" data-id="${project.id}">删除</button>
         </div>
       </article>
     `;
@@ -254,7 +248,8 @@ function getVerdictClass(project) {
 function renderResourceLink(label, links) {
   const items = normalizeLinks(links);
   if (!items.length) {
-    return `<button class="resource-btn pending-link" type="button">${label} · 待补充</button>`;
+    const pending = label === "报告" ? "待上传至飞书" : "待补充";
+    return `<button class="resource-btn pending-link" type="button">${label} · ${pending}</button>`;
   }
   return items.map((item, index) => `
     <a class="resource-btn" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">
@@ -398,7 +393,7 @@ function openForm(project) {
     }
     el.value = project?.[key] ?? "";
   });
-  populatePeopleSelects(project);
+  populatePeoplePickers(project);
   if (!project) {
     document.querySelector("#status").value = "进行中";
     document.querySelector("#startDate").value = "2026-06-08";
@@ -408,19 +403,45 @@ function openForm(project) {
   els.dialog.showModal();
 }
 
-function populatePeopleSelects(project = {}) {
+function populatePeoplePickers(project = {}) {
+  pickerState = {};
   ["manager", "writer", "publisher", "monitor"].forEach(id => {
-    const select = document.querySelector(`#${id}`);
-    if (!select) return;
-    const selected = new Set(String(project[id] || "").split(/、|,|，|\//).map(item => item.trim()).filter(Boolean));
-    select.innerHTML = peopleOptions.map(name => `<option value="${escapeHtml(name)}" ${selected.has(name) ? "selected" : ""}>${escapeHtml(name)}</option>`).join("");
+    pickerState[id] = splitPeople(project[id]);
+    renderPeoplePicker(id);
   });
 }
 
 function selectedPeople(id) {
-  const select = document.querySelector(`#${id}`);
-  if (!select) return "";
-  return [...select.selectedOptions].map(option => option.value).join("、");
+  return (pickerState[id] || []).join("、");
+}
+
+function splitPeople(value) {
+  return String(value || "")
+    .split(/、|,|，|\//)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function renderPeoplePicker(id) {
+  const selectedWrap = document.querySelector(`[data-selected="${id}"]`);
+  const optionsWrap = document.querySelector(`[data-options="${id}"]`);
+  if (!selectedWrap || !optionsWrap) return;
+  const selected = new Set(pickerState[id] || []);
+  selectedWrap.innerHTML = selected.size
+    ? [...selected].map(name => `
+      <span class="people-chip">
+        <span class="avatar mini">${escapeHtml(name.slice(0, 1))}</span>
+        ${escapeHtml(name)}
+      </span>
+    `).join("")
+    : `<span class="empty-chip">未选择</span>`;
+  optionsWrap.innerHTML = peopleOptions.map(name => `
+    <label class="picker-option ${selected.has(name) ? "checked" : ""}">
+      <input type="checkbox" data-people-field="${id}" value="${escapeHtml(name)}" ${selected.has(name) ? "checked" : ""} />
+      <span class="avatar mini">${escapeHtml(name.slice(0, 1))}</span>
+      <strong>${escapeHtml(name)}</strong>
+    </label>
+  `).join("");
 }
 
 function collectForm() {
@@ -453,6 +474,28 @@ function parseLinks(value = "") {
 }
 
 els.openFormBtn.addEventListener("click", () => openForm());
+
+els.dialog.addEventListener("click", event => {
+  const trigger = event.target.closest(".picker-trigger");
+  if (!trigger) return;
+  const picker = trigger.closest(".people-picker");
+  document.querySelectorAll(".people-picker.open").forEach(item => {
+    if (item !== picker) item.classList.remove("open");
+  });
+  picker.classList.toggle("open");
+});
+
+els.dialog.addEventListener("change", event => {
+  const input = event.target.closest("input[data-people-field]");
+  if (!input) return;
+  const field = input.dataset.peopleField;
+  const selected = new Set(pickerState[field] || []);
+  if (input.checked) selected.add(input.value);
+  else selected.delete(input.value);
+  pickerState[field] = [...selected];
+  renderPeoplePicker(field);
+  document.querySelector(`.people-picker[data-field="${field}"]`)?.classList.add("open");
+});
 
 els.saveProjectBtn.addEventListener("click", event => {
   event.preventDefault();
@@ -517,11 +560,6 @@ els.board.addEventListener("click", event => {
     return;
   }
   if (button.dataset.action === "edit" && project) openForm(project);
-  if (button.dataset.action === "delete") {
-    projects = projects.filter(item => item.id !== button.dataset.id);
-    persist();
-    render();
-  }
 });
 
 els.exportBtn.addEventListener("click", async () => {
