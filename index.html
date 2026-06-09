@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>氧气科技项目管理</title>
-    <link rel="stylesheet" href="./styles.css?v=20260609-layout-v2" />
+    <link rel="stylesheet" href="./styles.css?v=20260609-sync-v6" />
   </head>
   <body>
     <main class="app-shell">
@@ -28,7 +28,7 @@
           <strong id="totalProjects">0</strong>
         </article>
         <article class="metric glass">
-          <span>平均进度</span>
+          <span>进行中平均进度</span>
           <strong id="avgProgress">0%</strong>
         </article>
         <article class="metric glass">
@@ -129,10 +129,10 @@
           <label>周期（天） <input id="cycleDays" type="number" min="1" value="30" required /></label>
           <label>项目 KPI <input id="kpi" /></label>
           <label>优化平台 <input id="platform" placeholder="小红书 / 抖音 / 百度..." /></label>
-          <label>项目经理 <input id="manager" /></label>
-          <label>写稿 <input id="writer" /></label>
-          <label>发稿 <input id="publisher" /></label>
-          <label>监测 <input id="monitor" /></label>
+          <label>项目经理 <select id="manager" class="people-select" multiple></select></label>
+          <label>写稿 <select id="writer" class="people-select" multiple></select></label>
+          <label>发稿 <select id="publisher" class="people-select" multiple></select></label>
+          <label>监测 <select id="monitor" class="people-select" multiple></select></label>
           <label>开票信息
             <select id="invoiceStatus">
               <option>待确认</option>
@@ -143,6 +143,7 @@
           </label>
           <label class="wide">发稿链接 <textarea id="publishLinks" placeholder="一行一个链接"></textarea></label>
           <label class="wide">监测表 <textarea id="monitorLinks" placeholder="一行一个链接"></textarea></label>
+          <label class="wide">报告链接 <textarea id="reportLinks" placeholder="一行一个链接，可放报告文件或第三方报告地址"></textarea></label>
           <label class="wide">优化建议 <textarea id="optimizationSuggestion"></textarea></label>
           <label class="wide">备注（要求） <textarea id="notes"></textarea></label>
         </div>
@@ -153,7 +154,7 @@
       </form>
     </dialog>
 
-    <script src="./data.js?v=20260609-layout-v2"></script>
-    <script src="./app.js?v=20260609-layout-v2"></script>
+    <script src="./data.js?v=20260609-sync-v6"></script>
+    <script src="./app.js?v=20260609-sync-v6"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v4";
+const STORAGE_KEY = "oxygen-project-dashboard-v6";
 const today = startOfToday();
 
 const statusColors = {
@@ -9,6 +9,12 @@ const statusColors = {
 };
 
 const invoiceOptions = ["待确认", "待开票", "已开票", "无需开票"];
+const statusPriority = {
+  "进行中": 0,
+  "待开始": 1,
+  "已完成": 2,
+  "停滞": 3
+};
 
 const seedProjects = window.FEISHU_PROJECTS || [
   {
@@ -54,6 +60,8 @@ const els = {
   exportBtn: document.querySelector("#exportBtn")
 };
 
+const peopleOptions = buildPeopleOptions(seedProjects);
+
 const fields = [
   "projectId",
   "name",
@@ -69,6 +77,7 @@ const fields = [
   "invoiceStatus",
   "publishLinks",
   "monitorLinks",
+  "reportLinks",
   "optimizationSuggestion",
   "notes"
 ];
@@ -142,6 +151,8 @@ function filteredProjects() {
   }).sort((a, b) => {
     const calcA = calculate(a);
     const calcB = calculate(b);
+    const statusDiff = (statusPriority[a.status] ?? 9) - (statusPriority[b.status] ?? 9);
+    if (currentFilter === "all" && statusDiff !== 0) return statusDiff;
     if (currentSort === "deadline") return calcA.deadline - calcB.deadline;
     return calcB.progress - calcA.progress;
   });
@@ -178,6 +189,7 @@ function render() {
           <div class="resource-links top-links">
             ${renderResourceLink("发稿链接", project.publishLinks)}
             ${renderResourceLink("监测表", project.monitorLinks)}
+            ${renderResourceLink("报告", project.reportLinks)}
           </div>
           <select class="status-select" data-action="status" data-id="${project.id}">
             ${Object.keys(statusColors).map(status => `<option ${project.status === status ? "selected" : ""}>${status}</option>`).join("")}
@@ -273,11 +285,22 @@ function renderCurrentData(project, timing) {
 }
 
 function renderMetrics() {
-  const timings = projects.map(calculate);
+  const activeProjects = projects.filter(item => item.status === "进行中");
+  const timings = activeProjects.map(calculate);
   const avg = timings.length ? Math.round(timings.reduce((sum, item) => sum + item.progress, 0) / timings.length) : 0;
   els.totalProjects.textContent = projects.length;
   els.avgProgress.textContent = `${avg}%`;
   els.invoiceDue.textContent = projects.filter(item => ["待确认", "待开票"].includes(item.invoiceStatus)).length;
+}
+
+function buildPeopleOptions(source) {
+  const names = new Set();
+  source.forEach(project => {
+    [project.manager, project.writer, project.publisher, project.monitor].forEach(value => {
+      String(value || "").split(/、|,|，|\//).map(item => item.trim()).filter(Boolean).forEach(name => names.add(name));
+    });
+  });
+  return [...names].sort((a, b) => a.localeCompare(b, "zh-CN"));
 }
 
 function renderStatusCounts() {
@@ -369,12 +392,13 @@ function openForm(project) {
     const el = document.querySelector(`#${id}`);
     if (!el) return;
     const key = id === "projectId" ? "id" : id;
-    if (["publishLinks", "monitorLinks"].includes(id)) {
+    if (["publishLinks", "monitorLinks", "reportLinks"].includes(id)) {
       el.value = normalizeLinks(project?.[key]).map(item => item.url).join("\n");
       return;
     }
     el.value = project?.[key] ?? "";
   });
+  populatePeopleSelects(project);
   if (!project) {
     document.querySelector("#status").value = "进行中";
     document.querySelector("#startDate").value = "2026-06-08";
@@ -382,6 +406,21 @@ function openForm(project) {
     document.querySelector("#invoiceStatus").value = "待确认";
   }
   els.dialog.showModal();
+}
+
+function populatePeopleSelects(project = {}) {
+  ["manager", "writer", "publisher", "monitor"].forEach(id => {
+    const select = document.querySelector(`#${id}`);
+    if (!select) return;
+    const selected = new Set(String(project[id] || "").split(/、|,|，|\//).map(item => item.trim()).filter(Boolean));
+    select.innerHTML = peopleOptions.map(name => `<option value="${escapeHtml(name)}" ${selected.has(name) ? "selected" : ""}>${escapeHtml(name)}</option>`).join("");
+  });
+}
+
+function selectedPeople(id) {
+  const select = document.querySelector(`#${id}`);
+  if (!select) return "";
+  return [...select.selectedOptions].map(option => option.value).join("、");
 }
 
 function collectForm() {
@@ -393,13 +432,14 @@ function collectForm() {
     cycleDays: Number(document.querySelector("#cycleDays").value),
     kpi: document.querySelector("#kpi").value.trim(),
     platform: document.querySelector("#platform").value.trim(),
-    manager: document.querySelector("#manager").value.trim(),
-    writer: document.querySelector("#writer").value.trim(),
-    publisher: document.querySelector("#publisher").value.trim(),
-    monitor: document.querySelector("#monitor").value.trim(),
+    manager: selectedPeople("manager"),
+    writer: selectedPeople("writer"),
+    publisher: selectedPeople("publisher"),
+    monitor: selectedPeople("monitor"),
     invoiceStatus: document.querySelector("#invoiceStatus").value,
     publishLinks: parseLinks(document.querySelector("#publishLinks")?.value),
     monitorLinks: parseLinks(document.querySelector("#monitorLinks")?.value),
+    reportLinks: parseLinks(document.querySelector("#reportLinks")?.value),
     optimizationSuggestion: document.querySelector("#optimizationSuggestion")?.value.trim() || "",
     notes: document.querySelector("#notes").value.trim()
   };
