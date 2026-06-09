@@ -20,43 +20,47 @@ const corsHeaders = {
 
 export default {
   async fetch(request, env) {
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
-    if (request.method !== "POST") {
-      return json({ error: "Method not allowed" }, 405);
-    }
-
-    const body = await request.json();
-    if (!body.recordId || !body.fields) {
-      return json({ error: "Missing recordId or fields" }, 400);
-    }
-
-    const token = await tenantToken(env);
-    const fields = {};
-    for (const [key, feishuField] of Object.entries(FIELD_MAP)) {
-      if (body.fields[key] === undefined) continue;
-      if (key === "startDate" || key === "endDate") {
-        fields[feishuField] = dateToMs(body.fields[key]);
-      } else {
-        fields[feishuField] = body.fields[key] || "";
+    try {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { headers: corsHeaders });
       }
-    }
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed" }, 405);
+      }
 
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/${body.recordId}`;
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ fields })
-    });
-    const result = await response.json();
-    if (!response.ok || result.code) {
-      return json({ error: result }, 500);
+      const body = await request.json();
+      if (!body.recordId || !body.fields) {
+        return json({ error: "Missing recordId or fields" }, 400);
+      }
+
+      const token = await tenantToken(env);
+      const fields = {};
+      for (const [key, feishuField] of Object.entries(FIELD_MAP)) {
+        if (body.fields[key] === undefined) continue;
+        if (key === "startDate" || key === "endDate") {
+          fields[feishuField] = dateToMs(body.fields[key]);
+        } else {
+          fields[feishuField] = body.fields[key] || "";
+        }
+      }
+
+      const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/${body.recordId}`;
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ fields })
+      });
+      const result = await response.json();
+      if (!response.ok || result.code) {
+        return json({ error: result }, 500);
+      }
+      return json({ ok: true, updated: Object.keys(fields) });
+    } catch (error) {
+      return json({ error: String(error?.message || error) }, 500);
     }
-    return json({ ok: true, updated: Object.keys(fields) });
   }
 };
 
