@@ -31,6 +31,20 @@ body {
   animation: ambientShift 16s ease-in-out infinite;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    conic-gradient(from 140deg at 20% 18%, rgba(10, 132, 255, 0.22), rgba(35, 200, 219, 0.16), transparent 32%, rgba(124, 92, 255, 0.16), transparent 70%),
+    radial-gradient(circle at 72% 62%, rgba(33, 194, 122, 0.16), transparent 28rem);
+  filter: blur(2px);
+  opacity: 0.9;
+  animation: ambientShift 22s ease-in-out infinite reverse;
+}
+
 @keyframes ambientShift {
   0%,
   100% {
@@ -784,7 +798,7 @@ h2 {
     "left progress right"
     "left progress invoice"
     "kpi data suggestion"
-    "publish monitor report"
+    "material material reportfolder"
     ". . edit";
   gap: 18px 20px;
   min-height: 650px;
@@ -819,15 +833,39 @@ h2 {
 .sketch-invoice,
 .sketch-kpi,
 .sketch-data,
-.sketch-suggestion {
-  border: 1px solid rgba(255, 255, 255, 0.58);
+.sketch-suggestion,
+.sketch-folder {
+  border: 1px solid rgba(255, 255, 255, 0.72);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.28)),
-    rgba(255, 255, 255, 0.32);
-  border-radius: 18px;
-  backdrop-filter: blur(18px) saturate(1.16);
-  -webkit-backdrop-filter: blur(18px) saturate(1.16);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.3)),
+    rgba(255, 255, 255, 0.34);
+  border-radius: 20px;
+  backdrop-filter: blur(22px) saturate(1.22);
+  -webkit-backdrop-filter: blur(22px) saturate(1.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 18px 46px rgba(23, 42, 75, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.sketch-name:hover,
+.sketch-platform:hover,
+.sketch-people:hover,
+.sketch-progress:hover,
+.sketch-right:hover,
+.sketch-invoice:hover,
+.sketch-kpi:hover,
+.sketch-data:hover,
+.sketch-suggestion:hover,
+.sketch-folder:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.95);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.38)),
+    rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 24px 58px rgba(23, 42, 75, 0.13);
 }
 
 .sketch-name,
@@ -873,21 +911,32 @@ h2 {
 }
 
 .sketch-people {
-  min-height: 138px;
+  min-height: 110px;
 }
 
 .sketch-people .person-list {
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: nowrap;
   gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .sketch-people .person-role {
-  grid-template-columns: 56px 1fr;
-  align-items: start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .sketch-people .person-names {
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .sketch-people .person-line {
@@ -945,10 +994,11 @@ h2 {
   grid-area: right;
   display: grid;
   gap: 12px;
-  min-height: 168px;
+  min-height: 78px;
   padding: 16px;
   position: relative;
   z-index: 1;
+  align-content: center;
 }
 
 .sketch-right .status-select {
@@ -957,18 +1007,6 @@ h2 {
   border-radius: 999px;
   color: white;
   background: var(--status-color);
-}
-
-.sketch-current-mini {
-  min-height: 90px;
-  padding: 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.sketch-current-mini .data-list {
-  gap: 4px;
-  font-size: 12px;
 }
 
 .sketch-invoice {
@@ -1018,31 +1056,122 @@ h2 {
   line-height: 1.6;
 }
 
-.sketch-footer {
-  display: flex;
-  flex-wrap: wrap;
+.sketch-folder {
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 56px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.42);
+  gap: 16px;
+  min-height: 116px;
+  padding: 16px;
   position: relative;
   z-index: 1;
 }
 
-.sketch-publish {
-  grid-area: publish;
+.sketch-material-folder {
+  grid-area: material;
 }
 
-.sketch-monitor {
-  grid-area: monitor;
+.sketch-report-folder {
+  grid-area: reportfolder;
 }
 
-.sketch-report {
-  grid-area: report;
+.glass-icon-btn {
+  position: relative;
+  width: 4.5em;
+  height: 4.5em;
+  perspective: 24em;
+  transform-style: preserve-3d;
+}
+
+.icon-btn__back,
+.icon-btn__front {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 1.25em;
+  transition: opacity 0.3s cubic-bezier(0.83, 0, 0.17, 1), transform 0.3s cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+.icon-btn__back {
+  display: block;
+  transform: rotate(15deg);
+  transform-origin: 100% 100%;
+  box-shadow: 0.5em -0.5em 0.75em rgba(17, 24, 39, 0.15);
+}
+
+.folder-blue .icon-btn__back {
+  background: linear-gradient(hsl(223, 90%, 50%), hsl(208, 90%, 50%));
+}
+
+.folder-purple .icon-btn__back {
+  background: linear-gradient(hsl(283, 90%, 50%), hsl(268, 90%, 50%));
+}
+
+.icon-btn__front {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 0.1em rgba(255, 255, 255, 0.32) inset;
+  backdrop-filter: blur(0.75em);
+  -webkit-backdrop-filter: blur(0.75em);
+  transform-origin: 80% 50%;
+}
+
+.icon-btn__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  width: 1.5em;
+  height: 1.5em;
+  color: white;
+  font-size: 1.6em;
+  font-weight: 900;
+}
+
+.sketch-folder:hover .icon-btn__back {
+  transform: rotate(25deg) translate3d(-0.5em, -0.5em, 0.5em);
+}
+
+.sketch-folder:hover .icon-btn__front {
+  transform: translate3d(0, 0, 2em);
+}
+
+.folder-copy strong {
+  display: block;
+  font-size: 18px;
+}
+
+.folder-copy p {
+  margin: 4px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.folder-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.folder-links a,
+.folder-empty {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.folder-links a:hover {
+  color: white;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
 }
 
 .sketch-edit {
@@ -1380,8 +1509,8 @@ dialog::backdrop {
       "right invoice"
       "kpi data"
       "suggestion suggestion"
-      "publish monitor"
-      "report edit";
+      "material material"
+      "reportfolder edit";
     min-height: auto;
   }
 
@@ -1442,9 +1571,8 @@ dialog::backdrop {
       "kpi"
       "data"
       "suggestion"
-      "publish"
-      "monitor"
-      "report"
+      "material"
+      "reportfolder"
       "edit";
     padding: 20px;
   }

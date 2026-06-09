@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v8";
+const STORAGE_KEY = "oxygen-project-dashboard-v9";
 const today = startOfToday();
 
 const statusColors = {
@@ -210,10 +210,6 @@ function render() {
           <select class="status-select" data-action="status" data-id="${project.id}">
             ${Object.keys(statusColors).map(status => `<option ${project.status === status ? "selected" : ""}>${status}</option>`).join("")}
           </select>
-          <div class="sketch-current-mini">
-            <span>当前数据</span>
-            ${renderCurrentData(project, timing)}
-          </div>
         </section>
 
         <section class="sketch-kpi">
@@ -231,14 +227,16 @@ function render() {
           <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
         </section>
 
-        <section class="sketch-footer sketch-publish">
-          ${renderResourceLink("发稿链接", project.publishLinks)}
+        <section class="sketch-folder sketch-material-folder">
+          ${renderResourceFolder("项目资料", "发稿链接 / 监测表", "blue", "▣", [
+            ["发稿链接", project.publishLinks],
+            ["监测表", project.monitorLinks]
+          ])}
         </section>
-        <section class="sketch-footer sketch-monitor">
-          ${renderResourceLink("监测表", project.monitorLinks)}
-        </section>
-        <section class="sketch-footer sketch-report">
-          ${renderResourceLink("报告", project.reportLinks)}
+        <section class="sketch-folder sketch-report-folder">
+          ${renderResourceFolder("报告文件", "周报 / 月报 / 结案报告", "purple", "▤", [
+            ["报告", project.reportLinks]
+          ])}
         </section>
 
         <section class="sketch-invoice">
@@ -271,6 +269,29 @@ function renderResourceLink(label, links) {
       ${escapeHtml(label)}${items.length > 1 ? ` ${index + 1}` : ""}
     </a>
   `).join("");
+}
+
+function renderResourceFolder(title, subtitle, color, icon, groups) {
+  const links = groups.flatMap(([label, value]) =>
+    normalizeLinks(value).map((item, index) => ({
+      label: `${label}${normalizeLinks(value).length > 1 ? ` ${index + 1}` : ""}`,
+      url: item.url
+    }))
+  );
+  const linkHtml = links.length
+    ? links.map(item => `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`).join("")
+    : `<span class="folder-empty">待上传至飞书</span>`;
+  return `
+    <div class="glass-icon-btn folder-${color}">
+      <span class="icon-btn__back"></span>
+      <span class="icon-btn__front"><span class="icon-btn__icon">${icon}</span></span>
+    </div>
+    <div class="folder-copy">
+      <strong>${escapeHtml(title)}</strong>
+      <p>${escapeHtml(subtitle)}</p>
+      <div class="folder-links">${linkHtml}</div>
+    </div>
+  `;
 }
 
 function normalizeLinks(value) {
