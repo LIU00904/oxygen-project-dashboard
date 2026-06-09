@@ -2,9 +2,11 @@
   color-scheme: light;
   --ink: #101827;
   --muted: #647085;
-  --line: rgba(255, 255, 255, 0.52);
-  --panel: rgba(255, 255, 255, 0.48);
-  --panel-strong: rgba(255, 255, 255, 0.72);
+  --line: rgba(255, 255, 255, 0.38);
+  --panel: rgba(255, 255, 255, 0.18);
+  --panel-strong: rgba(255, 255, 255, 0.34);
+  --glass-tint: rgba(255, 255, 255, 0.16);
+  --glass-shine: rgba(255, 255, 255, 0.42);
   --blue: #0a84ff;
   --cyan: #23c8db;
   --green: #21c27a;
@@ -23,26 +25,43 @@ body {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 12% 10%, rgba(35, 200, 219, 0.38), transparent 32rem),
-    radial-gradient(circle at 85% 5%, rgba(124, 92, 255, 0.22), transparent 30rem),
-    linear-gradient(135deg, #f7fbff 0%, #edf6f5 44%, #f8f3ff 100%);
-  background-size: 180% 180%;
-  animation: ambientShift 16s ease-in-out infinite;
+  background: #eef7fb;
 }
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   pointer-events: none;
   background:
-    conic-gradient(from 140deg at 20% 18%, rgba(10, 132, 255, 0.22), rgba(35, 200, 219, 0.16), transparent 32%, rgba(124, 92, 255, 0.16), transparent 70%),
-    radial-gradient(circle at 72% 62%, rgba(33, 194, 122, 0.16), transparent 28rem);
-  filter: blur(2px);
-  opacity: 0.9;
-  animation: ambientShift 22s ease-in-out infinite reverse;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(238, 247, 251, 0.2) 42%, rgba(255, 255, 255, 0.44)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 10px);
+  mix-blend-mode: screen;
+}
+
+.iridescence-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, #dff8ff 0%, #f5f1ff 42%, #e7fff7 100%);
+}
+
+.iridescence-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.iridescence-fallback {
+  background:
+    linear-gradient(120deg, rgba(146, 211, 255, 0.95), rgba(250, 246, 255, 0.88), rgba(190, 255, 236, 0.9));
+  background-size: 220% 220%;
+  animation: ambientShift 18s ease-in-out infinite;
 }
 
 @keyframes ambientShift {
@@ -93,6 +112,8 @@ button {
 }
 
 .app-shell {
+  position: relative;
+  z-index: 2;
   width: min(1440px, calc(100% - 32px));
   margin: 0 auto;
   padding: 24px 0 40px;
@@ -101,17 +122,20 @@ button {
 .glass {
   border: 1px solid var(--line);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.28)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
     var(--panel);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(24px) saturate(1.25);
-  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(30px) saturate(1.45);
+  -webkit-backdrop-filter: blur(30px) saturate(1.45);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .glass:hover {
-  border-color: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 28px 86px rgba(23, 42, 75, 0.2);
+  border-color: rgba(255, 255, 255, 0.62);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.12)),
+    rgba(255, 255, 255, 0.2);
+  box-shadow: 0 28px 86px rgba(23, 42, 75, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .topbar {
@@ -1524,6 +1548,131 @@ dialog::backdrop {
   padding: 54px 20px;
   border-radius: 24px;
   text-align: center;
+}
+
+.topbar,
+.metric,
+.control-panel,
+.status-sidebar,
+.project-row,
+.project-form,
+.empty {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.14);
+}
+
+.metric,
+.control-panel,
+.status-sidebar,
+.project-row,
+.project-form {
+  border-color: rgba(255, 255, 255, 0.36);
+}
+
+.project-row {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.12);
+}
+
+.project-row::after {
+  opacity: 0.22;
+}
+
+.project-row:hover {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.12)),
+    rgba(255, 255, 255, 0.18);
+}
+
+.search-box,
+.top-links,
+.status-nav button,
+.folder-details,
+.sketch-name,
+.sketch-platform,
+.sketch-progress,
+.sketch-right,
+.sketch-kpi,
+.sketch-data,
+.sketch-suggestion,
+.sketch-invoice,
+.sketch-people,
+.invoice-toggle,
+.people-picker,
+.picker-options,
+.project-form label,
+input,
+select,
+textarea {
+  border-color: rgba(255, 255, 255, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px) saturate(1.32);
+  -webkit-backdrop-filter: blur(22px) saturate(1.32);
+}
+
+.search-box:focus-within,
+.status-nav button.active,
+.tool-btn:hover,
+.tool-icon:hover,
+.tool-btn.active,
+.tool-icon.active,
+.invoice-toggle button:hover,
+.invoice-toggle button.active,
+.picker-option.checked {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.16)),
+    rgba(255, 255, 255, 0.2);
+}
+
+.tool-btn,
+.tool-icon,
+.ghost-btn,
+.icon-btn,
+.resource-btn,
+.picker-trigger,
+.picker-option,
+.chip,
+.people-chip,
+.empty-chip {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+}
+
+.tool-btn.active {
+  color: var(--blue);
+  border-color: rgba(10, 132, 255, 0.28);
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.status-select {
+  color: var(--blue);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(10, 132, 255, 0.22);
+}
+
+.progress-track {
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.data-list li,
+.suggestion-box p,
+.sketch-suggestion p,
+.kpi-list,
+.sketch-kpi p {
+  color: #172235;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.primary-btn,
+.sidebar-add-btn,
+.resource-btn:not(.pending-link) {
+  box-shadow: 0 16px 38px rgba(10, 132, 255, 0.2);
 }
 
 @media (max-width: 1060px) {

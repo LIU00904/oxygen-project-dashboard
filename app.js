@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v20";
+const STORAGE_KEY = "oxygen-project-dashboard-v21";
 const today = startOfToday();
 
 const statusColors = {
@@ -63,6 +63,8 @@ const els = {
 
 const peopleOptions = buildPeopleOptions(seedProjects);
 
+initIridescenceBackground();
+
 const fields = [
   "projectId",
   "name",
@@ -102,6 +104,130 @@ function startOfToday() {
 
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+}
+
+function initIridescenceBackground() {
+  const container = document.querySelector("#iridescenceBg");
+  if (!container) return;
+  const canvas = document.createElement("canvas");
+  const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+  if (!gl) {
+    container.classList.add("iridescence-fallback");
+    return;
+  }
+
+  const vertexShader = `
+    attribute vec2 position;
+    varying vec2 vUv;
+    void main() {
+      vUv = position * 0.5 + 0.5;
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
+  const fragmentShader = `
+    precision highp float;
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform vec3 uResolution;
+    uniform vec2 uMouse;
+    uniform float uAmplitude;
+    uniform float uSpeed;
+    varying vec2 vUv;
+
+    void main() {
+      float mr = min(uResolution.x, uResolution.y);
+      vec2 uv = (vUv.xy * 2.0 - 1.0) * uResolution.xy / mr;
+      uv += (uMouse - vec2(0.5)) * uAmplitude;
+
+      float d = -uTime * 0.5 * uSpeed;
+      float a = 0.0;
+      for (float i = 0.0; i < 8.0; ++i) {
+        a += cos(i - d - a * uv.x);
+        d += sin(uv.y * i + a);
+      }
+      d += uTime * 0.5 * uSpeed;
+      vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
+      col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5) * uColor;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  const program = createShaderProgram(gl, vertexShader, fragmentShader);
+  if (!program) {
+    container.classList.add("iridescence-fallback");
+    return;
+  }
+
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const position = gl.getAttribLocation(program, "position");
+  gl.enableVertexAttribArray(position);
+  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+  const uniforms = {
+    time: gl.getUniformLocation(program, "uTime"),
+    color: gl.getUniformLocation(program, "uColor"),
+    resolution: gl.getUniformLocation(program, "uResolution"),
+    mouse: gl.getUniformLocation(program, "uMouse"),
+    amplitude: gl.getUniformLocation(program, "uAmplitude"),
+    speed: gl.getUniformLocation(program, "uSpeed")
+  };
+  const mouse = { x: 0.52, y: 0.48 };
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let frameId = 0;
+
+  container.appendChild(canvas);
+  gl.useProgram(program);
+  gl.uniform3f(uniforms.color, 0.94, 0.98, 1.0);
+  gl.uniform1f(uniforms.amplitude, 0.08);
+  gl.uniform1f(uniforms.speed, reduceMotion ? 0.16 : 0.72);
+
+  function resize() {
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.75);
+    const width = Math.max(1, Math.floor(container.offsetWidth * ratio));
+    const height = Math.max(1, Math.floor(container.offsetHeight * ratio));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      gl.viewport(0, 0, width, height);
+    }
+    gl.uniform3f(uniforms.resolution, width, height, width / height);
+  }
+
+  function update(time) {
+    resize();
+    gl.uniform1f(uniforms.time, time * 0.001);
+    gl.uniform2f(uniforms.mouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    frameId = requestAnimationFrame(update);
+  }
+
+  window.addEventListener("resize", resize);
+  window.addEventListener("mousemove", event => {
+    mouse.x = event.clientX / Math.max(1, window.innerWidth);
+    mouse.y = 1 - event.clientY / Math.max(1, window.innerHeight);
+  }, { passive: true });
+  frameId = requestAnimationFrame(update);
+  window.addEventListener("pagehide", () => cancelAnimationFrame(frameId), { once: true });
+}
+
+function createShaderProgram(gl, vertexSource, fragmentSource) {
+  const vertex = compileShader(gl, gl.VERTEX_SHADER, vertexSource);
+  const fragment = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+  if (!vertex || !fragment) return null;
+  const program = gl.createProgram();
+  gl.attachShader(program, vertex);
+  gl.attachShader(program, fragment);
+  gl.linkProgram(program);
+  return gl.getProgramParameter(program, gl.LINK_STATUS) ? program : null;
+}
+
+function compileShader(gl, type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
 }
 
 function dateFrom(value) {
