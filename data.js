@@ -1,5 +1,32 @@
 window.FEISHU_PROJECTS = [
   {
+    "id": "recvm25hMZaywX",
+    "source": "feishu",
+    "name": "湄洲岛",
+    "status": "已完成",
+    "startDate": "2025-12-17",
+    "cycleDays": 5,
+    "progressPercent": 100,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "",
+    "writer": "张扬",
+    "publisher": "刘依晨",
+    "monitor": "刘依晨",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/FPtlwteXAiIJNSkG22qcmU9enPw"
+      }
+    ],
+    "kpiStatus": "已完成待补 KPI",
+    "currentData": "已关联 1 个监测表入口；项目周期已结束，待补充 KPI 与结案资料。",
+    "optimizationSuggestion": "补充项目 KPI 与优化平台；监测表已关联，后续可归档周报/结案报告。",
+    "reportLinks": []
+  },
+  {
     "id": "rec25v3tGmrDdx",
     "source": "feishu",
     "name": "西昊",
@@ -16,10 +43,14 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/GckTwsRTni879KkUFfQctuMCnoh"
+      }
+    ],
     "kpiStatus": "停滞待处理",
-    "currentData": "当前完成度 47%",
-    "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
+    "currentData": "已关联 1 个监测表入口",
+    "optimizationSuggestion": "监测表已关联；项目停滞中，需结合最新监测补充恢复推进或暂停说明。",
     "reportLinks": []
   },
   {
@@ -62,10 +93,14 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/QkMywkQRIi1ko3ku0sfcvQr0nGb"
+      }
+    ],
     "kpiStatus": "已达标",
-    "currentData": "当前完成度 100%",
-    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
+    "currentData": "已关联 1 个监测表入口",
+    "optimizationSuggestion": "监测表已关联；项目已完成，建议归档监测结论和结案报告。",
     "reportLinks": []
   },
   {
@@ -85,10 +120,14 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/ZYRywZbsVisSyCk7e8YcBUO5nzd"
+      }
+    ],
     "kpiStatus": "已达标",
-    "currentData": "当前完成度 100%",
-    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
+    "currentData": "已关联 1 个监测表入口",
+    "optimizationSuggestion": "监测表已关联；项目已完成，建议补充结案资料并归档监测结果。",
     "reportLinks": []
   },
   {
@@ -138,11 +177,19 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
     "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/YLZcwYwFxivdUckaovgc4V4ynyh"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/CIjVwvhj2idT9wkKpmNcSL98nmh"
+      }
+    ],
     "kpiStatus": "已达标",
-    "currentData": "当前完成度 100%",
-    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
+    "currentData": "已关联 1 个发稿资料入口；已关联 1 个监测表入口",
+    "optimizationSuggestion": "发稿和监测资料已关联；下一步统计有效发布链接数，并结合监测表汇总近一周/近一月趋势。",
     "reportLinks": []
   },
   {
@@ -184,11 +231,19 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/sheets/LEqSs3Vsmhn8vEt8BAscioL1nob"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/EgLLwBbWXiQokskbPYacSSOSnxf"
+      }
+    ],
     "kpiStatus": "已达标",
-    "currentData": "当前完成度 100%",
-    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
+    "currentData": "已关联 1 个发稿资料入口；已关联 1 个监测表入口",
+    "optimizationSuggestion": "发稿和监测资料已关联；下一步统计有效发布链接数，核对 KPI 缺口。",
     "reportLinks": []
   },
   {
@@ -653,10 +708,14 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/LEc9wkYGHiuVT5kLmVUcN2I7nzg"
+      }
+    ],
     "kpiStatus": "已达标",
-    "currentData": "当前完成度 100%",
-    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
+    "currentData": "已关联 1 个监测表入口",
+    "optimizationSuggestion": "监测表已关联；下一步补充发稿资料，并按近一周/近一月整理趋势。",
     "reportLinks": []
   },
   {
@@ -1137,9 +1196,9 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "fetchedAt": "2026-06-08T09:43:39.979Z",
+  "fetchedAt": "2026-06-09T08:18:21.956Z",
   "projectCount": 48,
-  "reportCount": 48,
+  "reportCount": 49,
   "invoiceCount": 0,
   "tables": [
     "项目进度",
