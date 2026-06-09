@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v7";
+const STORAGE_KEY = "oxygen-project-dashboard-v8";
 const today = startOfToday();
 
 const statusColors = {
@@ -178,60 +178,75 @@ function render() {
     const timing = calculate(project);
     const color = statusColors[project.status] || statusColors["进行中"];
     return `
-      <article class="project-row glass" style="--status-color:${color};--progress:${timing.progress}%">
-        <div class="row-main">
-          <div class="project-identity">
+      <article class="project-row sketch-card glass" style="--status-color:${color};--progress:${timing.progress}%">
+        <section class="sketch-left">
+          <div class="sketch-name">
+            <span>项目名</span>
             <h3 class="project-title">${escapeHtml(project.name)}</h3>
-            <div class="chips">
-              <span class="chip">${escapeHtml(project.platform || "未填平台")}</span>
-              <span class="chip">${statusLabel(project, timing.remaining)}</span>
-            </div>
           </div>
-          <div class="resource-links top-links">
-            ${renderResourceLink("发稿链接", project.publishLinks)}
-            ${renderResourceLink("监测表", project.monitorLinks)}
-            ${renderResourceLink("报告", project.reportLinks)}
+          <div class="sketch-platform">
+            <span>优化平台</span>
+            <strong>${escapeHtml(project.platform || "未填平台")}</strong>
           </div>
-          <select class="status-select" data-action="status" data-id="${project.id}">
-            ${Object.keys(statusColors).map(status => `<option ${project.status === status ? "selected" : ""}>${status}</option>`).join("")}
-          </select>
-        </div>
-
-        <div class="row-content">
-          <div class="progress-panel">
-            <span>项目周期</span>
-            <div class="progress-line">
-              <span>${formatDate(timing.start)} → ${formatDate(timing.deadline)}</span>
-              <strong>${timing.progress}%</strong>
-            </div>
-            <div class="progress-track"><div class="progress-fill"></div></div>
-            <div class="cycle-line">周期 ${Number(project.cycleDays || 0)} 天 · ${statusLabel(project, timing.remaining)}</div>
-          </div>
-          <div class="kpi-panel">
-            <span>项目 KPI</span>
-            ${renderKpi(project.kpi)}
-          </div>
-          <div class="data-summary">
-            <span>当前数据</span>
-            ${renderCurrentData(project, timing)}
-          </div>
-          <div class="suggestion-box">
-            <span>优化建议</span>
-            <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
-          </div>
-          <div class="people-panel">
+          <div class="sketch-people">
             <span>项目人员</span>
             ${renderPeople(project)}
           </div>
-          <div class="invoice-panel">
-            <span>开票信息</span>
-            ${renderInvoiceToggle(project)}
-          </div>
-        </div>
+        </section>
 
-        <div class="card-actions">
-          <button class="ghost-btn" data-action="edit" data-id="${project.id}">编辑</button>
-        </div>
+        <section class="sketch-progress">
+          <div class="progress-dates">
+            <strong>${formatDate(timing.start)} → ${formatDate(timing.deadline)}</strong>
+            <span>${timing.progress}%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <div class="progress-meta">
+            <span>周期 ${Number(project.cycleDays || 0)} 天</span>
+            <strong>${statusLabel(project, timing.remaining)}</strong>
+          </div>
+        </section>
+
+        <section class="sketch-right">
+          <select class="status-select" data-action="status" data-id="${project.id}">
+            ${Object.keys(statusColors).map(status => `<option ${project.status === status ? "selected" : ""}>${status}</option>`).join("")}
+          </select>
+          <div class="sketch-current-mini">
+            <span>当前数据</span>
+            ${renderCurrentData(project, timing)}
+          </div>
+        </section>
+
+        <section class="sketch-kpi">
+          <span>KPI</span>
+          ${renderKpi(project.kpi)}
+        </section>
+
+        <section class="sketch-data">
+          <span>当前数据</span>
+          ${renderCurrentData(project, timing)}
+        </section>
+
+        <section class="sketch-suggestion">
+          <span>优化建议</span>
+          <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
+        </section>
+
+        <section class="sketch-footer sketch-publish">
+          ${renderResourceLink("发稿链接", project.publishLinks)}
+        </section>
+        <section class="sketch-footer sketch-monitor">
+          ${renderResourceLink("监测表", project.monitorLinks)}
+        </section>
+        <section class="sketch-footer sketch-report">
+          ${renderResourceLink("报告", project.reportLinks)}
+        </section>
+
+        <section class="sketch-invoice">
+          <span>开票信息</span>
+          ${renderInvoiceToggle(project)}
+        </section>
+
+        <button class="ghost-btn sketch-edit" data-action="edit" data-id="${project.id}">编辑</button>
       </article>
     `;
   }).join("");

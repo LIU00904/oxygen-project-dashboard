@@ -777,6 +777,282 @@ h2 {
   background: linear-gradient(90deg, var(--status-color), var(--cyan));
 }
 
+.sketch-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.78fr) minmax(360px, 1.35fr) minmax(260px, 0.92fr);
+  grid-template-areas:
+    "left progress right"
+    "left progress invoice"
+    "kpi data suggestion"
+    "publish monitor report"
+    ". . edit";
+  gap: 18px 20px;
+  min-height: 650px;
+  padding: 30px 32px 24px;
+}
+
+.sketch-card::after {
+  content: "";
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 250px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(17, 24, 39, 0.14), transparent);
+}
+
+.sketch-left {
+  grid-area: left;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-name,
+.sketch-platform,
+.sketch-people,
+.sketch-progress,
+.sketch-right,
+.sketch-invoice,
+.sketch-kpi,
+.sketch-data,
+.sketch-suggestion {
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.28)),
+    rgba(255, 255, 255, 0.32);
+  border-radius: 18px;
+  backdrop-filter: blur(18px) saturate(1.16);
+  -webkit-backdrop-filter: blur(18px) saturate(1.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48);
+}
+
+.sketch-name,
+.sketch-platform,
+.sketch-people {
+  padding: 16px;
+}
+
+.sketch-name span,
+.sketch-platform span,
+.sketch-people > span,
+.sketch-progress span,
+.sketch-right span,
+.sketch-invoice > span,
+.sketch-kpi > span,
+.sketch-data > span,
+.sketch-suggestion > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sketch-name {
+  min-height: 88px;
+}
+
+.sketch-name .project-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.sketch-platform {
+  min-height: 72px;
+}
+
+.sketch-platform strong {
+  display: block;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.sketch-people {
+  min-height: 138px;
+}
+
+.sketch-people .person-list {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.sketch-people .person-role {
+  grid-template-columns: 56px 1fr;
+  align-items: start;
+}
+
+.sketch-people .person-names {
+  gap: 4px;
+}
+
+.sketch-people .person-line {
+  min-height: 26px;
+}
+
+.sketch-progress {
+  grid-area: progress;
+  align-self: start;
+  min-height: 168px;
+  padding: 18px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-dates,
+.progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.progress-dates strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.progress-dates span {
+  margin: 0;
+  color: var(--status-color);
+  font-size: 26px;
+}
+
+.sketch-progress .progress-track {
+  height: 18px;
+  margin: 20px 0;
+}
+
+.progress-meta {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.progress-meta span,
+.progress-meta strong {
+  margin: 0;
+}
+
+.progress-meta strong {
+  color: var(--ink);
+}
+
+.sketch-right {
+  grid-area: right;
+  display: grid;
+  gap: 12px;
+  min-height: 168px;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-right .status-select {
+  width: 100%;
+  height: 46px;
+  border-radius: 999px;
+  color: white;
+  background: var(--status-color);
+}
+
+.sketch-current-mini {
+  min-height: 90px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.sketch-current-mini .data-list {
+  gap: 4px;
+  font-size: 12px;
+}
+
+.sketch-invoice {
+  grid-area: invoice;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-invoice .invoice-toggle {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sketch-kpi,
+.sketch-data,
+.sketch-suggestion {
+  height: 320px;
+  min-height: 320px;
+  overflow: auto;
+  padding: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-kpi {
+  grid-area: kpi;
+}
+
+.sketch-data {
+  grid-area: data;
+}
+
+.sketch-suggestion {
+  grid-area: suggestion;
+}
+
+.sketch-kpi > span,
+.sketch-data > span,
+.sketch-suggestion > span {
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.sketch-suggestion p {
+  margin: 0;
+  color: #273348;
+  line-height: 1.6;
+}
+
+.sketch-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.42);
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-publish {
+  grid-area: publish;
+}
+
+.sketch-monitor {
+  grid-area: monitor;
+}
+
+.sketch-report {
+  grid-area: report;
+}
+
+.sketch-edit {
+  grid-area: edit;
+  justify-self: end;
+  width: 112px;
+  position: relative;
+  z-index: 1;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1097,6 +1373,22 @@ dialog::backdrop {
       "suggestion invoice";
   }
 
+  .sketch-card {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "left progress"
+      "right invoice"
+      "kpi data"
+      "suggestion suggestion"
+      "publish monitor"
+      "report edit";
+    min-height: auto;
+  }
+
+  .sketch-card::after {
+    display: none;
+  }
+
   .row-main {
     grid-template-columns: 1fr;
   }
@@ -1138,6 +1430,34 @@ dialog::backdrop {
   .row-main,
   .row-content {
     grid-template-columns: 1fr;
+  }
+
+  .sketch-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "progress"
+      "right"
+      "invoice"
+      "kpi"
+      "data"
+      "suggestion"
+      "publish"
+      "monitor"
+      "report"
+      "edit";
+    padding: 20px;
+  }
+
+  .sketch-kpi,
+  .sketch-data,
+  .sketch-suggestion {
+    height: auto;
+    min-height: 220px;
+  }
+
+  .sketch-edit {
+    width: 100%;
   }
 
   .row-content {
