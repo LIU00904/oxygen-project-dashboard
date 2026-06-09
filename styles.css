@@ -447,6 +447,91 @@ h2 {
   box-shadow: 0 24px 72px rgba(23, 42, 75, 0.18);
 }
 
+.assessment-strip {
+  display: grid;
+  grid-template-columns: 170px minmax(220px, 0.85fr) minmax(280px, 1.4fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.kpi-verdict,
+.resource-links,
+.suggestion-box {
+  min-height: 76px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.kpi-verdict {
+  display: grid;
+  align-content: center;
+  border-left: 4px solid var(--blue);
+}
+
+.kpi-verdict.good {
+  border-left-color: var(--green);
+}
+
+.kpi-verdict.bad {
+  border-left-color: var(--red);
+}
+
+.kpi-verdict.working {
+  border-left-color: var(--amber);
+}
+
+.kpi-verdict span,
+.suggestion-box span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.kpi-verdict strong {
+  font-size: 22px;
+}
+
+.resource-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 8px;
+}
+
+.resource-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.resource-btn:not(.pending-link) {
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+}
+
+.pending-link {
+  color: var(--muted);
+}
+
+.suggestion-box p {
+  margin: 0;
+  color: #273348;
+  line-height: 1.5;
+}
+
 .row-main {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) 128px;
@@ -516,7 +601,7 @@ h2 {
 
 .row-content {
   display: grid;
-  grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.4fr) minmax(220px, 0.9fr) 210px;
+  grid-template-columns: minmax(170px, 0.72fr) minmax(240px, 1.1fr) minmax(220px, 0.9fr) minmax(220px, 0.9fr) 190px;
   gap: 12px;
   margin-top: 16px;
   align-items: start;
@@ -527,12 +612,13 @@ h2 {
 }
 
 .compact-mode .row-content {
-  grid-template-columns: minmax(180px, 0.8fr) minmax(240px, 1.6fr) minmax(180px, 0.8fr) 190px;
+  grid-template-columns: minmax(170px, 0.72fr) minmax(240px, 1.1fr) minmax(220px, 0.9fr) minmax(180px, 0.8fr) 180px;
   margin-top: 12px;
 }
 
 .compact-mode .progress-panel,
 .compact-mode .kpi-panel,
+.compact-mode .data-panel,
 .compact-mode .people-panel,
 .compact-mode .invoice-panel {
   padding: 12px;
@@ -544,6 +630,7 @@ h2 {
 
 .progress-panel,
 .kpi-panel,
+.data-panel,
 .people-panel,
 .invoice-panel {
   min-height: 100%;
@@ -554,6 +641,7 @@ h2 {
 
 .progress-panel > span,
 .kpi-panel > span,
+.data-panel > span,
 .people-panel > span,
 .invoice-panel > span {
   display: block;
@@ -609,6 +697,19 @@ h2 {
 .kpi-list li::marker {
   color: var(--blue);
   font-weight: 900;
+}
+
+.data-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: #273348;
+  line-height: 1.45;
+}
+
+.data-list li::marker {
+  color: var(--cyan);
 }
 
 .progress-fill {
@@ -842,6 +943,10 @@ dialog::backdrop {
     grid-template-columns: 1fr 1fr;
   }
 
+  .assessment-strip {
+    grid-template-columns: 1fr;
+  }
+
   .control-panel {
     grid-template-columns: 1fr;
   }
@@ -873,7 +978,8 @@ dialog::backdrop {
 
   .status-nav,
   .row-main,
-  .row-content {
+  .row-content,
+  .assessment-strip {
     grid-template-columns: 1fr;
   }
 

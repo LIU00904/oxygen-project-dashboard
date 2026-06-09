@@ -67,6 +67,9 @@ const fields = [
   "publisher",
   "monitor",
   "invoiceStatus",
+  "publishLinks",
+  "monitorLinks",
+  "optimizationSuggestion",
   "notes"
 ];
 
@@ -177,6 +180,21 @@ function render() {
           </select>
         </div>
 
+        <div class="assessment-strip">
+          <div class="kpi-verdict ${getVerdictClass(project)}">
+            <span>KPI评估</span>
+            <strong>${escapeHtml(project.kpiStatus || "待评估")}</strong>
+          </div>
+          <div class="resource-links">
+            ${renderResourceLink("发稿链接", project.publishLinks)}
+            ${renderResourceLink("监测表", project.monitorLinks)}
+          </div>
+          <div class="suggestion-box">
+            <span>优化建议</span>
+            <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
+          </div>
+        </div>
+
         <div class="row-content">
           <div class="progress-panel">
             <div class="progress-line">
@@ -189,6 +207,10 @@ function render() {
           <div class="kpi-panel">
             <span>项目 KPI</span>
             ${renderKpi(project.kpi)}
+          </div>
+          <div class="data-panel">
+            <span>当前数据</span>
+            ${renderCurrentData(project, timing)}
           </div>
           <div class="people-panel">
             <span>项目人员</span>
@@ -207,6 +229,47 @@ function render() {
       </article>
     `;
   }).join("");
+}
+
+function getVerdictClass(project) {
+  const status = project.kpiStatus || "";
+  if (status.includes("已达标")) return "good";
+  if (status.includes("停滞") || status.includes("未达标")) return "bad";
+  if (status.includes("推进")) return "working";
+  return "neutral";
+}
+
+function renderResourceLink(label, links) {
+  const items = normalizeLinks(links);
+  if (!items.length) {
+    return `<button class="resource-btn pending-link" type="button">${label} · 待补充</button>`;
+  }
+  return items.map((item, index) => `
+    <a class="resource-btn" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+      ${escapeHtml(label)}${items.length > 1 ? ` ${index + 1}` : ""}
+    </a>
+  `).join("");
+}
+
+function normalizeLinks(value) {
+  if (!value) return [];
+  const list = Array.isArray(value) ? value : [value];
+  return list.map(item => {
+    if (typeof item === "string") return { label: item, url: item };
+    return item;
+  }).filter(item => item && item.url);
+}
+
+function renderCurrentData(project, timing) {
+  const progress = Number(timing.progress || 0);
+  const gap = Math.max(0, 100 - progress);
+  const data = [
+    project.currentData || `当前完成度 ${progress}%`,
+    progress >= 100 ? "完成度已达到 100%" : `距离 100% 还差 ${gap}%`,
+    project.status === "待开始" ? "待补充启动数据" : "",
+    project.status === "停滞" ? "需要更新停滞原因" : ""
+  ].filter(Boolean);
+  return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
 function renderMetrics() {
@@ -306,6 +369,10 @@ function openForm(project) {
     const el = document.querySelector(`#${id}`);
     if (!el) return;
     const key = id === "projectId" ? "id" : id;
+    if (["publishLinks", "monitorLinks"].includes(id)) {
+      el.value = normalizeLinks(project?.[key]).map(item => item.url).join("\n");
+      return;
+    }
     el.value = project?.[key] ?? "";
   });
   if (!project) {
@@ -331,8 +398,18 @@ function collectForm() {
     publisher: document.querySelector("#publisher").value.trim(),
     monitor: document.querySelector("#monitor").value.trim(),
     invoiceStatus: document.querySelector("#invoiceStatus").value,
+    publishLinks: parseLinks(document.querySelector("#publishLinks")?.value),
+    monitorLinks: parseLinks(document.querySelector("#monitorLinks")?.value),
+    optimizationSuggestion: document.querySelector("#optimizationSuggestion")?.value.trim() || "",
     notes: document.querySelector("#notes").value.trim()
   };
+}
+
+function parseLinks(value = "") {
+  return value.split(/\n|,|，/)
+    .map(item => item.trim())
+    .filter(Boolean)
+    .map(url => ({ url }));
 }
 
 els.openFormBtn.addEventListener("click", () => openForm());

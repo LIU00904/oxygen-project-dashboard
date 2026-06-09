@@ -14,7 +14,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈、张扬",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "停滞待处理",
+    "currentData": "当前完成度 47%",
+    "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。"
   },
   {
     "id": "recveNaDKVJG3t",
@@ -31,7 +36,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "停滞待处理",
+    "currentData": "当前完成度 35%",
+    "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。"
   },
   {
     "id": "recveNlgg5OPg6",
@@ -48,7 +58,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNouG3UhTD",
@@ -65,7 +80,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈、刘依晨",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNpiTYQzHi",
@@ -82,7 +102,12 @@ window.FEISHU_PROJECTS = [
     "writer": "梁伟安",
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 32%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recveNplOcrpKw",
@@ -99,7 +124,12 @@ window.FEISHU_PROJECTS = [
     "writer": "宋芷桐、刘依晨",
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcTlEG",
@@ -116,7 +146,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈、刘依晨",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOciJ1c",
@@ -133,7 +168,12 @@ window.FEISHU_PROJECTS = [
     "writer": "赵博宇",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcdyyk",
@@ -150,7 +190,12 @@ window.FEISHU_PROJECTS = [
     "writer": "马朔",
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 88%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recveNplOcfxZ1",
@@ -167,7 +212,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcfeUR",
@@ -184,7 +234,12 @@ window.FEISHU_PROJECTS = [
     "writer": "邢瑜轩",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcxETh",
@@ -201,7 +256,12 @@ window.FEISHU_PROJECTS = [
     "writer": "金雨婷",
     "publisher": "刘依晨",
     "monitor": "金雨婷、刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcWAzC",
@@ -218,7 +278,12 @@ window.FEISHU_PROJECTS = [
     "writer": "邢瑜轩",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recveNplOcnwiZ",
@@ -235,7 +300,12 @@ window.FEISHU_PROJECTS = [
     "writer": "马朔",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "停滞待处理",
+    "currentData": "当前完成度 52%",
+    "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。"
   },
   {
     "id": "recveNplOcetxW",
@@ -252,7 +322,12 @@ window.FEISHU_PROJECTS = [
     "writer": "赵博宇",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "停滞待处理",
+    "currentData": "当前完成度 54%",
+    "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。"
   },
   {
     "id": "recveNplOcXYmU",
@@ -269,7 +344,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOcjm2W",
@@ -286,7 +366,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOc7fXw",
@@ -303,7 +388,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOceANM",
@@ -320,7 +410,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOc4DBR",
@@ -337,7 +432,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOcE3VX",
@@ -354,7 +454,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOc37li",
@@ -371,7 +476,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOcECQL",
@@ -388,7 +498,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOcIuxf",
@@ -405,7 +520,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOc0BKa",
@@ -422,7 +542,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOcszqo",
@@ -439,7 +564,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recveNplOctD7v",
@@ -456,7 +586,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvgopfFqMfp4",
@@ -473,7 +608,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "已达标",
+    "currentData": "当前完成度 100%",
+    "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
     "id": "recvhXpRFrA1MC",
@@ -490,7 +630,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 20%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recvhXpWChLgnp",
@@ -507,7 +652,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvhXq5d4Oxv0",
@@ -524,7 +674,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvhXqn6kl16F",
@@ -541,7 +696,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvhXqxeQlGwN",
@@ -558,7 +718,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvhXr75uIOhW",
@@ -575,7 +740,12 @@ window.FEISHU_PROJECTS = [
     "writer": "刘依晨",
     "publisher": "刘依晨",
     "monitor": "刘依晨",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvhXr8SD77ql",
@@ -592,7 +762,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvjh9izeBYrC",
@@ -609,7 +784,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvjheWColObr",
@@ -626,7 +806,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 36%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recvjhfX2i6zgu",
@@ -643,7 +828,12 @@ window.FEISHU_PROJECTS = [
     "writer": "宋芷桐",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvjW5TB0WiZd",
@@ -660,7 +850,12 @@ window.FEISHU_PROJECTS = [
     "writer": "辛味珈",
     "publisher": "刘依晨",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvjW5VFLM2L1",
@@ -677,7 +872,12 @@ window.FEISHU_PROJECTS = [
     "writer": "宋芷桐",
     "publisher": "刘依晨",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 80%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recvjW6XlvkgV3",
@@ -694,7 +894,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvkB4pIdAQ48",
@@ -711,7 +916,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvkB4roXUK2R",
@@ -728,7 +938,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvkB4MgLZqyP",
@@ -745,7 +960,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvkB4Qxo6Obm",
@@ -762,7 +982,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvkB54wk2Wq0",
@@ -779,7 +1004,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
     "id": "recvld4x7F5xhp",
@@ -796,7 +1026,12 @@ window.FEISHU_PROJECTS = [
     "writer": "宋芷桐",
     "publisher": "刘依晨",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "推进中",
+    "currentData": "当前完成度 18%",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recvln50lusVeg",
@@ -813,7 +1048,12 @@ window.FEISHU_PROJECTS = [
     "writer": "",
     "publisher": "",
     "monitor": "",
-    "invoiceStatus": "待确认"
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   }
 ];
 window.FEISHU_SYNC_META = {
