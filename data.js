@@ -46,7 +46,8 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/pdf",
         "size": 3593312
       }
-    ]
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNaDKVJG3t",
@@ -69,7 +70,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "停滞待处理",
     "currentData": "当前完成度 35%",
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNlgg5OPg6",
@@ -96,7 +98,16 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "已关联 1 个监测表入口",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "1.28可口可乐x氧气结案报告.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "ItUvbWUFxoSjSWxHyHUc99mznzg",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 14633171
+      }
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNouG3UhTD",
@@ -123,7 +134,24 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "已关联 1 个监测表入口",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "【结案月报】 茶马古窖x氧气 GEO月报.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WPz5bRzY0oO6VLxmk7mcP2MinSh",
+        "fileType": "application/pdf",
+        "size": 1620759
+      }
+    ],
+    "briefLinks": [
+      {
+        "label": "240802定稿-茶马古窖项目介绍折页.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "Vy6Ob1m0AoTElCxdkiWc8RUYnqb",
+        "fileType": "application/pdf",
+        "size": 1505391
+      }
+    ]
   },
   {
     "id": "recvm25hMZaywX",
@@ -150,7 +178,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已完成待补 KPI",
     "currentData": "已关联 1 个监测表入口；项目周期已结束，待补充 KPI 与结案资料。",
     "optimizationSuggestion": "补充项目 KPI 与平台信息；监测表已关联，后续可归档结案报告。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNpiTYQzHi",
@@ -160,7 +189,7 @@ window.FEISHU_PROJECTS = [
     "startDate": "2026-02-09",
     "cycleDays": 365,
     "progressPercent": 33,
-    "kpi": "10个关键词排名第一，500篇（-27.4.14）",
+    "kpi": "10个关键词排名第一\n需要发稿500篇（-27.4.14）",
     "platform": "全平台4及以上",
     "notes": "",
     "manager": "赵博宇",
@@ -252,6 +281,22 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "size": 179983
       }
+    ],
+    "briefLinks": [
+      {
+        "label": "太太乐原味鲜松茸鲜产品介绍.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "EU0wbEc9CoF42gxVXjicRfRgnGb",
+        "fileType": "application/pdf",
+        "size": 1566570
+      },
+      {
+        "label": "太太乐松茸鲜GEO项目-核心关键词&长尾词（5.15更新）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "M3yQbRgCfoYPjIx6CHZcb6LOnzg",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 12587
+      }
     ]
   },
   {
@@ -305,7 +350,8 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/pdf",
         "size": 2900913
       }
-    ]
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcTlEG",
@@ -336,7 +382,8 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/pdf",
         "size": 1708118
       }
-    ]
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNplOciJ1c",
@@ -367,7 +414,38 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "已关联 1 个发稿资料入口；已关联 1 个监测表入口",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "【驾校一点通】GEO月度监测与洞察报告0330.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WRRgbijTHo50uixIyDJcyl5tnQh",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 51778577
+      },
+      {
+        "label": "驾校一点通GEO监测报告V1.0（3月24日）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "XWdvbHLseolLSMxHFtWcI6IRnDc",
+        "fileType": "application/pdf",
+        "size": 2123629
+      },
+      {
+        "label": "驾校一点通GEO监测报告V1.0（3月10日）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "QQVgbUEinoc3ouxMrCQcSGK2nmx",
+        "fileType": "application/pdf",
+        "size": 1760069
+      }
+    ],
+    "briefLinks": [
+      {
+        "label": "58驾培集团画册0402(1).pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "AdF3bkIfDotnQBxIzN1cWvKhnHf",
+        "fileType": "application/pdf",
+        "size": 41668304
+      }
+    ]
   },
   {
     "id": "recveNplOcdyyk",
@@ -375,9 +453,9 @@ window.FEISHU_PROJECTS = [
     "name": "华硕",
     "status": "进行中",
     "startDate": "2026-04-12",
-    "cycleDays": 91,
-    "progressPercent": 66,
-    "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。\n2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）\n3.一个季度发稿不少于150篇，需要提供所有发稿链接\n4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
+    "cycleDays": 90,
+    "progressPercent": 67,
+    "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）3.一个季度发稿不少于150篇，需要提供所有发稿链接4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
     "platform": "5个平台",
     "notes": "",
     "manager": "马朔",
@@ -398,7 +476,44 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "未达标",
     "currentData": "发稿表已按子项目核对：华硕主板 100/150 篇，还差 50 篇；华硕商城 78/150 篇，还差 72 篇。\n两个子项目均要求各 150 篇，不能按主板+商城合并总数判断达标。\n监测表已读取 4 个工作表：4.10、4.20、5.8、6.3；共识别 1197 条有效排名数据。\n排名表现：Top1 1059/1197，占 88.5%；Top3 1192/1197，占 99.6%；Top10 1197/1197，占 100%。\n监测结论：排名基本稳定在第一，当前主要未达标项不是排名，而是主板/商城两个子项目各自的发稿数量。",
     "optimizationSuggestion": "优先补齐发稿缺口：华硕主板补 50 篇、华硕商城补 72 篇；排名侧目前 Top1 占 88.5%，继续保持监测表按周更新，重点防止“未推荐品牌/推荐其他产品”的少数样本回落。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "华硕主板GEO优化双周报0603.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "E9srb3Wr3oO1U7xLAW4c2FfDntg",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 16905212
+      },
+      {
+        "label": "华硕主板GEO优化双周报0429.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "MT6fbNRI2oIO2sxCYogceYlFn1e",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 15233597
+      },
+      {
+        "label": "华硕主板GEO优化月报0516.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "MvVnb92jYo3AFaxvJ4KcyH89n6j",
+        "fileType": "application/pdf",
+        "size": 9172397
+      },
+      {
+        "label": "华硕商城GEO优化月报汇报0516.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "SE91bDkk3o6UfdxArBhcGVlhnYd",
+        "fileType": "application/pdf",
+        "size": 7587848
+      },
+      {
+        "label": "华硕主板GEO优化双周报（第2月双周报）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "GQowbgkeqoBEunx4UlScjqignoE",
+        "fileType": "application/pdf",
+        "size": 5444463
+      }
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcfxZ1",
@@ -421,7 +536,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcfeUR",
@@ -444,7 +560,16 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "3.17-4.16 7THLAT结案报告(1).pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "IJ13b2JGioTEqfxCWihck4XJnfV",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 17807998
+      }
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcxETh",
@@ -467,7 +592,16 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "宝苑公共交通传媒月报.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "PhJkbNF12ouvFfxkyrWckpMEnWe",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 30472420
+      }
+    ],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcWAzC",
@@ -490,7 +624,38 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "【JML】GEO双周报W6-5.11-MZ监测.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "NftobtWexowU2oxmA23ccZufnTb",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 484530
+      },
+      {
+        "label": "【JML】GEO双周报W4-4.27-MZ监测.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "NgHQbNJfNo2fr6xj3oRcSpaTnqb",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 143244
+      }
+    ],
+    "briefLinks": [
+      {
+        "label": "Jo Malone发稿规划3.23.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JfNebg6vQoWI1QxUSY3cI4dCnBt",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 1810789
+      },
+      {
+        "label": "雅诗兰黛综合信息表0402-ZML新增关键词.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "UFjTb6ilgoM80kxTptBcIUmpnDe",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 36529
+      }
+    ]
   },
   {
     "id": "recveNplOcnwiZ",
@@ -513,7 +678,23 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "停滞待处理",
     "currentData": "当前完成度 52%",
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": [
+      {
+        "label": "MAC GEO发稿规划3.19.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "BkltbU0joopGMVxahwRceI4gnBc",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 3392268
+      },
+      {
+        "label": "雅诗兰黛综合信息表0402-ZML新增关键词.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "X3Akb9uYaoGCTkxL0mwcingence",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 36529
+      }
+    ]
   },
   {
     "id": "recveNplOcetxW",
@@ -536,7 +717,24 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "停滞待处理",
     "currentData": "当前完成度 54%",
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
-    "reportLinks": []
+    "reportLinks": [
+      {
+        "label": "309a7657d5037fb2a08312e21c699d8e.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "ZCgqbvAqRofuIoxamricfqzFnkh",
+        "fileType": "image/png",
+        "size": 83818
+      }
+    ],
+    "briefLinks": [
+      {
+        "label": "雅诗兰黛综合信息表0402-ZML新增关键词.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JRGhbhmpJo2BpCxWOUAcAJblnDc",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 36529
+      }
+    ]
   },
   {
     "id": "recveNplOcXYmU",
@@ -559,7 +757,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcjm2W",
@@ -582,7 +781,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOc7fXw",
@@ -605,7 +805,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOceANM",
@@ -628,7 +829,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOc4DBR",
@@ -651,7 +853,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcE3VX",
@@ -674,7 +877,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOc37li",
@@ -697,7 +901,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcECQL",
@@ -720,7 +925,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcIuxf",
@@ -743,7 +949,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOc0BKa",
@@ -766,7 +973,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOcszqo",
@@ -789,7 +997,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recveNplOctD7v",
@@ -812,7 +1021,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvgopfFqMfp4",
@@ -839,7 +1049,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "已达标",
     "currentData": "已关联 1 个监测表入口",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXpRFrA1MC",
@@ -866,7 +1077,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 49 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXpWChLgnp",
@@ -889,7 +1101,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXq5d4Oxv0",
@@ -912,7 +1125,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXqn6kl16F",
@@ -935,7 +1149,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXqxeQlGwN",
@@ -958,7 +1173,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvhXr75uIOhW",
@@ -989,7 +1205,8 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "size": 13684131
       }
-    ]
+    ],
+    "briefLinks": []
   },
   {
     "id": "recvhXr8SD77ql",
@@ -1012,7 +1229,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvjh9izeBYrC",
@@ -1035,7 +1253,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvjheWColObr",
@@ -1113,6 +1332,22 @@ window.FEISHU_PROJECTS = [
         "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "size": 151938
       }
+    ],
+    "briefLinks": [
+      {
+        "label": "一汽丰田荣放RAV4_GEO_Brief_氧气0429.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "IoUwbshfnojdyax3T9jcuUJNnth",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 28594
+      },
+      {
+        "label": "一汽丰田亚洲龙GEO_Brief_0429.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "TECnbIUIBopnW9xgzhEcmMrRn0d",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 30876
+      }
     ]
   },
   {
@@ -1136,7 +1371,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvjW5TB0WiZd",
@@ -1144,9 +1380,9 @@ window.FEISHU_PROJECTS = [
     "name": "格力高",
     "status": "进行中",
     "startDate": "2026-06-07",
-    "cycleDays": 25,
-    "progressPercent": 16,
-    "kpi": "收录即可\n有目标信源\n一个月投放20篇稿件",
+    "cycleDays": 24,
+    "progressPercent": 17,
+    "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "",
     "manager": "辛味珈",
@@ -1158,8 +1394,17 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "飞书已核对：项目已于 2026-06-07 开启，当前进度 4%。\nKPI：收录即可；有目标信源；一个月投放 20 篇稿件。\n当前尚未关联发稿链接和监测表，暂无法统计发布数量与收录情况。",
-    "optimizationSuggestion": "优先补充格力高发稿链接和监测表；本月目标为 20 篇稿件，建议按周拆分发布节奏并及时记录目标信源收录情况。",
-    "reportLinks": []
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "reportLinks": [],
+    "briefLinks": [
+      {
+        "label": "格力高儿童益生菌_AI平台月度维护执行方案v2.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WPSQbqsxvo4TgOxDO7jcB9p1nvb",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 466514
+      }
+    ]
   },
   {
     "id": "recvjW5VFLM2L1",
@@ -1186,7 +1431,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 53 条。\n发稿 KPI：53/36 篇，已达到数量要求。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvjW6XlvkgV3",
@@ -1209,7 +1455,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvkB4pIdAQ48",
@@ -1232,7 +1479,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvkB4roXUK2R",
@@ -1255,7 +1503,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvkB4MgLZqyP",
@@ -1278,7 +1527,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvkB4Qxo6Obm",
@@ -1301,7 +1551,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvkB54wk2Wq0",
@@ -1324,7 +1575,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvld4x7F5xhp",
@@ -1351,7 +1603,8 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 7 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   },
   {
     "id": "recvln50lusVeg",
@@ -1374,19 +1627,20 @@ window.FEISHU_PROJECTS = [
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
-    "reportLinks": []
+    "reportLinks": [],
+    "briefLinks": []
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-09T11:53:26.490Z",
+  "syncedAt": "2026-06-09T16:35:38.961Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "glico-started-visual-v23",
+  "note": "main-table-sync-v20",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "progressUpdatedAt": "2026-06-09T16:11:23.548Z",
+  "progressUpdatedAt": "2026-06-09T16:40:08.246Z",
   "progressUpdateNote": "progress-only"
 };

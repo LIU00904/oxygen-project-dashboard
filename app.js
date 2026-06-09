@@ -429,14 +429,14 @@ function render() {
               ["监测表", project.monitorLinks]
             ])}
           </div>
+          <div class="sketch-folder sketch-brief-folder">
+            ${renderResourceFolder("Brief", "项目简报 / 需求说明", "brief", "◫", [
+              ["Brief", project.briefLinks]
+            ])}
+          </div>
           <div class="sketch-folder sketch-report-folder">
             ${renderResourceFolder("报告文件", "周报 / 月报 / 结案报告", "purple", "▤", [
               ["报告", project.reportLinks]
-            ])}
-          </div>
-          <div class="sketch-folder sketch-brief-folder">
-            ${renderResourceFolder("Brief", "项目简报 / 需求说明", "green", "◫", [
-              ["Brief", project.briefLinks]
             ])}
           </div>
         </section>
