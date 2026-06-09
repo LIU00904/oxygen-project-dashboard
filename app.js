@@ -91,6 +91,7 @@ const fields = [
   "publishLinks",
   "monitorLinks",
   "reportLinks",
+  "briefLinks",
   "optimizationSuggestion",
   "notes"
 ];
@@ -151,6 +152,7 @@ function projectSyncPayload(project) {
       invoiceStatus: project.invoiceStatus,
       publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
       monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
+      briefLinks: normalizeLinks(project.briefLinks).map(item => item.url).filter(Boolean).join("\n"),
       optimizationSuggestion: project.optimizationSuggestion
     }
   };
@@ -432,6 +434,11 @@ function render() {
               ["报告", project.reportLinks]
             ])}
           </div>
+          <div class="sketch-folder sketch-brief-folder">
+            ${renderResourceFolder("Brief", "项目简报 / 需求说明", "green", "◫", [
+              ["Brief", project.briefLinks]
+            ])}
+          </div>
         </section>
 
         <section class="sketch-invoice">
@@ -522,6 +529,7 @@ function renderCurrentData(project, timing) {
   const publishCount = normalizeLinks(project.publishLinks).length;
   const monitorCount = normalizeLinks(project.monitorLinks).length;
   const reportCount = normalizeLinks(project.reportLinks).length;
+  const briefCount = normalizeLinks(project.briefLinks).length;
   const data = [];
   if (project.status === "进行中") {
     data.push(progress >= 100 ? "当前进度已到 100%，建议核对是否可转为已完成。" : `当前进度 ${progress}%，距离阶段目标还差 ${gap}%。`);
@@ -536,6 +544,7 @@ function renderCurrentData(project, timing) {
   data.push(monitorCount ? `已关联 ${monitorCount} 个监测表入口，可继续汇总近一周/近一月趋势。` : "尚未关联监测表，暂无法分析排名与收录趋势。");
   if (!reportCount) data.push("报告文件待上传到飞书“项目报告文件”字段。");
   else data.push(`已关联 ${reportCount} 个报告入口。`);
+  if (briefCount) data.push(`已关联 ${briefCount} 个 Brief 文件。`);
   return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
@@ -647,7 +656,7 @@ function openForm(project) {
     const el = document.querySelector(`#${id}`);
     if (!el) return;
     const key = id === "projectId" ? "id" : id;
-    if (["publishLinks", "monitorLinks", "reportLinks"].includes(id)) {
+    if (["publishLinks", "monitorLinks", "reportLinks", "briefLinks"].includes(id)) {
       el.value = normalizeLinks(project?.[key]).map(item => item.url).join("\n");
       return;
     }
@@ -730,6 +739,7 @@ function collectForm() {
     publishLinks: parseLinks(document.querySelector("#publishLinks")?.value),
     monitorLinks: parseLinks(document.querySelector("#monitorLinks")?.value),
     reportLinks: parseLinks(document.querySelector("#reportLinks")?.value),
+    briefLinks: parseLinks(document.querySelector("#briefLinks")?.value),
     optimizationSuggestion: document.querySelector("#optimizationSuggestion")?.value.trim() || "",
     notes: document.querySelector("#notes").value.trim()
   };

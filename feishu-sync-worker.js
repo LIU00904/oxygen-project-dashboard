@@ -9,6 +9,7 @@ const FIELD_MAP = {
   invoiceStatus: "网页开票信息",
   publishLinks: "发稿链接",
   monitorLinks: "监测表",
+  briefLinks: "Brief",
   optimizationSuggestion: "优化建议"
 };
 
