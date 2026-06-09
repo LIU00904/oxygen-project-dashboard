@@ -1076,14 +1076,28 @@ h2 {
 }
 
 .sketch-folder {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 16px;
+  display: block;
   min-height: 116px;
   padding: 16px;
   position: relative;
   z-index: 1;
+}
+
+.folder-details {
+  width: 100%;
+}
+
+.folder-details summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.folder-details summary::-webkit-details-marker {
+  display: none;
 }
 
 .glass-icon-btn {
@@ -1160,10 +1174,34 @@ h2 {
   font-weight: 850;
 }
 
+.folder-count {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .folder-links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 220ms ease, opacity 180ms ease, margin-top 180ms ease;
+}
+
+.folder-details[open] .folder-links {
+  max-height: 220px;
+  overflow: auto;
+  opacity: 1;
+  margin-top: 14px;
 }
 
 .folder-links a,

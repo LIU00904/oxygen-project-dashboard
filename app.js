@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v14";
+const STORAGE_KEY = "oxygen-project-dashboard-v15";
 const today = startOfToday();
 
 const statusColors = {
@@ -286,19 +286,25 @@ function renderResourceFolder(title, subtitle, color, icon, groups) {
       url: item.url
     }))
   );
+  const countLabel = links.length ? `${links.length} 个文件` : "0 个文件";
   const linkHtml = links.length
     ? links.map(item => `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`).join("")
     : `<span class="folder-empty">待上传至飞书</span>`;
   return `
-    <div class="glass-icon-btn folder-${color}">
-      <span class="icon-btn__back"></span>
-      <span class="icon-btn__front"><span class="icon-btn__icon">${icon}</span></span>
-    </div>
-    <div class="folder-copy">
-      <strong>${escapeHtml(title)}</strong>
-      <p>${escapeHtml(subtitle)}</p>
+    <details class="folder-details">
+      <summary>
+        <div class="glass-icon-btn folder-${color}">
+          <span class="icon-btn__back"></span>
+          <span class="icon-btn__front"><span class="icon-btn__icon">${icon}</span></span>
+        </div>
+        <div class="folder-copy">
+          <strong>${escapeHtml(title)}</strong>
+          <p>${escapeHtml(subtitle)}</p>
+          <span class="folder-count">${countLabel}</span>
+        </div>
+      </summary>
       <div class="folder-links">${linkHtml}</div>
-    </div>
+    </details>
   `;
 }
 
