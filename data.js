@@ -179,8 +179,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。 已关联监测表，需按近一周/近一月汇总趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 4 个工作表，有效发布链接 304 条。\n监测表已读取 1 个工作表，最新日期 2026-06-04。\n监测表识别到排名数据 14 条，其中 Top3 5 条、Top10 9 条。\n收录/提及相关记录：正向 17 条，未收录 0 条。\n排名第一 KPI：目标 10 个关键词；当前需用监测表关键词维度继续核对“排名第一”数量。",
+    "optimizationSuggestion": "把监测表中的关键词、平台、排名整理为固定列，便于自动判断排名第一达成数。",
     "reportLinks": [
       {
         "label": "太太乐0504-0531监测折线图.pdf",
@@ -396,8 +396,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。 已关联监测表，需按近一周/近一月汇总趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 2 个工作表，有效发布链接 175 条。\n发稿 KPI：175/150 篇，已达到数量要求。\n监测表已读取 1 个工作表，最新日期 2026-06-02。\n监测表识别到排名数据 50 条，其中 Top3 50 条、Top10 50 条。\n收录/提及相关记录：正向 27 条，未收录 0 条。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": []
   },
   {
@@ -864,8 +864,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 1 个工作表，有效发布链接 49 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": []
   },
   {
@@ -1059,9 +1059,9 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "monitorLinks": [],
-    "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "kpiStatus": "部分未达标",
+    "currentData": "本地报告已核对：亚洲龙周报发布明细 22 条、荣放周报发布明细 13 条，当前可确认有效发布链接 35 条；项目稿件 KPI ≥100 篇，还差 65 篇需继续用发稿文档核实/补齐。\n亚洲龙 6/7 KPI 表：6 个基础词的 SOV、Top3、Top10 综合值均达标；最新综合 SOV 20.6%-27.7%、Top3 57.0%-68.9%、Top10 82.7%-89.3%。\n荣放 5/20 点检表：Top3 38.51% 已超过 ≥20%；SOV 7.63% 距 ≥15% 还差 7.37 个百分点；Top10 47.24% 距 ≥80% 还差 32.76 个百分点。\n飞书附件下载权限暂未开通 drive:file:download / drive:drive:readonly，因此上传报告暂按已知本地 Excel 分析。",
+    "optimizationSuggestion": "优先补荣放 SOV 与 Top10：增加高权重汽车垂媒/问答信源发稿，围绕“15万左右通勤SUV、城市SUV、家用SUV”做定向覆盖；同时把一丰发稿文档整理成可统计 URL 表，补齐至少 65 条可确认发布链接。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1183,8 +1183,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 1 个工作表，有效发布链接 53 条。\n发稿 KPI：53/36 篇，已达到数量要求。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": []
   },
   {
@@ -1348,8 +1348,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "已关联发稿链接，待统计有效发布链接数量。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 1 个工作表，有效发布链接 7 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": []
   },
   {
@@ -1422,5 +1422,7 @@ window.FEISHU_SYNC_META = {
         "count": 7
       }
     ]
-  }
+  },
+  "syncedAt": "2026-06-09T09:30:32.019Z",
+  "note": "ongoing-kpi-analysis-v16"
 };

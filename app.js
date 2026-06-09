@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v15";
+const STORAGE_KEY = "oxygen-project-dashboard-v16";
 const today = startOfToday();
 
 const statusColors = {
@@ -318,6 +318,13 @@ function normalizeLinks(value) {
 }
 
 function renderCurrentData(project, timing) {
+  if (project.currentData && project.currentData.trim()) {
+    const data = project.currentData
+      .split(/\n|；|。/)
+      .map(item => item.trim())
+      .filter(Boolean);
+    return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  }
   const progress = Number(timing.progress || 0);
   const gap = Math.max(0, 100 - progress);
   const publishCount = normalizeLinks(project.publishLinks).length;
