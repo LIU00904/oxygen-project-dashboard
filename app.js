@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v3";
+const STORAGE_KEY = "oxygen-project-dashboard-v4";
 const today = startOfToday();
 
 const statusColors = {
@@ -175,6 +175,10 @@ function render() {
               <span class="chip">${statusLabel(project, timing.remaining)}</span>
             </div>
           </div>
+          <div class="resource-links top-links">
+            ${renderResourceLink("发稿链接", project.publishLinks)}
+            ${renderResourceLink("监测表", project.monitorLinks)}
+          </div>
           <select class="status-select" data-action="status" data-id="${project.id}">
             ${Object.keys(statusColors).map(status => `<option ${project.status === status ? "selected" : ""}>${status}</option>`).join("")}
           </select>
@@ -185,9 +189,9 @@ function render() {
             <span>KPI评估</span>
             <strong>${escapeHtml(project.kpiStatus || "待评估")}</strong>
           </div>
-          <div class="resource-links">
-            ${renderResourceLink("发稿链接", project.publishLinks)}
-            ${renderResourceLink("监测表", project.monitorLinks)}
+          <div class="data-summary">
+            <span>当前数据</span>
+            ${renderCurrentData(project, timing)}
           </div>
           <div class="suggestion-box">
             <span>优化建议</span>
@@ -207,10 +211,6 @@ function render() {
           <div class="kpi-panel">
             <span>项目 KPI</span>
             ${renderKpi(project.kpi)}
-          </div>
-          <div class="data-panel">
-            <span>当前数据</span>
-            ${renderCurrentData(project, timing)}
           </div>
           <div class="people-panel">
             <span>项目人员</span>

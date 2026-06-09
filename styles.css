@@ -449,13 +449,13 @@ h2 {
 
 .assessment-strip {
   display: grid;
-  grid-template-columns: 170px minmax(220px, 0.85fr) minmax(280px, 1.4fr);
+  grid-template-columns: 170px minmax(300px, 1fr) minmax(280px, 1.2fr);
   gap: 12px;
   margin-top: 14px;
 }
 
 .kpi-verdict,
-.resource-links,
+.data-summary,
 .suggestion-box {
   min-height: 76px;
   padding: 14px;
@@ -482,6 +482,7 @@ h2 {
 }
 
 .kpi-verdict span,
+.data-summary span,
 .suggestion-box span {
   display: block;
   margin-bottom: 6px;
@@ -499,6 +500,14 @@ h2 {
   flex-wrap: wrap;
   align-content: center;
   gap: 8px;
+}
+
+.top-links {
+  justify-content: center;
+  min-height: 66px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.44);
 }
 
 .resource-btn {
@@ -532,9 +541,13 @@ h2 {
   line-height: 1.5;
 }
 
+.data-summary .data-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .row-main {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) 128px;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(320px, 1fr) 128px;
   gap: 16px;
   align-items: start;
 }
@@ -601,7 +614,7 @@ h2 {
 
 .row-content {
   display: grid;
-  grid-template-columns: minmax(170px, 0.72fr) minmax(240px, 1.1fr) minmax(220px, 0.9fr) minmax(220px, 0.9fr) 190px;
+  grid-template-columns: minmax(180px, 0.78fr) minmax(300px, 1.45fr) minmax(220px, 0.9fr) 210px;
   gap: 12px;
   margin-top: 16px;
   align-items: start;
@@ -612,13 +625,12 @@ h2 {
 }
 
 .compact-mode .row-content {
-  grid-template-columns: minmax(170px, 0.72fr) minmax(240px, 1.1fr) minmax(220px, 0.9fr) minmax(180px, 0.8fr) 180px;
+  grid-template-columns: minmax(170px, 0.78fr) minmax(280px, 1.45fr) minmax(200px, 0.9fr) 190px;
   margin-top: 12px;
 }
 
 .compact-mode .progress-panel,
 .compact-mode .kpi-panel,
-.compact-mode .data-panel,
 .compact-mode .people-panel,
 .compact-mode .invoice-panel {
   padding: 12px;
@@ -630,7 +642,6 @@ h2 {
 
 .progress-panel,
 .kpi-panel,
-.data-panel,
 .people-panel,
 .invoice-panel {
   min-height: 100%;
@@ -641,7 +652,6 @@ h2 {
 
 .progress-panel > span,
 .kpi-panel > span,
-.data-panel > span,
 .people-panel > span,
 .invoice-panel > span {
   display: block;
@@ -947,6 +957,14 @@ dialog::backdrop {
     grid-template-columns: 1fr;
   }
 
+  .row-main {
+    grid-template-columns: 1fr;
+  }
+
+  .top-links {
+    justify-content: flex-start;
+  }
+
   .control-panel {
     grid-template-columns: 1fr;
   }
@@ -980,6 +998,10 @@ dialog::backdrop {
   .row-main,
   .row-content,
   .assessment-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .data-summary .data-list {
     grid-template-columns: 1fr;
   }
 
