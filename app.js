@@ -96,6 +96,8 @@ const fields = [
   "notes"
 ];
 
+const feishuFileFields = ["publishLinks", "monitorLinks", "reportLinks", "briefLinks"];
+
 function loadProjects() {
   const saved = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
   if (!saved) {
@@ -107,10 +109,17 @@ function loadProjects() {
     if (!Array.isArray(parsed)) return seedProjects;
     const savedById = new Map(parsed.map(project => [project.id, project]));
     const savedByName = new Map(parsed.map(project => [project.name, project]));
-    const merged = seedProjects.map(project => ({
-      ...project,
-      ...(savedById.get(project.id) || savedByName.get(project.name) || {})
-    }));
+    const merged = seedProjects.map(project => {
+      const savedProject = savedById.get(project.id) || savedByName.get(project.name) || {};
+      const mergedProject = {
+        ...project,
+        ...savedProject
+      };
+      feishuFileFields.forEach(field => {
+        mergedProject[field] = project[field] || [];
+      });
+      return mergedProject;
+    });
     const seedIds = new Set(seedProjects.map(project => project.id));
     const seedNames = new Set(seedProjects.map(project => project.name));
     parsed.forEach(project => {

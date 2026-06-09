@@ -1827,21 +1827,6 @@ dialog::backdrop {
     rgba(255, 255, 255, 0.1);
 }
 
-.sketch-brief-folder,
-.sketch-brief-folder .folder-details {
-  border-color: rgba(148, 168, 255, 0.32);
-  background:
-    linear-gradient(135deg, rgba(177, 207, 255, 0.2), rgba(203, 178, 255, 0.14)),
-    rgba(255, 255, 255, 0.05);
-}
-
-.sketch-brief-folder:hover,
-.sketch-brief-folder:hover .folder-details {
-  background:
-    linear-gradient(135deg, rgba(177, 207, 255, 0.28), rgba(203, 178, 255, 0.2)),
-    rgba(255, 255, 255, 0.08);
-}
-
 .folder-brief .icon-btn__back {
   background: linear-gradient(150deg, rgba(118, 178, 255, 0.9), rgba(181, 145, 255, 0.86));
   box-shadow: 0.5em -0.5em 0.8em rgba(118, 178, 255, 0.18);

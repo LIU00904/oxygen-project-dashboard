@@ -513,7 +513,36 @@ window.FEISHU_PROJECTS = [
         "size": 5444463
       }
     ],
-    "briefLinks": []
+    "briefLinks": [
+      {
+        "label": "核心竞品产品优劣势对比分析、定位与核心卖点差异.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "A07rbHAEQobscqxqMf9cftjfnag",
+        "fileType": "application/pdf",
+        "size": 505279
+      },
+      {
+        "label": "AMD 平台.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "ZAgPbNyOToj6uexVJvicCVYpnzf",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 15735
+      },
+      {
+        "label": "华硕商城全面解析：介绍、优势与竞品对比.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "SFddbKIRQo6tCjxe6IKcvc4lnhf",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 116167
+      },
+      {
+        "label": "Intel 平台.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "Jx7cbOKuNovxAcxttzwcpXXUnPh",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 17980
+      }
+    ]
   },
   {
     "id": "recveNplOcfxZ1",
@@ -1632,7 +1661,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-09T16:35:38.961Z",
+  "syncedAt": "2026-06-09T16:57:03.156Z",
   "source": "feishu",
   "recordCount": 49,
   "note": "main-table-sync-v20",
@@ -1641,6 +1670,6 @@ window.FEISHU_SYNC_META = {
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "progressUpdatedAt": "2026-06-09T16:40:08.246Z",
+  "progressUpdatedAt": "2026-06-09T16:58:18.296Z",
   "progressUpdateNote": "progress-only"
 };
