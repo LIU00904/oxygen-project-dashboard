@@ -213,6 +213,7 @@ function initIridescenceBackground() {
       d += uTime * 0.5 * uSpeed;
       vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
       col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5) * uColor;
+      col = mix(vec3(0.91, 0.96, 0.98), col, 0.42);
       gl_FragColor = vec4(col, 1.0);
     }
   `;
@@ -244,9 +245,9 @@ function initIridescenceBackground() {
 
   container.appendChild(canvas);
   gl.useProgram(program);
-  gl.uniform3f(uniforms.color, 0.94, 0.98, 1.0);
-  gl.uniform1f(uniforms.amplitude, 0.08);
-  gl.uniform1f(uniforms.speed, reduceMotion ? 0.16 : 0.72);
+  gl.uniform3f(uniforms.color, 0.86, 0.91, 0.94);
+  gl.uniform1f(uniforms.amplitude, 0.035);
+  gl.uniform1f(uniforms.speed, reduceMotion ? 0.1 : 0.42);
 
   function resize() {
     const ratio = Math.min(window.devicePixelRatio || 1, 1.75);

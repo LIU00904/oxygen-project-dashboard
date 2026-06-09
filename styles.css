@@ -48,7 +48,7 @@ body::before {
   height: 100%;
   overflow: hidden;
   background:
-    linear-gradient(135deg, #dff8ff 0%, #f5f1ff 42%, #e7fff7 100%);
+    linear-gradient(135deg, #edf8fb 0%, #f7f6fb 46%, #f0faf6 100%);
 }
 
 .iridescence-container canvas {
@@ -59,9 +59,9 @@ body::before {
 
 .iridescence-fallback {
   background:
-    linear-gradient(120deg, rgba(146, 211, 255, 0.95), rgba(250, 246, 255, 0.88), rgba(190, 255, 236, 0.9));
+    linear-gradient(120deg, rgba(207, 232, 245, 0.86), rgba(249, 247, 252, 0.9), rgba(219, 244, 236, 0.84));
   background-size: 220% 220%;
-  animation: ambientShift 18s ease-in-out infinite;
+  animation: ambientShift 28s ease-in-out infinite;
 }
 
 @keyframes ambientShift {
