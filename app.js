@@ -1,4 +1,4 @@
-const STORAGE_KEY = "oxygen-project-dashboard-v10";
+const STORAGE_KEY = "oxygen-project-dashboard-v11";
 const today = startOfToday();
 
 const statusColors = {
@@ -119,6 +119,9 @@ function formatDate(date) {
 }
 
 function calculate(project) {
+  if (project.status === "待开始") {
+    return { start: null, deadline: null, progress: 0, remaining: null };
+  }
   const start = dateFrom(project.startDate);
   const deadline = addDays(start, Number(project.cycleDays || 1));
   const elapsed = Math.max(0, Math.ceil((today - start) / 86400000));
@@ -137,6 +140,7 @@ function calculate(project) {
 function statusLabel(project, remaining) {
   if (project.status === "已完成") return "已完成";
   if (project.status === "停滞") return "停滞";
+  if (project.status === "待开始") return "待开始";
   if (remaining < 0) return `逾期 ${Math.abs(remaining)} 天`;
   if (remaining === 0) return "今日截止";
   return `剩余 ${remaining} 天`;
@@ -177,6 +181,7 @@ function render() {
   els.board.innerHTML = items.map(project => {
     const timing = calculate(project);
     const color = statusColors[project.status] || statusColors["进行中"];
+    const pendingStart = project.status === "待开始";
     return `
       <article class="project-row sketch-card glass" style="--status-color:${color};--progress:${timing.progress}%">
         <section class="sketch-left">
@@ -192,13 +197,13 @@ function render() {
 
         <section class="sketch-progress">
           <div class="progress-dates">
-            <strong>${formatDate(timing.start)} → ${formatDate(timing.deadline)}</strong>
+            <strong>${pendingStart ? "" : `${formatDate(timing.start)} → ${formatDate(timing.deadline)}`}</strong>
             <span>${timing.progress}%</span>
           </div>
           <div class="progress-track"><div class="progress-fill"></div></div>
           <div class="progress-meta">
-            <span>周期 ${Number(project.cycleDays || 0)} 天</span>
-            <strong>${statusLabel(project, timing.remaining)}</strong>
+            <span>${pendingStart ? "" : `周期 ${Number(project.cycleDays || 0)} 天`}</span>
+            <strong>${pendingStart ? "" : statusLabel(project, timing.remaining)}</strong>
           </div>
         </section>
 
