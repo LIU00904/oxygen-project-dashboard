@@ -458,8 +458,8 @@ window.FEISHU_PROJECTS = [
     "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）3.一个季度发稿不少于150篇，需要提供所有发稿链接4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
     "platform": "5个平台",
     "notes": "",
-    "manager": "马朔",
-    "writer": "马朔",
+    "manager": "飞书用户6916HP",
+    "writer": "梁伟安",
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
     "invoiceStatus": "待确认",
@@ -1661,7 +1661,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-09T16:57:03.156Z",
+  "syncedAt": "2026-06-10T03:16:15.309Z",
   "source": "feishu",
   "recordCount": 49,
   "note": "main-table-sync-v20",
@@ -1670,6 +1670,6 @@ window.FEISHU_SYNC_META = {
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "progressUpdatedAt": "2026-06-09T16:58:18.296Z",
+  "progressUpdatedAt": "2026-06-10T03:17:02.420Z",
   "progressUpdateNote": "progress-only"
 };
