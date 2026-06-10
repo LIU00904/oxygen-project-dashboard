@@ -823,8 +823,7 @@ h2 {
     "left progress invoice"
     "people people people"
     "kpi data suggestion"
-    "folders folders folders"
-    ". . edit";
+    "folders folders folders";
   gap: 18px 20px;
   min-height: 650px;
   padding: 30px 32px 24px;
@@ -1245,14 +1244,6 @@ h2 {
 .folder-links a:hover {
   color: white;
   background: linear-gradient(135deg, var(--blue), var(--cyan));
-}
-
-.sketch-edit {
-  grid-area: edit;
-  justify-self: end;
-  width: 112px;
-  position: relative;
-  z-index: 1;
 }
 
 .detail-grid {
@@ -1935,8 +1926,7 @@ dialog::backdrop {
       "people people"
       "kpi data"
       "suggestion suggestion"
-      "folders folders"
-      ". edit";
+      "folders folders";
     min-height: auto;
   }
 
@@ -2121,8 +2111,7 @@ dialog::backdrop {
       "kpi"
       "data"
       "suggestion"
-      "folders"
-      "edit";
+      "folders";
     gap: 10px;
     min-height: auto;
     width: 100%;
@@ -2283,11 +2272,6 @@ dialog::backdrop {
   .glass-icon-btn {
     width: 3.8em;
     height: 3.8em;
-  }
-
-  .sketch-edit {
-    width: 100%;
-    min-height: 42px;
   }
 
   .row-content {

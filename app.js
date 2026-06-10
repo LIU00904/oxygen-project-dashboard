@@ -65,9 +65,6 @@ const els = {
   densityBtn: document.querySelector("#densityBtn"),
   pageTitle: document.querySelector("#pageTitle"),
   pageMeta: document.querySelector("#pageMeta"),
-  dialog: document.querySelector("#projectDialog"),
-  openFormBtn: document.querySelector("#openFormBtn"),
-  saveProjectBtn: document.querySelector("#saveProjectBtn"),
   exportBtn: document.querySelector("#exportBtn")
 };
 
@@ -460,7 +457,6 @@ function render() {
           ${renderPeople(project)}
         </section>
 
-        <button class="ghost-btn sketch-edit" data-action="edit" data-id="${project.id}">编辑</button>
       </article>
     `;
   }).join("");
@@ -761,56 +757,6 @@ function parseLinks(value = "") {
     .map(url => ({ url }));
 }
 
-els.openFormBtn.addEventListener("click", () => openForm());
-
-els.dialog.addEventListener("click", event => {
-  const remove = event.target.closest("[data-remove-person]");
-  if (remove) {
-    const field = remove.dataset.removeField;
-    pickerState[field] = (pickerState[field] || []).filter(name => name !== remove.dataset.removePerson);
-    renderPeoplePicker(field);
-    return;
-  }
-
-  const trigger = event.target.closest(".picker-trigger");
-  if (!trigger && !event.target.closest(".people-picker")) {
-    document.querySelectorAll(".people-picker.open").forEach(item => item.classList.remove("open"));
-    return;
-  }
-  if (!trigger) return;
-  const picker = trigger.closest(".people-picker");
-  document.querySelectorAll(".people-picker.open").forEach(item => {
-    if (item !== picker) item.classList.remove("open");
-  });
-  picker.classList.toggle("open");
-});
-
-els.dialog.addEventListener("change", event => {
-  const input = event.target.closest("input[data-people-field]");
-  if (!input) return;
-  const field = input.dataset.peopleField;
-  const selected = new Set(pickerState[field] || []);
-  if (input.checked) selected.add(input.value);
-  else selected.delete(input.value);
-  pickerState[field] = [...selected];
-  renderPeoplePicker(field);
-  document.querySelector(`.people-picker[data-field="${field}"]`)?.classList.add("open");
-});
-
-els.saveProjectBtn.addEventListener("click", event => {
-  event.preventDefault();
-  const formProject = collectForm();
-  if (!formProject.name || !formProject.startDate || !formProject.cycleDays) return;
-  const index = projects.findIndex(item => item.id === formProject.id);
-  if (index >= 0) projects[index] = { ...projects[index], ...formProject };
-  else projects.unshift(formProject);
-  const savedProject = index >= 0 ? projects[index] : projects[0];
-  persist();
-  syncProjectToFeishu(savedProject);
-  els.dialog.close();
-  render();
-});
-
 els.statusTabs.addEventListener("click", event => {
   const button = event.target.closest("button[data-filter]");
   if (!button) return;
@@ -863,7 +809,6 @@ els.board.addEventListener("click", event => {
     render();
     return;
   }
-  if (button.dataset.action === "edit" && project) openForm(project);
 });
 
 els.exportBtn.addEventListener("click", async () => {
