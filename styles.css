@@ -1962,13 +1962,23 @@ dialog::backdrop {
 }
 
 @media (max-width: 720px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     font-size: 14px;
+    line-height: 1.45;
   }
 
   .app-shell {
-    width: min(100% - 14px, 1440px);
-    padding: 8px 0 24px;
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 8px 24px;
+    overflow: hidden;
   }
 
   .topbar,
@@ -2037,11 +2047,19 @@ dialog::backdrop {
   }
 
   .workspace {
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
     margin-top: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .status-sidebar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
     padding: 14px;
     border-radius: 22px;
   }
@@ -2051,21 +2069,27 @@ dialog::backdrop {
   }
 
   .status-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     gap: 8px;
-    overflow-x: auto;
+    overflow: visible;
     padding-bottom: 4px;
-    scroll-snap-type: x proximity;
   }
 
   .status-nav button {
     grid-template-columns: 10px auto auto;
-    min-width: 122px;
+    min-width: 0;
     min-height: 42px;
     padding: 0 12px;
     border-radius: 999px;
-    scroll-snap-align: start;
     white-space: nowrap;
+  }
+
+  .status-nav button:first-child {
+    grid-column: 1 / -1;
   }
 
   .sidebar-add-btn {
@@ -2076,6 +2100,14 @@ dialog::backdrop {
 
   .page-head {
     display: none;
+  }
+
+  .project-page,
+  .board,
+  .project-row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .sketch-card {
@@ -2093,8 +2125,30 @@ dialog::backdrop {
       "edit";
     gap: 10px;
     min-height: auto;
-    padding: 14px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 12px;
     border-radius: 22px;
+    overflow: hidden;
+  }
+
+  .sketch-card > *,
+  .sketch-left,
+  .sketch-name,
+  .sketch-platform,
+  .sketch-progress,
+  .sketch-right,
+  .sketch-invoice,
+  .sketch-people,
+  .sketch-kpi,
+  .sketch-data,
+  .sketch-suggestion,
+  .sketch-folder,
+  .folder-details,
+  .folder-copy {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .project-row::before {
@@ -2118,7 +2172,9 @@ dialog::backdrop {
   }
 
   .sketch-name .project-title {
-    font-size: 26px;
+    font-size: 24px;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
   }
 
   .sketch-progress {
@@ -2126,11 +2182,12 @@ dialog::backdrop {
   }
 
   .progress-dates strong {
-    font-size: 15px;
+    font-size: 14px;
+    overflow-wrap: anywhere;
   }
 
   .progress-dates span {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .sketch-progress .progress-track {
@@ -2150,11 +2207,25 @@ dialog::backdrop {
   }
 
   .sketch-people .person-list {
+    flex-wrap: wrap;
     gap: 8px;
+    overflow: visible;
+    padding-bottom: 0;
   }
 
   .sketch-people .person-role {
+    flex: 1 1 150px;
+    min-width: 0;
     padding: 4px 10px;
+  }
+
+  .sketch-people .person-names,
+  .sketch-people .person-line {
+    min-width: 0;
+  }
+
+  .sketch-people .person-line strong {
+    overflow-wrap: anywhere;
   }
 
   .sketch-folders {
@@ -2166,9 +2237,10 @@ dialog::backdrop {
   .sketch-data,
   .sketch-suggestion {
     height: auto;
-    min-height: 150px;
-    max-height: 260px;
-    padding: 16px;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 14px;
     border-radius: 18px;
   }
 
@@ -2176,13 +2248,32 @@ dialog::backdrop {
   .sketch-data > span,
   .sketch-suggestion > span {
     font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .sketch-kpi p,
+  .sketch-suggestion p,
+  .data-list,
+  .kpi-list {
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
   }
 
   .data-list,
   .kpi-list {
-    gap: 6px;
+    gap: 7px;
     padding-left: 16px;
-    line-height: 1.45;
+  }
+
+  .data-list li,
+  .kpi-list li {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .folder-details summary {
