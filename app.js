@@ -93,7 +93,29 @@ const fields = [
   "notes"
 ];
 
-const feishuSyncedFields = ["manager", "writer", "publisher", "monitor", "publishLinks", "monitorLinks", "reportLinks", "briefLinks"];
+const feishuSyncedFields = [
+  "source",
+  "name",
+  "status",
+  "startDate",
+  "cycleDays",
+  "progressPercent",
+  "kpi",
+  "platform",
+  "notes",
+  "manager",
+  "writer",
+  "publisher",
+  "monitor",
+  "invoiceStatus",
+  "publishLinks",
+  "monitorLinks",
+  "reportLinks",
+  "briefLinks",
+  "kpiStatus",
+  "currentData",
+  "optimizationSuggestion"
+];
 
 function loadProjects() {
   const saved = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
@@ -113,7 +135,9 @@ function loadProjects() {
         ...savedProject
       };
       feishuSyncedFields.forEach(field => {
-        mergedProject[field] = project[field] || (Array.isArray(mergedProject[field]) ? [] : "");
+        mergedProject[field] = Object.prototype.hasOwnProperty.call(project, field)
+          ? project[field]
+          : (Array.isArray(mergedProject[field]) ? [] : "");
       });
       return mergedProject;
     });
