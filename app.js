@@ -498,7 +498,7 @@ function render() {
 }
 
 function lastUpdateLabel() {
-  const value = syncMeta.progressUpdatedAt || syncMeta.syncedAt;
+  const value = syncMeta.analysisUpdatedAt || syncMeta.progressUpdatedAt || syncMeta.syncedAt;
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
