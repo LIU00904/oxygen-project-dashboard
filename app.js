@@ -62,6 +62,9 @@ const els = {
   searchInput: document.querySelector("#searchInput"),
   controlTitle: document.querySelector("#controlTitle"),
   controlMeta: document.querySelector("#controlMeta"),
+  publishRequirementsBtn: document.querySelector("#publishRequirementsBtn"),
+  publishRequirementsDialog: document.querySelector("#publishRequirementsDialog"),
+  publishRequirementsClose: document.querySelector("#publishRequirementsClose"),
   publishRequirementsPanel: document.querySelector("#publishRequirementsPanel"),
   invoiceOnlyBtn: document.querySelector("#invoiceOnlyBtn"),
   densityBtn: document.querySelector("#densityBtn"),
@@ -522,6 +525,10 @@ function publishRequirementFor(project) {
 function renderPublishRequirements() {
   if (!els.publishRequirementsPanel) return;
   const ongoing = projects.filter(project => project.status === "进行中");
+  if (!ongoing.length) {
+    els.publishRequirementsPanel.innerHTML = `<div class="publish-requirement-empty">当前没有进行中的项目</div>`;
+    return;
+  }
   els.publishRequirementsPanel.innerHTML = ongoing.map(project => `
     <div class="publish-requirement-item">
       <strong>${escapeHtml(project.name)}</strong>
@@ -853,6 +860,26 @@ els.densityBtn.addEventListener("click", () => {
   compactMode = !compactMode;
   els.densityBtn.classList.toggle("active", compactMode);
   render();
+});
+
+els.publishRequirementsBtn?.addEventListener("click", () => {
+  renderPublishRequirements();
+  els.publishRequirementsBtn.classList.add("active");
+  els.publishRequirementsDialog?.showModal();
+});
+
+els.publishRequirementsClose?.addEventListener("click", () => {
+  els.publishRequirementsDialog?.close();
+});
+
+els.publishRequirementsDialog?.addEventListener("click", event => {
+  if (event.target === els.publishRequirementsDialog) {
+    els.publishRequirementsDialog.close();
+  }
+});
+
+els.publishRequirementsDialog?.addEventListener("close", () => {
+  els.publishRequirementsBtn?.classList.remove("active");
 });
 
 els.board.addEventListener("change", event => {
