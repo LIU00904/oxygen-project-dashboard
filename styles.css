@@ -28,6 +28,14 @@ body {
   background: #eef7fb;
 }
 
+body.modal-locked {
+  position: fixed;
+  right: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -447,9 +455,20 @@ h2 {
   padding: 2px 4px 2px 0;
 }
 
+.publish-requirement-head {
+  display: grid;
+  grid-template-columns: minmax(108px, 0.76fr) minmax(0, 1.28fr) minmax(96px, 0.86fr);
+  gap: 12px;
+  padding: 0 14px 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
 .publish-requirement-item {
   display: grid;
-  grid-template-columns: minmax(108px, 0.8fr) minmax(0, 1.35fr);
+  grid-template-columns: minmax(108px, 0.76fr) minmax(0, 1.28fr) minmax(96px, 0.86fr);
   gap: 12px;
   align-items: start;
   min-height: 46px;
@@ -463,7 +482,8 @@ h2 {
 }
 
 .publish-requirement-item strong,
-.publish-requirement-item span {
+.publish-requirement-item span,
+.publish-requirement-item b {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: 13px;
@@ -479,6 +499,11 @@ h2 {
   font-weight: 800;
 }
 
+.publish-requirement-item b {
+  color: var(--blue);
+  font-weight: 900;
+}
+
 .publish-requirement-empty {
   padding: 18px;
   border-radius: 18px;
@@ -486,6 +511,14 @@ h2 {
   font-weight: 850;
   text-align: center;
   background: rgba(255, 255, 255, 0.12);
+}
+
+.publish-dialog-meta {
+  margin-top: 10px;
+  color: rgba(100, 112, 133, 0.72);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: right;
 }
 
 .tool-icon {
@@ -2176,6 +2209,40 @@ dialog::backdrop {
   .people,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .publish-dialog {
+    width: calc(100% - 18px);
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .publish-dialog-head h2 {
+    font-size: 26px;
+  }
+
+  .publish-requirements-panel {
+    max-height: 62vh;
+  }
+
+  .publish-requirement-head {
+    display: none;
+  }
+
+  .publish-requirement-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 12px;
+  }
+
+  .publish-requirement-item span::before {
+    content: "需求：";
+    color: rgba(100, 112, 133, 0.72);
+  }
+
+  .publish-requirement-item b::before {
+    content: "现发稿量：";
+    color: rgba(100, 112, 133, 0.72);
   }
 
   .row-main,

@@ -52,6 +52,7 @@ let currentSort = "progress";
 let invoiceOnly = false;
 let compactMode = false;
 let pickerState = {};
+let lockedScrollY = 0;
 
 const els = {
   board: document.querySelector("#projectBoard"),
@@ -66,6 +67,7 @@ const els = {
   publishRequirementsDialog: document.querySelector("#publishRequirementsDialog"),
   publishRequirementsClose: document.querySelector("#publishRequirementsClose"),
   publishRequirementsPanel: document.querySelector("#publishRequirementsPanel"),
+  publishRequirementsMeta: document.querySelector("#publishRequirementsMeta"),
   invoiceOnlyBtn: document.querySelector("#invoiceOnlyBtn"),
   densityBtn: document.querySelector("#densityBtn"),
   pageTitle: document.querySelector("#pageTitle"),
@@ -522,19 +524,69 @@ function publishRequirementFor(project) {
   return `${prefix}${values.join(" / ")} 篇`;
 }
 
+function currentPublishCountFor(project) {
+  const text = String(project.currentData || "");
+  if (!text.trim()) return "待统计";
+  if (project.name === "华硕") {
+    const motherboard = text.match(/华硕主板\s*(\d+)\s*\/\s*150/);
+    const mall = text.match(/华硕商城\s*(\d+)\s*\/\s*150/);
+    if (motherboard || mall) {
+      return [
+        motherboard ? `主板 ${motherboard[1]} 篇` : "",
+        mall ? `商城 ${mall[1]} 篇` : ""
+      ].filter(Boolean).join("；");
+    }
+  }
+  if (project.name.includes("一丰")) {
+    const total = text.match(/有效发布链接\s*(\d+)\s*条/);
+    const rav4 = text.match(/荣放\s*(\d+)\s*条/);
+    const avalon = text.match(/亚洲龙\s*(\d+)\s*条/);
+    if (total) {
+      const detail = [rav4 ? `荣放 ${rav4[1]}` : "", avalon ? `亚洲龙 ${avalon[1]}` : ""].filter(Boolean).join(" / ");
+      return detail ? `${total[1]} 篇（${detail}）` : `${total[1]} 篇`;
+    }
+  }
+  const patterns = [
+    /发稿(?:\s*KPI)?[:：]?\s*(\d+)\s*\/\s*\d+\s*篇/,
+    /发稿数量目前\s*(\d+)\s*\/\s*\d+/,
+    /有效发布链接\s*(\d+)\s*条/,
+    /有效发布链接\s*(\d+)\s*个/,
+    /发稿表[^。\n]*?(\d+)\s*条/
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return `${match[1]} 篇`;
+  }
+  return /尚未关联发稿|暂无法统计发布数量|待补充发稿/.test(text) ? "待统计" : "待核对";
+}
+
 function renderPublishRequirements() {
   if (!els.publishRequirementsPanel) return;
   const ongoing = projects.filter(project => project.status === "进行中");
   if (!ongoing.length) {
     els.publishRequirementsPanel.innerHTML = `<div class="publish-requirement-empty">当前没有进行中的项目</div>`;
+    if (els.publishRequirementsMeta) {
+      els.publishRequirementsMeta.textContent = lastUpdateLabel();
+    }
     return;
   }
-  els.publishRequirementsPanel.innerHTML = ongoing.map(project => `
+  els.publishRequirementsPanel.innerHTML = `
+    <div class="publish-requirement-head" aria-hidden="true">
+      <span>项目</span>
+      <span>需求</span>
+      <span>现发稿量</span>
+    </div>
+    ${ongoing.map(project => `
     <div class="publish-requirement-item">
       <strong>${escapeHtml(project.name)}</strong>
       <span>${escapeHtml(publishRequirementFor(project))}</span>
+      <b>${escapeHtml(currentPublishCountFor(project))}</b>
     </div>
-  `).join("");
+    `).join("")}
+  `;
+  if (els.publishRequirementsMeta) {
+    els.publishRequirementsMeta.textContent = lastUpdateLabel();
+  }
 }
 
 function getVerdictClass(project) {
@@ -832,6 +884,18 @@ function parseLinks(value = "") {
     .map(url => ({ url }));
 }
 
+function lockPageScroll() {
+  lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  document.body.style.top = `-${lockedScrollY}px`;
+  document.body.classList.add("modal-locked");
+}
+
+function unlockPageScroll() {
+  document.body.classList.remove("modal-locked");
+  document.body.style.top = "";
+  window.scrollTo(0, lockedScrollY);
+}
+
 els.statusTabs.addEventListener("click", event => {
   const button = event.target.closest("button[data-filter]");
   if (!button) return;
@@ -865,6 +929,7 @@ els.densityBtn.addEventListener("click", () => {
 els.publishRequirementsBtn?.addEventListener("click", () => {
   renderPublishRequirements();
   els.publishRequirementsBtn.classList.add("active");
+  lockPageScroll();
   els.publishRequirementsDialog?.showModal();
 });
 
@@ -880,6 +945,7 @@ els.publishRequirementsDialog?.addEventListener("click", event => {
 
 els.publishRequirementsDialog?.addEventListener("close", () => {
   els.publishRequirementsBtn?.classList.remove("active");
+  unlockPageScroll();
 });
 
 els.board.addEventListener("change", event => {
