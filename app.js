@@ -9,6 +9,7 @@ const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v15"
 ];
 const FEISHU_SYNC_API = window.FEISHU_SYNC_API || localStorage.getItem("FEISHU_SYNC_API") || "";
+const syncMeta = window.FEISHU_SYNC_META || {};
 const today = startOfToday();
 
 const statusColors = {
@@ -61,6 +62,7 @@ const els = {
   searchInput: document.querySelector("#searchInput"),
   controlTitle: document.querySelector("#controlTitle"),
   controlMeta: document.querySelector("#controlMeta"),
+  publishRequirementsPanel: document.querySelector("#publishRequirementsPanel"),
   invoiceOnlyBtn: document.querySelector("#invoiceOnlyBtn"),
   densityBtn: document.querySelector("#densityBtn"),
   pageTitle: document.querySelector("#pageTitle"),
@@ -390,6 +392,7 @@ function filteredProjects() {
 function render() {
   renderMetrics();
   renderStatusCounts();
+  renderPublishRequirements();
   const items = filteredProjects();
   els.pageTitle.textContent = currentFilter === "all" ? "全部项目" : currentFilter;
   els.pageMeta.textContent = `${items.length} 个项目`;
@@ -443,7 +446,10 @@ function render() {
         </section>
 
         <section class="sketch-data">
-          <span>当前数据</span>
+          <div class="section-title-row">
+            <span>当前数据</span>
+            <small>${escapeHtml(lastUpdateLabel())}</small>
+          </div>
           ${renderCurrentData(project, timing)}
         </section>
 
@@ -484,6 +490,44 @@ function render() {
       </article>
     `;
   }).join("");
+}
+
+function lastUpdateLabel() {
+  const value = syncMeta.progressUpdatedAt || syncMeta.syncedAt;
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  }).formatToParts(date);
+  const map = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `last update ${map.year}.${map.month}.${map.day}`;
+}
+
+function publishRequirementFor(project) {
+  const text = String(project.kpi || "");
+  if (project.name === "华硕") return "华硕主板 150 篇；华硕商城 150 篇";
+  if (/暂未要求稿件数据|暂未要求固定/.test(text)) return "暂未要求固定数量";
+  const matches = [...text.matchAll(/(?:发稿|稿件|投放|优化稿件)[^。；\n，,]*?(?:>=|≥|大于|不少于|需要|目标是|目标)?\s*(\d+)\s*篇/g)];
+  if (!matches.length) return "KPI 未写明发稿数量";
+  const values = [...new Set(matches.map(match => Number(match[1])).filter(Boolean))];
+  if (!values.length) return "KPI 未写明发稿数量";
+  const prefix = /不少于|>=|≥|大于/.test(text) ? "不少于 " : "";
+  return `${prefix}${values.join(" / ")} 篇`;
+}
+
+function renderPublishRequirements() {
+  if (!els.publishRequirementsPanel) return;
+  const ongoing = projects.filter(project => project.status === "进行中");
+  els.publishRequirementsPanel.innerHTML = ongoing.map(project => `
+    <div class="publish-requirement-item">
+      <strong>${escapeHtml(project.name)}</strong>
+      <span>${escapeHtml(publishRequirementFor(project))}</span>
+    </div>
+  `).join("");
 }
 
 function getVerdictClass(project) {

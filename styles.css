@@ -332,6 +332,7 @@ h2 {
 }
 
 .quick-controls {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -351,6 +352,92 @@ h2 {
 
 .tool-btn {
   padding: 0 14px;
+}
+
+.publish-requirements {
+  position: relative;
+}
+
+.publish-requirements summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.54);
+  font-size: 13px;
+  font-weight: 850;
+  list-style: none;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.publish-requirements summary::-webkit-details-marker {
+  display: none;
+}
+
+.publish-requirements summary::after {
+  content: "⌄";
+  margin-left: 8px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.publish-requirements[open] summary,
+.publish-requirements summary:hover {
+  transform: translateY(-1px);
+  color: var(--blue);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 12px 28px rgba(23, 42, 75, 0.12);
+}
+
+.publish-requirements-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: 8px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.18)),
+    rgba(255, 255, 255, 0.18);
+  box-shadow: 0 22px 60px rgba(23, 42, 75, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(28px) saturate(1.34);
+  -webkit-backdrop-filter: blur(28px) saturate(1.34);
+}
+
+.publish-requirement-item {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.82fr) minmax(0, 1.4fr);
+  gap: 10px;
+  align-items: start;
+  min-height: 34px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.publish-requirement-item strong,
+.publish-requirement-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.publish-requirement-item strong {
+  color: var(--ink);
+}
+
+.publish-requirement-item span {
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .tool-icon {
@@ -1081,6 +1168,28 @@ h2 {
 .sketch-suggestion > span {
   color: var(--ink);
   font-size: 20px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.section-title-row span {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.section-title-row small {
+  color: rgba(100, 112, 133, 0.62);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  padding-top: 4px;
 }
 
 .sketch-suggestion p {
@@ -1830,6 +1939,7 @@ dialog::backdrop {
 
 .tool-btn,
 .tool-icon,
+.publish-requirements summary,
 .ghost-btn,
 .icon-btn,
 .resource-btn,

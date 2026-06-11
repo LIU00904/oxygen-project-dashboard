@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>氧气科技项目管理</title>
-    <link rel="stylesheet" href="./styles.css?v=20260611-full-sync-v35" />
+    <link rel="stylesheet" href="./styles.css?v=20260611-publish-needs-v36" />
   </head>
   <body>
     <div class="iridescence-container" id="iridescenceBg" aria-hidden="true"></div>
@@ -50,6 +50,10 @@
           <input id="searchInput" type="search" placeholder="搜索项目、平台、人员或 KPI" />
         </label>
         <div class="quick-controls" aria-label="视图控制">
+          <details class="publish-requirements" id="publishRequirements">
+            <summary>项目发稿数量需求</summary>
+            <div class="publish-requirements-panel" id="publishRequirementsPanel"></div>
+          </details>
           <button class="tool-btn active" data-sort="progress" type="button">进度</button>
           <button class="tool-btn" data-sort="deadline" type="button">截止</button>
           <button class="tool-btn" id="invoiceOnlyBtn" type="button">待开票</button>
@@ -108,7 +112,7 @@
     <script>
       window.FEISHU_SYNC_API = "https://oxygen-feishu-sync.liuyichen021231.workers.dev";
     </script>
-    <script src="./data.js?v=20260611-full-sync-v35"></script>
-    <script src="./app.js?v=20260611-full-sync-v35"></script>
+    <script src="./data.js?v=20260611-publish-needs-v36"></script>
+    <script src="./app.js?v=20260611-publish-needs-v36"></script>
   </body>
 </html>
