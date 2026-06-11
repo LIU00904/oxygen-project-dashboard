@@ -538,6 +538,8 @@ function currentPublishCountFor(project) {
     }
   }
   if (project.name.includes("一丰")) {
+    const auditedTotal = text.match(/有效发稿条目\s*(\d+)\s*条/);
+    if (auditedTotal) return `${auditedTotal[1]} 篇`;
     const total = text.match(/有效发布链接\s*(\d+)\s*条/);
     const rav4 = text.match(/荣放\s*(\d+)\s*条/);
     const avalon = text.match(/亚洲龙\s*(\d+)\s*条/);
@@ -549,6 +551,8 @@ function currentPublishCountFor(project) {
   const patterns = [
     /发稿(?:\s*KPI)?[:：]?\s*(\d+)\s*\/\s*\d+\s*篇/,
     /发稿数量目前\s*(\d+)\s*\/\s*\d+/,
+    /有效发稿条目\s*(\d+)\s*条/,
+    /有效发布条目\s*(\d+)\s*条/,
     /有效发布链接\s*(\d+)\s*条/,
     /有效发布链接\s*(\d+)\s*个/,
     /发稿表[^。\n]*?(\d+)\s*条/
@@ -558,6 +562,50 @@ function currentPublishCountFor(project) {
     if (match) return `${match[1]} 篇`;
   }
   return /尚未关联发稿|暂无法统计发布数量|待补充发稿/.test(text) ? "待统计" : "待核对";
+}
+
+function publishCompletionFor(project) {
+  const text = String(project.currentData || "");
+  if (project.name === "华硕") {
+    const motherboard = text.match(/华硕主板\s*(\d+)\s*\/\s*150/);
+    const mall = text.match(/华硕商城\s*(\d+)\s*\/\s*150/);
+    const gaps = [];
+    if (motherboard) {
+      const gap = 150 - Number(motherboard[1]);
+      if (gap > 0) gaps.push(`主板差 ${gap} 篇`);
+    }
+    if (mall) {
+      const gap = 150 - Number(mall[1]);
+      if (gap > 0) gaps.push(`商城差 ${gap} 篇`);
+    }
+    return gaps.length
+      ? { label: `未完成，${gaps.join("；")}`, className: "bad" }
+      : { label: "已完成", className: "good" };
+  }
+  if (/暂未要求稿件数据|暂未要求固定|暂未要求固定数量/.test(`${project.kpi}\n${text}`)) {
+    return { label: "无固定数量", className: "neutral" };
+  }
+  if (/尚未关联发稿|暂无法统计发布数量|待补充发稿|待统计/.test(text)) {
+    return { label: "待统计", className: "neutral" };
+  }
+  const explicit = text.match(/(\d+)\s*\/\s*(\d+)\s*篇/);
+  if (explicit) {
+    const current = Number(explicit[1]);
+    const target = Number(explicit[2]);
+    const gap = target - current;
+    if (gap > 0) return { label: `未完成，还差 ${gap} 篇`, className: "bad" };
+    if (gap < 0) return { label: `已完成，超出 ${Math.abs(gap)} 篇`, className: "good" };
+    return { label: "已完成，刚好达标", className: "good" };
+  }
+  const current = Number((currentPublishCountFor(project).match(/\d+/) || [])[0]);
+  const target = Number((publishRequirementFor(project).match(/\d+/) || [])[0]);
+  if (Number.isFinite(current) && Number.isFinite(target) && target > 0) {
+    const gap = target - current;
+    if (gap > 0) return { label: `未完成，还差 ${gap} 篇`, className: "bad" };
+    if (gap < 0) return { label: `已完成，超出 ${Math.abs(gap)} 篇`, className: "good" };
+    return { label: "已完成，刚好达标", className: "good" };
+  }
+  return { label: "KPI 未写明", className: "neutral" };
 }
 
 function renderPublishRequirements() {
@@ -575,14 +623,19 @@ function renderPublishRequirements() {
       <span>项目</span>
       <span>需求</span>
       <span>现发稿量</span>
+      <span>完成情况</span>
     </div>
-    ${ongoing.map(project => `
+    ${ongoing.map(project => {
+      const completion = publishCompletionFor(project);
+      return `
     <div class="publish-requirement-item">
       <strong>${escapeHtml(project.name)}</strong>
       <span>${escapeHtml(publishRequirementFor(project))}</span>
       <b>${escapeHtml(currentPublishCountFor(project))}</b>
+      <em class="${escapeHtml(completion.className)}">${escapeHtml(completion.label)}</em>
     </div>
-    `).join("")}
+    `;
+    }).join("")}
   `;
   if (els.publishRequirementsMeta) {
     els.publishRequirementsMeta.textContent = lastUpdateLabel();

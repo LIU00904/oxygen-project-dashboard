@@ -394,7 +394,7 @@ h2 {
 }
 
 .publish-dialog {
-  width: min(520px, calc(100% - 28px));
+  width: min(760px, calc(100% - 28px));
   padding: 18px;
   border-color: rgba(255, 255, 255, 0.74);
   border-radius: 28px;
@@ -457,7 +457,7 @@ h2 {
 
 .publish-requirement-head {
   display: grid;
-  grid-template-columns: minmax(108px, 0.76fr) minmax(0, 1.28fr) minmax(96px, 0.86fr);
+  grid-template-columns: minmax(116px, 0.72fr) minmax(0, 1.08fr) minmax(112px, 0.78fr) minmax(150px, 1fr);
   gap: 12px;
   padding: 0 14px 2px;
   color: var(--muted);
@@ -468,7 +468,7 @@ h2 {
 
 .publish-requirement-item {
   display: grid;
-  grid-template-columns: minmax(108px, 0.76fr) minmax(0, 1.28fr) minmax(96px, 0.86fr);
+  grid-template-columns: minmax(116px, 0.72fr) minmax(0, 1.08fr) minmax(112px, 0.78fr) minmax(150px, 1fr);
   gap: 12px;
   align-items: start;
   min-height: 46px;
@@ -483,11 +483,13 @@ h2 {
 
 .publish-requirement-item strong,
 .publish-requirement-item span,
-.publish-requirement-item b {
+.publish-requirement-item b,
+.publish-requirement-item em {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: 13px;
   line-height: 1.35;
+  font-style: normal;
 }
 
 .publish-requirement-item strong {
@@ -502,6 +504,25 @@ h2 {
 .publish-requirement-item b {
   color: var(--blue);
   font-weight: 900;
+}
+
+.publish-requirement-item em {
+  justify-self: start;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 900;
+  background: rgba(100, 112, 133, 0.1);
+  color: var(--muted);
+}
+
+.publish-requirement-item em.good {
+  background: rgba(33, 194, 122, 0.14);
+  color: #108452;
+}
+
+.publish-requirement-item em.bad {
+  background: rgba(255, 90, 104, 0.14);
+  color: #c13546;
 }
 
 .publish-requirement-empty {
@@ -2242,6 +2263,16 @@ dialog::backdrop {
 
   .publish-requirement-item b::before {
     content: "现发稿量：";
+    color: rgba(100, 112, 133, 0.72);
+  }
+
+  .publish-requirement-item em {
+    justify-self: start;
+    margin-top: 2px;
+  }
+
+  .publish-requirement-item em::before {
+    content: "完成情况：";
     color: rgba(100, 112, 133, 0.72);
   }
 

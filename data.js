@@ -1419,11 +1419,16 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "",
     "invoiceStatus": "已开票",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp",
+        "label": "格力高发稿链接"
+      }
+    ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "飞书已核对：项目已于 2026-06-07 开启。\nKPI：收录即可；有目标信源；一个月投放 20 篇稿件。\n当前尚未关联发稿链接和监测表，暂无法统计发布数量与收录情况。",
-    "optimizationSuggestion": "补充发稿表入口和监测表入口；否则只能确认项目已启动，无法判断 20 篇投放和收录是否达标。",
+    "currentData": "发稿表已重新核对：有效发布条目 9 条。\n发稿 KPI：9/20 篇，还差 11 篇。\n尚未关联监测表，暂无法判断收录、目标信源和近一周/近一月趋势。",
+    "optimizationSuggestion": "优先补齐发稿缺口 11 篇；同时补充监测表入口，否则无法判断收录和目标信源是否达标。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1664,11 +1669,11 @@ window.FEISHU_SYNC_META = {
   "syncedAt": "2026-06-11T07:33:01.199Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v22-count-audit",
+  "note": "main-table-sync-v23-glico-publish-status",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "analysisUpdatedAt": "2026-06-11T08:31:45.765Z"
+  "analysisUpdatedAt": "2026-06-11T10:07:30.426Z"
 };
