@@ -649,7 +649,12 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "label": "雅诗兰黛监测表",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
@@ -703,7 +708,12 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "label": "雅诗兰黛监测表",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
     "kpiStatus": "停滞待处理",
     "currentData": "当前完成度 52%",
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
@@ -742,7 +752,12 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "label": "雅诗兰黛监测表",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
     "kpiStatus": "停滞待处理",
     "currentData": "当前完成度 54%",
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。",
@@ -1421,8 +1436,8 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp",
-        "label": "格力高发稿链接"
+        "label": "格力高发稿链接",
+        "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp"
       }
     ],
     "monitorLinks": [],
@@ -1656,7 +1671,12 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "",
     "invoiceStatus": "已开票",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "label": "北大发稿链接",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
     "monitorLinks": [],
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
@@ -1674,10 +1694,10 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-12T04:09:38.963Z",
+  "syncedAt": "2026-06-12T05:13:55.853Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v24-status-files-refresh",
+  "note": "main-table-sync-v26-preserve-real-links",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
