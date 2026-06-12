@@ -154,34 +154,6 @@ window.FEISHU_PROJECTS = [
     ]
   },
   {
-    "id": "recvm25hMZaywX",
-    "source": "feishu",
-    "name": "湄洲岛",
-    "status": "已完成",
-    "startDate": "2025-12-17",
-    "cycleDays": 5,
-    "progressPercent": 100,
-    "kpi": "",
-    "platform": "",
-    "notes": "",
-    "manager": "",
-    "writer": "张扬",
-    "publisher": "刘依晨",
-    "monitor": "刘依晨",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/FPtlwteXAiIJNSkG22qcmU9enPw"
-      }
-    ],
-    "kpiStatus": "已完成待补 KPI",
-    "currentData": "已关联 1 个监测表入口；项目周期已结束，待补充 KPI 与结案资料。",
-    "optimizationSuggestion": "补充项目 KPI 与平台信息；监测表已关联，后续可归档结案报告。",
-    "reportLinks": [],
-    "briefLinks": []
-  },
-  {
     "id": "recveNpiTYQzHi",
     "source": "feishu",
     "name": "太太乐松茸鲜",
@@ -585,7 +557,11 @@ window.FEISHU_PROJECTS = [
     "monitor": "刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/sheets/LQf0scv1eh7JzRtaQ9zcr8xWnVh"
+      }
+    ],
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
@@ -617,7 +593,11 @@ window.FEISHU_PROJECTS = [
     "monitor": "金雨婷、刘依晨",
     "invoiceStatus": "待确认",
     "publishLinks": [],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/sheets/XdbMspYsmhWZR7tMZLKcPSDNnAe"
+      }
+    ],
     "kpiStatus": "已达标",
     "currentData": "当前完成度 100%",
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。",
@@ -648,11 +628,14 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/W0HNw9DLMiC55FkLScGcLb0mnyb"
+      }
+    ],
     "monitorLinks": [
       {
-        "label": "雅诗兰黛监测表",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+        "url": "https://jcnquengglen.feishu.cn/wiki/FtREwiPdKicwxQkK8VVcTFeInrb"
       }
     ],
     "kpiStatus": "已达标",
@@ -707,11 +690,14 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/W0HNw9DLMiC55FkLScGcLb0mnyb"
+      }
+    ],
     "monitorLinks": [
       {
-        "label": "雅诗兰黛监测表",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+        "url": "https://jcnquengglen.feishu.cn/wiki/FtREwiPdKicwxQkK8VVcTFeInrb"
       }
     ],
     "kpiStatus": "停滞待处理",
@@ -751,11 +737,14 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "刘依晨",
     "invoiceStatus": "已开票",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/W0HNw9DLMiC55FkLScGcLb0mnyb"
+      }
+    ],
     "monitorLinks": [
       {
-        "label": "雅诗兰黛监测表",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+        "url": "https://jcnquengglen.feishu.cn/wiki/FtREwiPdKicwxQkK8VVcTFeInrb"
       }
     ],
     "kpiStatus": "停滞待处理",
@@ -1224,7 +1213,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvhXr75uIOhW",
     "source": "feishu",
     "name": "骨科医生",
-    "status": "待开始",
+    "status": "已完成",
     "startDate": "2026-04-20",
     "cycleDays": 36,
     "progressPercent": 100,
@@ -1318,8 +1307,7 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "url": "https://jcnquengglen.feishu.cn/wiki/XDQhwi6bTiZVrlkmQQEch7Bgn0c",
-        "label": "一丰荣放亚洲龙 发稿附表"
+        "url": "https://mv21kbvltn.feishu.cn/wiki/Sgumwr7Q3iIGMBkzLlPcL1LRnNf"
       }
     ],
     "monitorLinks": [],
@@ -1436,14 +1424,13 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "label": "格力高发稿链接",
-        "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp"
+        "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp?from=from_copylink"
       }
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已重新核对：有效发布条目 9 条。\n发稿 KPI：9/20 篇，还差 11 篇。\n尚未关联监测表，暂无法判断收录、目标信源和近一周/近一月趋势。",
-    "optimizationSuggestion": "优先补齐发稿缺口 11 篇；同时补充监测表入口，否则无法判断收录和目标信源是否达标。",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1659,7 +1646,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvln50lusVeg",
     "source": "feishu",
     "name": "北京大学深圳研究生院",
-    "status": "待开始",
+    "status": "进行中",
     "startDate": "2026-06-09",
     "cycleDays": 61,
     "progressPercent": 5,
@@ -1673,8 +1660,7 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "label": "北大发稿链接",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+        "url": "https://jcnquengglen.feishu.cn/wiki/FuwzwceVxi8PZ3kTp8Ocixffn7e"
       }
     ],
     "monitorLinks": [],
@@ -1691,13 +1677,41 @@ window.FEISHU_PROJECTS = [
         "size": 2687343
       }
     ]
+  },
+  {
+    "id": "recvm25hMZaywX",
+    "source": "feishu",
+    "name": "湄洲岛",
+    "status": "已完成",
+    "startDate": "2025-12-17",
+    "cycleDays": 5,
+    "progressPercent": 100,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "",
+    "writer": "张扬",
+    "publisher": "刘依晨",
+    "monitor": "刘依晨",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/FPtlwteXAiIJNSkG22qcmU9enPw"
+      }
+    ],
+    "kpiStatus": "已完成待补 KPI",
+    "currentData": "已关联 1 个监测表入口；项目周期已结束，待补充 KPI 与结案资料。",
+    "optimizationSuggestion": "补充项目 KPI 与平台信息；监测表已关联，后续可归档结案报告。",
+    "reportLinks": [],
+    "briefLinks": []
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-12T05:13:55.853Z",
+  "syncedAt": "2026-06-12T06:42:36.589Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v26-preserve-real-links",
+  "note": "main-table-sync-v27-status-kpi-links",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",

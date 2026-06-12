@@ -790,7 +790,7 @@ function splitKpi(kpi) {
   const text = String(kpi || "").trim();
   if (!text) return [];
   const normalized = text
-    .replace(/\s*([1-9][0-9]*[.、）)])\s*/g, "\n$1 ")
+    .replace(/(^|[\n。；;])\s*([1-9][0-9]*[.、）)])(?!\d)\s*/g, "\n$2 ")
     .replace(/\s*([一二三四五六七八九十]+[、）)])\s*/g, "\n$1 ");
   const parts = normalized
     .split(/\n+/)
