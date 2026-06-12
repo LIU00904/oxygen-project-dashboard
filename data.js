@@ -1105,7 +1105,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已重新核对：有效发布条目 65 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1211,7 +1211,7 @@ window.FEISHU_PROJECTS = [
     "name": "骨科医生",
     "status": "待开始",
     "startDate": "2026-04-20",
-    "cycleDays": 37,
+    "cycleDays": 36,
     "progressPercent": 100,
     "kpi": "信息正确展露，收录并推荐吴敏飞医生",
     "platform": "Deepseek 千问 豆包",
@@ -1447,7 +1447,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-05-15",
     "cycleDays": 30,
-    "progressPercent": 83,
+    "progressPercent": 94,
     "kpi": "大模型关键词正向提及率超过90%，需要发稿大于36篇（提供发稿链接）",
     "platform": "",
     "notes": "",
@@ -1464,7 +1464,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 56 条。\n发稿 KPI：56/36 篇，已达到数量要求。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1599,7 +1599,7 @@ window.FEISHU_PROJECTS = [
     "kpi": "",
     "platform": "",
     "notes": "",
-    "manager": "",
+    "manager": "辛味珈",
     "writer": "",
     "publisher": "",
     "monitor": "",
@@ -1619,7 +1619,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-01",
     "cycleDays": 91,
-    "progressPercent": 9,
+    "progressPercent": 12,
     "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
     "platform": "六个平台中四个及以上，80%时间",
     "notes": "",
@@ -1636,7 +1636,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 10 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1645,10 +1645,10 @@ window.FEISHU_PROJECTS = [
     "source": "feishu",
     "name": "北京大学深圳研究生院",
     "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "收录即可\n五个关键词",
+    "startDate": "2026-06-09",
+    "cycleDays": 61,
+    "progressPercent": 5,
+    "kpi": "\nkpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
     "platform": "",
     "notes": "",
     "manager": "辛味珈",
@@ -1662,18 +1662,25 @@ window.FEISHU_PROJECTS = [
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
     "reportLinks": [],
-    "briefLinks": []
+    "briefLinks": [
+      {
+        "label": "6e2d8a6ba12dddacd1528e5169c1dd9f.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "BzG4b4pe7oVks3xvtoDcZvC1ngc",
+        "fileType": "image/png",
+        "size": 2687343
+      }
+    ]
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-11T07:33:01.199Z",
+  "syncedAt": "2026-06-12T04:09:38.963Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v23-glico-publish-status",
+  "note": "main-table-sync-v24-status-files-refresh",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
     "一丰 荣放 亚洲龙"
-  ],
-  "analysisUpdatedAt": "2026-06-11T10:07:30.426Z"
+  ]
 };
