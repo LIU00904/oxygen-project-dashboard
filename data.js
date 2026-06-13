@@ -1307,13 +1307,13 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "已开票",
     "publishLinks": [
       {
-        "url": "https://jcnquengglen.feishu.cn/wiki/XDQhwi6bTiZVrlkmQQEch7Bgn0c"
+        "url": "https://mv21kbvltn.feishu.cn/wiki/Sgumwr7Q3iIGMBkzLlPcL1LRnNf"
       }
     ],
     "monitorLinks": [],
-    "kpiStatus": "未达标",
-    "currentData": "正式发稿附表已按最新链接实时核对：90 行有效发稿链接，排除拒稿/发布中/空白 0 行。\n发稿 KPI：90/100 篇，还差 10 篇。\n亚洲龙 6/7 KPI 表：6 个基础词的 SOV、Top3、Top10 综合值均达标；最新综合 SOV 20.6%-27.7%、Top3 57.0%-68.9%、Top10 82.7%-89.3%。\n荣放 5/20 点检表：Top3 38.51% 已超过 ≥20%；SOV 7.63% 距 ≥15% 还差 7.37 个百分点；Top10 47.24% 距 ≥80% 还差 32.76 个百分点。",
-    "optimizationSuggestion": "先补齐 10 篇有效发稿链接缺口；荣放侧继续重点补 SOV 与 Top10，增加汽车垂媒/问答信源覆盖。",
+    "kpiStatus": "部分达标",
+    "currentData": "发稿表以最新飞书 docx 内嵌表为准：状态筛选显示已发稿 109 条，拒稿 28 条，审核中 2 条，空白 6 条；只计“已发稿”。\n发稿 KPI：109/100 篇，已达到数量要求，超出 9 篇。\n说明：该链接是 docx 页面内嵌表，当前 API 缺 docx:document:readonly 权限，网页先按截图中飞书筛选结果记录；若开通 docx 只读权限后可自动抓取。\n亚洲龙 6/7 KPI 表：6 个基础词的 SOV、Top3、Top10 综合值均达标；最新综合 SOV 20.6%-27.7%、Top3 57.0%-68.9%、Top10 82.7%-89.3%。\n荣放 5/20 点检表：Top3 38.51% 已超过 ≥20%；SOV 7.63% 距 ≥15% 还差 7.37 个百分点；Top10 47.24% 距 ≥80% 还差 32.76 个百分点。",
+    "optimizationSuggestion": "发稿数量已达标；接下来重点补荣放侧 SOV 与 Top10，增加汽车垂媒/问答信源覆盖，围绕“15万左右通勤SUV、城市SUV、家用SUV”等词做定向发布和监测复盘。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1711,7 +1711,7 @@ window.FEISHU_SYNC_META = {
   "syncedAt": "2026-06-13T11:42:22.208Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v33-effective-row-recount-20260613",
+  "note": "main-table-sync-v34-yifeng-docx-status-20260613",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
@@ -1731,5 +1731,5 @@ window.FEISHU_SYNC_META = {
     "北京大学深圳研究生院:suggestion"
   ],
   "statusOverrideNote": "进行中项目最终口径为 9 个；咪咕体育已归入进行中。",
-  "analysisUpdatedAt": "2026-06-13T21:45:00+08:00"
+  "analysisUpdatedAt": "2026-06-13T22:00:00+08:00"
 };
