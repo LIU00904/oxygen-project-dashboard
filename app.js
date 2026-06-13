@@ -516,7 +516,7 @@ function publishRequirementFor(project) {
   const text = String(project.kpi || "");
   if (project.name === "华硕") return "华硕主板 150 篇；华硕商城 150 篇";
   if (/暂未要求稿件数据|暂未要求固定/.test(text)) return "暂未要求固定数量";
-  const matches = [...text.matchAll(/(?:发稿|稿件|投放|优化稿件)[^。；\n，,]*?(?:>=|≥|大于|不少于|需要|目标是|目标)?\s*(\d+)\s*篇/g)];
+  const matches = [...text.matchAll(/(?:发稿|稿件|投放|优化稿件|文章发布|发布)[^。；\n，,]*?(?:>=|≥|大于|不少于|需要|目标是|目标)?\s*(\d+)\s*篇/g)];
   if (!matches.length) return "KPI 未写明发稿数量";
   const values = [...new Set(matches.map(match => Number(match[1])).filter(Boolean))];
   if (!values.length) return "KPI 未写明发稿数量";
@@ -549,7 +549,8 @@ function currentPublishCountFor(project) {
     }
   }
   const patterns = [
-    /发稿(?:\s*KPI)?[:：]?\s*(\d+)\s*\/\s*\d+\s*篇/,
+    /(?:发稿|发布)(?:\s*KPI|数量)?[:：]?\s*(\d+)\s*\/\s*\d+\s*篇/,
+    /当前发布数量\s*(\d+)\s*\/\s*\d+\s*篇/,
     /发稿数量目前\s*(\d+)\s*\/\s*\d+/,
     /有效发稿条目\s*(\d+)\s*条/,
     /有效发布条目\s*(\d+)\s*条/,
@@ -790,12 +791,13 @@ function splitKpi(kpi) {
   const text = String(kpi || "").trim();
   if (!text) return [];
   const normalized = text
-    .replace(/(^|[\n。；;])\s*([1-9][0-9]*[.、）)])(?!\d)\s*/g, "\n$2 ")
+    .replace(/(^|[\n。；;：:])\s*([1-9][0-9]*[.、）)])(?!\d)\s*/g, "\n$2 ")
     .replace(/\s*([一二三四五六七八九十]+[、）)])\s*/g, "\n$1 ");
   const parts = normalized
     .split(/\n+/)
     .map(item => item.replace(/^([1-9][0-9]*|[一二三四五六七八九十]+)[.、）)]\s*/, "").trim())
-    .filter(Boolean);
+    .flatMap(item => item.split(/；/).map(part => part.trim()).filter(Boolean))
+    .filter(item => !/^KPI目标[:：]?$/.test(item));
   if (parts.length > 1) return parts;
   return text.split(/；|;(?=\s*)/).map(item => item.trim()).filter(Boolean);
 }
