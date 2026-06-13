@@ -704,11 +704,7 @@ function normalizeLinks(value) {
 
 function renderCurrentData(project, timing) {
   if (project.currentData && project.currentData.trim()) {
-    const data = project.currentData
-      .split(/\n|；|。/)
-      .map(item => item.trim())
-      .filter(Boolean);
-    return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    return renderDataSections(project.currentData);
   }
   const progress = Number(timing.progress || 0);
   const gap = Math.max(0, 100 - progress);
@@ -732,6 +728,38 @@ function renderCurrentData(project, timing) {
   else data.push(`已关联 ${reportCount} 个报告入口。`);
   if (briefCount) data.push(`已关联 ${briefCount} 个 Brief 文件。`);
   return `<ul class="data-list">${data.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function renderDataSections(value) {
+  const lines = String(value)
+    .split(/\n/)
+    .flatMap(line => {
+      const trimmed = line.trim();
+      if (/^【.+】$/.test(trimmed)) return [trimmed];
+      return trimmed.split(/(?<=。)/).map(item => item.trim()).filter(Boolean);
+    })
+    .filter(Boolean);
+
+  let html = "";
+  let list = [];
+
+  function flushList() {
+    if (!list.length) return;
+    html += `<ul class="data-list">${list.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    list = [];
+  }
+
+  lines.forEach(line => {
+    const heading = line.match(/^【(.+)】$/);
+    if (heading) {
+      flushList();
+      html += `<h4 class="data-subtitle">${escapeHtml(heading[1])}</h4>`;
+    } else {
+      list.push(line);
+    }
+  });
+  flushList();
+  return html;
 }
 
 function renderMetrics() {
