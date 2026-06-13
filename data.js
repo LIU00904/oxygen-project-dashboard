@@ -1522,7 +1522,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvkB4roXUK2R",
     "source": "feishu",
     "name": "咪咕体育",
-    "status": "待开始",
+    "status": "进行中",
     "startDate": "2026-06-12",
     "cycleDays": 49,
     "progressPercent": 2,
@@ -1536,9 +1536,9 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "待确认",
     "publishLinks": [],
     "monitorLinks": [],
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "kpiStatus": "推进中",
+    "currentData": "项目已启动；待补充发稿链接、监测表和资料文件后更新 KPI 分析。",
+    "optimizationSuggestion": "下一步补齐发稿计划、监测表入口与负责人，按月度关键词和发稿 KPI 维护进度。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1708,10 +1708,10 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-13T11:29:49.396Z",
+  "syncedAt": "2026-06-13T11:42:22.208Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v29-full-refresh-cleanup-20260613",
+  "note": "main-table-sync-v30-migu-sports-ongoing-20260613",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
@@ -1729,5 +1729,6 @@ window.FEISHU_SYNC_META = {
     "北京大学深圳研究生院:kpiStatus",
     "北京大学深圳研究生院:currentData",
     "北京大学深圳研究生院:suggestion"
-  ]
+  ],
+  "statusOverrideNote": "进行中项目最终口径为 9 个；咪咕体育已归入进行中。"
 };
