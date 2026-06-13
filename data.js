@@ -1635,10 +1635,14 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/RmRwwx6XKiyvxZkI1zBcE5OZnzf"
       }
     ],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/KOT6wuYUBinmJBk7qxdcJM9HnYb"
+      }
+    ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 10 篇。\nKPI 写明“暂未要求固定数量”，当前不按固定发稿量判断达标。\n【监测数据】\n尚未关联监测表，暂无法判断第一个月收录、第二个月进前 5、第三个月进前 3 的进展。",
-    "optimizationSuggestion": "继续沉淀发布链接；重点补充监测表，按“收录 / 前5 / 前3”的阶段目标更新进展。",
+    "currentData": "【发稿数据】\n有效发稿 10 篇。\nKPI 写明“暂未要求固定数量”，当前不按固定发稿量判断达标。\n【监测数据】\n已关联赏会所监测表，可按“收录 / 前5 / 前3”的阶段目标继续更新近一周与近一月趋势。",
+    "optimizationSuggestion": "继续沉淀发布链接；后续按监测表复核第一个月收录、第二个月进前 5、第三个月进前 3 的阶段达成情况。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1731,5 +1735,5 @@ window.FEISHU_SYNC_META = {
     "北京大学深圳研究生院:suggestion"
   ],
   "statusOverrideNote": "进行中项目最终口径为 9 个；咪咕体育已归入进行中。",
-  "analysisUpdatedAt": "2026-06-13T22:00:00+08:00"
+  "analysisUpdatedAt": "2026-06-14T10:00:00+08:00"
 };
