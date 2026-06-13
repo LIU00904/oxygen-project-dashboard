@@ -1108,8 +1108,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "发稿表已重新核对：有效发布条目 65 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "发稿表已读取 1 个工作表，有效发布链接 64 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1227,9 +1227,9 @@ window.FEISHU_PROJECTS = [
     "invoiceStatus": "待确认",
     "publishLinks": [],
     "monitorLinks": [],
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "kpiStatus": "已完成待复核",
+    "currentData": "项目已完成；尚未关联发稿资料；尚未关联监测表；已关联 1 个报告文件。重点检查发稿、监测和报告是否归档齐全。",
+    "optimizationSuggestion": "项目已完成，建议补齐结案报告、监测归档与发稿资料入口。",
     "reportLinks": [
       {
         "label": "吴敏飞教授AI语料优化结案报告(2).pptx",
@@ -1466,7 +1466,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 56 条。\n发稿 KPI：56/36 篇，已达到数量要求。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1521,13 +1521,13 @@ window.FEISHU_PROJECTS = [
   {
     "id": "recvkB4roXUK2R",
     "source": "feishu",
-    "name": "咪咕",
+    "name": "咪咕体育",
     "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "",
+    "startDate": "2026-06-12",
+    "cycleDays": 49,
+    "progressPercent": 2,
+    "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
+    "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
     "notes": "",
     "manager": "",
     "writer": "",
@@ -1638,7 +1638,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "推进中",
     "currentData": "发稿表已读取 1 个工作表，有效发布链接 10 条。\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1664,9 +1664,9 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "monitorLinks": [],
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "kpiStatus": "推进中",
+    "currentData": "已关联 1 个发稿资料入口；尚未关联监测表；已关联 1 个 Brief 文件。",
+    "optimizationSuggestion": "下一步补充监测表入口，并持续维护发稿链接与周报资料。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1708,13 +1708,26 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-12T06:42:36.589Z",
+  "syncedAt": "2026-06-13T11:29:49.396Z",
   "source": "feishu",
   "recordCount": 49,
-  "note": "main-table-sync-v27-status-kpi-links",
+  "note": "main-table-sync-v29-full-refresh-cleanup-20260613",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
     "一丰 荣放 亚洲龙"
+  ],
+  "analysisMerged": [
+    "哲库林 润喉糖",
+    "深演",
+    "赏·会所"
+  ],
+  "cleanupFixed": [
+    "骨科医生:kpiStatus",
+    "骨科医生:currentData",
+    "骨科医生:suggestion",
+    "北京大学深圳研究生院:kpiStatus",
+    "北京大学深圳研究生院:currentData",
+    "北京大学深圳研究生院:suggestion"
   ]
 };
