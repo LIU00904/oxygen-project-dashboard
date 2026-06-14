@@ -1,5 +1,6 @@
 const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
 const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
+const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v21",
   "oxygen-project-dashboard-v20",
@@ -54,6 +55,7 @@ let invoiceOnly = false;
 let compactMode = false;
 let pickerState = {};
 let lockedScrollY = 0;
+let currentFeishuUser = readFeishuUserFromHash() || readFeishuUser();
 
 const els = {
   board: document.querySelector("#projectBoard"),
@@ -193,6 +195,46 @@ function projectSyncPayload(project) {
       optimizationSuggestion: project.optimizationSuggestion
     }
   };
+}
+
+function readFeishuUser() {
+  try {
+    const saved = localStorage.getItem(FEISHU_USER_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveFeishuUser(user) {
+  if (!user?.name) return;
+  currentFeishuUser = user;
+  localStorage.setItem(FEISHU_USER_KEY, JSON.stringify(user));
+  localStorage.setItem(COMMENTER_KEY, user.name);
+}
+
+function readFeishuUserFromHash() {
+  const hash = window.location.hash || "";
+  const match = hash.match(/(?:^#|&)feishu_user=([^&]+)/);
+  if (!match) return null;
+  try {
+    const user = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(match[1])))));
+    const cleanUrl = `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, "", cleanUrl);
+    localStorage.setItem(FEISHU_USER_KEY, JSON.stringify(user));
+    localStorage.setItem(COMMENTER_KEY, user.name || "飞书用户");
+    return user;
+  } catch {
+    return null;
+  }
+}
+
+function loginUrl() {
+  if (!FEISHU_SYNC_API) return "#";
+  const returnTo = window.location.protocol === "file:"
+    ? "https://liu00904.github.io/oxygen-project-dashboard/"
+    : window.location.href.split("#")[0];
+  return `${FEISHU_SYNC_API}/auth/start?return_to=${encodeURIComponent(returnTo)}`;
 }
 
 async function syncProjectToFeishu(project) {
@@ -809,6 +851,14 @@ function renderDataSections(value) {
 function parseProjectComments(notes) {
   const text = String(notes || "").trim();
   if (!text) return [];
+  if (text.startsWith("[网页评论JSON]")) {
+    try {
+      const parsed = JSON.parse(text.replace("[网页评论JSON]", "").trim());
+      if (Array.isArray(parsed)) return parsed.map(normalizeComment).filter(item => item.text);
+    } catch {
+      return [];
+    }
+  }
   if (text.startsWith("[网页评论]")) {
     return text
       .split(/\n+/)
@@ -819,7 +869,9 @@ function parseProjectComments(notes) {
         return {
           time: match[1].trim(),
           author: match[2].trim(),
-          text: match[3].trim()
+          text: match[3].trim(),
+          avatar: "",
+          userId: ""
         };
       })
       .filter(Boolean);
@@ -829,14 +881,20 @@ function parseProjectComments(notes) {
 
 function serializeProjectComments(comments) {
   const clean = comments
-    .map(item => ({
-      time: item.time || formatCommentTime(new Date()),
-      author: String(item.author || "匿名").trim() || "匿名",
-      text: String(item.text || "").trim()
-    }))
+    .map(normalizeComment)
     .filter(item => item.text);
   if (!clean.length) return "";
-  return ["[网页评论]", ...clean.map(item => `${item.time}｜${item.author}：${item.text}`)].join("\n");
+  return `[网页评论JSON]\n${JSON.stringify(clean)}`;
+}
+
+function normalizeComment(item) {
+  return {
+    time: item.time || formatCommentTime(new Date()),
+    author: String(item.author || "匿名").trim() || "匿名",
+    avatar: String(item.avatar || "").trim(),
+    userId: String(item.userId || item.openId || "").trim(),
+    text: String(item.text || "").trim()
+  };
 }
 
 function formatCommentTime(date) {
@@ -846,7 +904,8 @@ function formatCommentTime(date) {
 
 function renderProjectComments(project) {
   const comments = parseProjectComments(project.notes);
-  const commenter = localStorage.getItem(COMMENTER_KEY) || "我";
+  const commenter = currentFeishuUser?.name || localStorage.getItem(COMMENTER_KEY) || "我";
+  const commenterAvatar = currentFeishuUser?.avatar || "";
   const commentsHtml = comments.length
     ? comments.map((item, index) => `
       <div
@@ -855,7 +914,7 @@ function renderProjectComments(project) {
         data-project-id="${project.id}"
         title="右键可编辑或删除"
       >
-        <span class="avatar">${escapeHtml((item.author || "备").slice(0, 1))}</span>
+        ${renderAvatar(item.author || "备", item.avatar)}
         <div class="comment-body">
           <div class="comment-meta">
             <strong>${escapeHtml(item.author || "备注")}</strong>
@@ -869,7 +928,7 @@ function renderProjectComments(project) {
   return `
     <div class="comment-list">${commentsHtml}</div>
     <div class="comment-compose">
-      <span class="comment-self-avatar">${escapeHtml(commenter.slice(0, 1))}</span>
+      ${renderAvatar(commenter, commenterAvatar, "comment-self-avatar")}
       <textarea
         class="comment-input"
         data-action="comment-input"
@@ -877,8 +936,17 @@ function renderProjectComments(project) {
         placeholder="写备注..."
       ></textarea>
       <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">发送</button>
+      ${currentFeishuUser ? "" : `<a class="comment-login" href="${escapeHtml(loginUrl())}">飞书登录</a>`}
     </div>
   `;
+}
+
+function renderAvatar(name, avatar, className = "avatar") {
+  const label = escapeHtml(String(name || "用").slice(0, 1));
+  if (avatar) {
+    return `<span class="${className} avatar-image" style="background-image:url('${escapeHtml(avatar)}')" aria-label="${escapeHtml(name)}"></span>`;
+  }
+  return `<span class="${className}">${label}</span>`;
 }
 
 async function saveProjectComments(project, comments, successMessage = "备注已同步到飞书") {
@@ -1197,10 +1265,16 @@ els.board.addEventListener("click", async event => {
     const textInput = card?.querySelector(`[data-action='comment-input'][data-id="${project.id}"]`);
     const text = textInput?.value.trim() || "";
     if (!text) return;
-    const author = localStorage.getItem(COMMENTER_KEY) || "我";
+    const author = currentFeishuUser?.name || localStorage.getItem(COMMENTER_KEY) || "我";
     localStorage.setItem(COMMENTER_KEY, author);
     const comments = parseProjectComments(project.notes);
-    comments.push({ author, text, time: formatCommentTime(new Date()) });
+    comments.push({
+      author,
+      text,
+      time: formatCommentTime(new Date()),
+      avatar: currentFeishuUser?.avatar || "",
+      userId: currentFeishuUser?.openId || currentFeishuUser?.unionId || ""
+    });
     await saveProjectComments(project, comments);
     return;
   }

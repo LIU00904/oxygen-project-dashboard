@@ -22,8 +22,15 @@ const corsHeaders = {
 export default {
   async fetch(request, env) {
     try {
+      const requestUrl = new URL(request.url);
       if (request.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
+      }
+      if (requestUrl.pathname === "/auth/start") {
+        return startAuth(request, env);
+      }
+      if (requestUrl.pathname === "/auth/callback") {
+        return finishAuth(request, env);
       }
       if (request.method === "GET") {
         const token = await tenantToken(env);
@@ -70,6 +77,36 @@ export default {
   }
 };
 
+function startAuth(request, env) {
+  const requestUrl = new URL(request.url);
+  const returnTo = requestUrl.searchParams.get("return_to") || "https://liu00904.github.io/oxygen-project-dashboard/";
+  const redirectUri = `${requestUrl.origin}/auth/callback`;
+  const state = btoa(unescape(encodeURIComponent(JSON.stringify({
+    returnTo,
+    createdAt: Date.now()
+  }))));
+  const authUrl = new URL("https://open.feishu.cn/open-apis/authen/v1/index");
+  authUrl.searchParams.set("app_id", env.FEISHU_APP_ID);
+  authUrl.searchParams.set("redirect_uri", redirectUri);
+  authUrl.searchParams.set("state", state);
+  return Response.redirect(authUrl.toString(), 302);
+}
+
+async function finishAuth(request, env) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const state = requestUrl.searchParams.get("state") || "";
+  if (!code) return html("飞书登录失败：没有收到授权 code。", 400);
+  const decodedState = parseState(state);
+  const returnTo = decodedState?.returnTo || "https://liu00904.github.io/oxygen-project-dashboard/";
+  const appToken = await appAccessToken(env);
+  const userToken = await userAccessToken(appToken, code);
+  const user = await userInfo(userToken);
+  const target = new URL(returnTo);
+  target.hash = `feishu_user=${encodeURIComponent(toBase64(user))}`;
+  return Response.redirect(target.toString(), 302);
+}
+
 async function readNotes(env, token) {
   const notes = {};
   let pageToken = "";
@@ -110,6 +147,55 @@ async function tenantToken(env) {
   return result.tenant_access_token;
 }
 
+async function appAccessToken(env) {
+  const response = await fetch("https://open.feishu.cn/open-apis/auth/v3/app_access_token/internal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      app_id: env.FEISHU_APP_ID,
+      app_secret: env.FEISHU_APP_SECRET
+    })
+  });
+  const result = await response.json();
+  if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+  return result.app_access_token;
+}
+
+async function userAccessToken(appToken, code) {
+  const response = await fetch("https://open.feishu.cn/open-apis/authen/v1/access_token", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${appToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      grant_type: "authorization_code",
+      code
+    })
+  });
+  const result = await response.json();
+  if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+  return result.data?.access_token;
+}
+
+async function userInfo(userToken) {
+  const response = await fetch("https://open.feishu.cn/open-apis/authen/v1/user_info", {
+    headers: {
+      Authorization: `Bearer ${userToken}`
+    }
+  });
+  const result = await response.json();
+  if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+  const data = result.data || {};
+  return {
+    name: data.name || data.en_name || data.email || "飞书用户",
+    avatar: data.avatar_url || data.avatar_thumb || data.avatar_middle || data.avatar_big || "",
+    openId: data.open_id || "",
+    unionId: data.union_id || "",
+    tenantKey: data.tenant_key || ""
+  };
+}
+
 function dateToMs(value) {
   if (!value) return null;
   return new Date(`${value}T00:00:00Z`).getTime();
@@ -123,6 +209,28 @@ function textValue(value) {
     return value.text || value.name || value.link || value.url || "";
   }
   return String(value);
+}
+
+function parseState(value) {
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(value))));
+  } catch {
+    return null;
+  }
+}
+
+function toBase64(value) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(value))));
+}
+
+function html(message, status = 200) {
+  return new Response(`<!doctype html><meta charset="utf-8"><title>飞书登录</title><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:32px;"><h2>${message}</h2></body>`, {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/html; charset=utf-8"
+    }
+  });
 }
 
 function json(payload, status = 200) {
