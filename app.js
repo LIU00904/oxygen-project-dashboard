@@ -955,7 +955,11 @@ function renderProjectComments(project) {
 function renderAvatar(name, avatar, className = "avatar") {
   const label = escapeHtml(String(name || "用").slice(0, 1));
   if (avatar) {
-    return `<span class="${className} avatar-image" style="background-image:url('${escapeHtml(avatar)}')" aria-label="${escapeHtml(name)}"></span>`;
+    return `
+      <span class="${className} avatar-image" aria-label="${escapeHtml(name)}" data-fallback="${label}">
+        <img src="${escapeHtml(avatar)}" alt="${escapeHtml(name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('avatar-broken');this.remove();" />
+      </span>
+    `;
   }
   return `<span class="${className}">${label}</span>`;
 }
