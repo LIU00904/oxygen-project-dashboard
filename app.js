@@ -210,13 +210,6 @@ function projectNotesPayload(project, notesText) {
   };
 }
 
-function plainNotesText(notes) {
-  return parseProjectComments(notes)
-    .map(item => item.text)
-    .filter(Boolean)
-    .join("\n");
-}
-
 function readDirtyNotes() {
   try {
     return JSON.parse(localStorage.getItem(DIRTY_NOTES_KEY) || "{}");
@@ -309,12 +302,11 @@ async function syncProjectToFeishu(project) {
 
 async function syncProjectNotesToFeishu(project) {
   if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
-  const notesText = plainNotesText(project.notes);
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(projectNotesPayload(project, notesText))
+      body: JSON.stringify(projectNotesPayload(project, project.notes || ""))
     });
     if (!response.ok) throw new Error(await response.text());
     const result = await response.json();
@@ -345,8 +337,11 @@ async function loadSharedNotesFromFeishu() {
         changed = true;
         return { ...project, notes: "" };
       }
+      if (sharedNote === "" && !isNoteDirty(project.id)) {
+        changed = true;
+        return { ...project, notes: "" };
+      }
       if (isNoteDirty(project.id)) return project;
-      if (sharedNote === plainNotesText(project.notes)) return project;
       changed = true;
       return { ...project, notes: sharedNote };
     });
