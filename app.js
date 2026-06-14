@@ -110,7 +110,6 @@ const feishuSyncedFields = [
   "progressPercent",
   "kpi",
   "platform",
-  "notes",
   "manager",
   "writer",
   "publisher",
@@ -197,7 +196,7 @@ function projectSyncPayload(project) {
 }
 
 async function syncProjectToFeishu(project) {
-  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return;
+  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
@@ -206,8 +205,10 @@ async function syncProjectToFeishu(project) {
     });
     if (!response.ok) throw new Error(await response.text());
     console.info("已同步飞书", project.name);
+    return { ok: true };
   } catch (error) {
     console.warn("飞书同步失败，已保存在网页本地", error);
+    return { ok: false, error };
   }
 }
 
@@ -339,6 +340,22 @@ function initIridescenceBackground() {
   }, { passive: true });
   frameId = requestAnimationFrame(update);
   window.addEventListener("pagehide", () => cancelAnimationFrame(frameId), { once: true });
+}
+
+function showSyncNotice(message, type = "info") {
+  let notice = document.querySelector(".sync-notice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.className = "sync-notice";
+    document.body.appendChild(notice);
+  }
+  notice.textContent = message;
+  notice.dataset.type = type;
+  notice.classList.add("show");
+  clearTimeout(showSyncNotice.timer);
+  showSyncNotice.timer = setTimeout(() => {
+    notice.classList.remove("show");
+  }, 2600);
 }
 
 function createShaderProgram(gl, vertexSource, fragmentSource) {
@@ -1141,7 +1158,7 @@ els.board.addEventListener("change", event => {
   render();
 });
 
-els.board.addEventListener("click", event => {
+els.board.addEventListener("click", async event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   const project = projects.find(item => item.id === button.dataset.id);
@@ -1156,7 +1173,12 @@ els.board.addEventListener("click", event => {
     comments.push({ author, text, time: formatCommentTime(new Date()) });
     project.notes = serializeProjectComments(comments);
     persist();
-    syncProjectToFeishu(project);
+    const syncResult = await syncProjectToFeishu(project);
+    if (syncResult.ok) {
+      showSyncNotice("备注已同步到飞书", "success");
+    } else {
+      showSyncNotice("备注已保存在本机，飞书同步暂未成功", "warning");
+    }
     render();
     return;
   }
