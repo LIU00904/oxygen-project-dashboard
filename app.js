@@ -2,6 +2,7 @@ const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
 const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
+const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v21",
   "oxygen-project-dashboard-v20",
@@ -200,6 +201,44 @@ function projectSyncPayload(project) {
   };
 }
 
+function projectNotesPayload(project, notesText) {
+  return {
+    recordId: project.id,
+    fields: {
+      notes: notesText
+    }
+  };
+}
+
+function plainNotesText(notes) {
+  return parseProjectComments(notes)
+    .map(item => item.text)
+    .filter(Boolean)
+    .join("\n");
+}
+
+function readDirtyNotes() {
+  try {
+    return JSON.parse(localStorage.getItem(DIRTY_NOTES_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function isNoteDirty(projectId) {
+  return Boolean(readDirtyNotes()[projectId]);
+}
+
+function markNoteDirty(projectId, dirty) {
+  const dirtyNotes = readDirtyNotes();
+  if (dirty) {
+    dirtyNotes[projectId] = true;
+  } else {
+    delete dirtyNotes[projectId];
+  }
+  localStorage.setItem(DIRTY_NOTES_KEY, JSON.stringify(dirtyNotes));
+}
+
 function readFeishuUser() {
   try {
     const saved = localStorage.getItem(FEISHU_USER_KEY);
@@ -258,10 +297,34 @@ async function syncProjectToFeishu(project) {
       body: JSON.stringify(projectSyncPayload(project))
     });
     if (!response.ok) throw new Error(await response.text());
+    const result = await response.json();
+    if (!result?.ok) throw new Error(JSON.stringify(result));
     console.info("已同步飞书", project.name);
     return { ok: true };
   } catch (error) {
     console.warn("飞书同步失败，已保存在网页本地", error);
+    return { ok: false, error };
+  }
+}
+
+async function syncProjectNotesToFeishu(project) {
+  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
+  const notesText = plainNotesText(project.notes);
+  try {
+    const response = await fetch(FEISHU_SYNC_API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(projectNotesPayload(project, notesText))
+    });
+    if (!response.ok) throw new Error(await response.text());
+    const result = await response.json();
+    if (!result?.ok) throw new Error(JSON.stringify(result));
+    markNoteDirty(project.id, false);
+    console.info("备注已同步飞书", project.name);
+    return { ok: true };
+  } catch (error) {
+    markNoteDirty(project.id, true);
+    console.warn("备注同步失败，已保存在网页本地", error);
     return { ok: false, error };
   }
 }
@@ -277,6 +340,13 @@ async function loadSharedNotesFromFeishu() {
     projects = projects.map(project => {
       const sharedNote = result.notes[project.id];
       if (sharedNote === undefined || sharedNote === project.notes) return project;
+      if (sharedNote === "" && !String(project.notes || "").trim().startsWith("[网页评论JSON]")) {
+        markNoteDirty(project.id, false);
+        changed = true;
+        return { ...project, notes: "" };
+      }
+      if (isNoteDirty(project.id)) return project;
+      if (sharedNote === plainNotesText(project.notes)) return project;
       changed = true;
       return { ...project, notes: sharedNote };
     });
@@ -888,7 +958,7 @@ function parseProjectComments(notes) {
       })
       .filter(Boolean);
   }
-  return [{ time: "", author: "历史备注", text, avatar: "", userId: "" }];
+  return [{ legacy: true, time: "", author: "", text, avatar: "", userId: "" }];
 }
 
 function serializeProjectComments(comments) {
@@ -903,9 +973,11 @@ function normalizeComment(item) {
   const rawAuthor = String(item.author || "匿名").trim() || "匿名";
   const avatar = String(item.avatar || "").trim();
   const userId = String(item.userId || item.openId || "").trim();
+  const legacy = Boolean(item.legacy) || (["备注", "历史备注"].includes(rawAuthor) && !avatar && !userId);
   return {
-    time: item.time || formatCommentTime(new Date()),
-    author: rawAuthor === "备注" && !avatar && !userId ? "历史备注" : rawAuthor,
+    legacy,
+    time: legacy ? "" : (item.time || formatCommentTime(new Date())),
+    author: legacy ? "" : rawAuthor,
     avatar,
     userId,
     text: String(item.text || "").trim()
@@ -922,23 +994,30 @@ function renderProjectComments(project) {
   const commenter = currentFeishuUser?.name || localStorage.getItem(COMMENTER_KEY) || "我";
   const commenterAvatar = currentFeishuUser?.avatar || "";
   const commentsHtml = comments.length
-    ? comments.map((item, index) => `
-      <div
-        class="comment-item"
-        data-comment-index="${index}"
-        data-project-id="${project.id}"
-        title="右键可编辑或删除"
-      >
-        ${renderAvatar(item.author || "备", item.avatar)}
-        <div class="comment-body">
-          <div class="comment-meta">
-            <strong>${escapeHtml(item.author || "备注")}</strong>
-            ${item.time ? `<small>${escapeHtml(item.time)}</small>` : ""}
-          </div>
+    ? comments.map((item, index) => item.legacy
+      ? `
+        <div class="comment-legacy">
+          <span>原备注</span>
           <p>${escapeHtml(item.text)}</p>
         </div>
-      </div>
-    `).join("")
+      `
+      : `
+        <div
+          class="comment-item"
+          data-comment-index="${index}"
+          data-project-id="${project.id}"
+          title="右键可编辑或删除"
+        >
+          ${renderAvatar(item.author || "备", item.avatar)}
+          <div class="comment-body">
+            <div class="comment-meta">
+              <strong>${escapeHtml(item.author || "备注")}</strong>
+              ${item.time ? `<small>${escapeHtml(item.time)}</small>` : ""}
+            </div>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+        </div>
+      `).join("")
     : `<div class="comment-empty">暂无评论</div>`;
   return `
     <div class="comment-list">${commentsHtml}</div>
@@ -970,7 +1049,8 @@ function renderAvatar(name, avatar, className = "avatar") {
 async function saveProjectComments(project, comments, successMessage = "备注已同步到飞书") {
   project.notes = serializeProjectComments(comments);
   persist();
-  const syncResult = await syncProjectToFeishu(project);
+  markNoteDirty(project.id, true);
+  const syncResult = await syncProjectNotesToFeishu(project);
   showSyncNotice(syncResult.ok ? successMessage : "备注已保存在本机，飞书同步暂未成功", syncResult.ok ? "success" : "warning");
   render();
 }
