@@ -565,8 +565,8 @@ h2 {
 
 .workspace {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 16px;
+  grid-template-columns: 232px 1fr;
+  gap: 14px;
   margin-top: 16px;
   align-items: start;
 }
@@ -574,8 +574,8 @@ h2 {
 .status-sidebar {
   position: sticky;
   top: 16px;
-  padding: 20px;
-  border-radius: 24px;
+  padding: 16px;
+  border-radius: 22px;
 }
 
 .panel-head {
@@ -584,18 +584,18 @@ h2 {
 
 .status-nav {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .status-nav button {
   display: grid;
-  grid-template-columns: 12px 1fr auto;
+  grid-template-columns: 9px 1fr auto;
   align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 14px;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 11px;
   border: 1px solid rgba(255, 255, 255, 0.66);
-  border-radius: 16px;
+  border-radius: 14px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.5);
   font-weight: 850;
@@ -618,8 +618,8 @@ h2 {
 }
 
 .status-mark {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   background: var(--blue);
 }
@@ -650,10 +650,10 @@ h2 {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  min-height: 50px;
-  margin-top: 18px;
+  min-height: 44px;
+  margin-top: 14px;
   border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 18px;
+  border-radius: 15px;
   color: white;
   background: linear-gradient(135deg, rgba(10, 132, 255, 0.95), rgba(35, 200, 219, 0.9));
   box-shadow: 0 16px 36px rgba(10, 132, 255, 0.2);
@@ -1018,14 +1018,13 @@ h2 {
 
 .sketch-card {
   display: grid;
-  grid-template-columns: minmax(220px, 0.82fr) minmax(360px, 1.45fr) minmax(170px, 0.45fr);
+  grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1fr) minmax(260px, 0.86fr);
   grid-template-areas:
     "left progress right"
     "left progress invoice"
     "people people people"
     "kpi data suggestion"
-    "folders folders folders"
-    "webnote webnote webnote";
+    "folders folders folders";
   gap: 18px 20px;
   min-height: 650px;
   padding: 30px 32px 24px;
@@ -1054,7 +1053,6 @@ h2 {
 .sketch-kpi,
 .sketch-data,
 .sketch-suggestion,
-.sketch-web-note,
 .sketch-folder {
   border: 1px solid rgba(255, 255, 255, 0.72);
   background:
@@ -1078,7 +1076,6 @@ h2 {
 .sketch-kpi:hover,
 .sketch-data:hover,
 .sketch-suggestion:hover,
-.sketch-web-note:hover,
 .sketch-folder:hover {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.95);
@@ -1104,8 +1101,7 @@ h2 {
 .sketch-invoice > span,
 .sketch-kpi > span,
 .sketch-data > span,
-.sketch-suggestion > span,
-.sketch-web-note > span {
+.sketch-suggestion > span {
   display: block;
   margin-bottom: 8px;
   color: var(--muted);
@@ -1325,31 +1321,37 @@ h2 {
   z-index: 1;
 }
 
-.sketch-web-note {
-  grid-area: webnote;
-  min-height: 160px;
-  padding: 18px;
-  position: relative;
-  z-index: 1;
-}
-
 .comment-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   margin-top: 10px;
+  position: relative;
 }
 
 .comment-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 8px;
   align-items: start;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   backdrop-filter: blur(14px) saturate(1.18);
   -webkit-backdrop-filter: blur(14px) saturate(1.18);
+}
+
+.comment-item .avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.comment-body {
+  padding: 9px 11px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.26);
 }
 
 .comment-body {
@@ -1359,17 +1361,17 @@ h2 {
 .comment-meta {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
 
 .comment-meta strong {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .comment-meta small {
   color: rgba(100, 112, 133, 0.78);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
 }
 
@@ -1377,27 +1379,28 @@ h2 {
 .comment-empty {
   margin: 4px 0 0;
   color: #172235;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 750;
-  line-height: 1.55;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
 .comment-empty {
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(100, 112, 133, 0.86);
+  padding: 2px 2px 0;
+  background: transparent;
+  color: rgba(100, 112, 133, 0.72);
+  font-size: 12px;
 }
 
 .comment-compose {
   display: grid;
-  grid-template-columns: minmax(110px, 0.22fr) minmax(0, 1fr) auto;
-  gap: 10px;
-  margin-top: 12px;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
 }
 
-.comment-author,
+.comment-self-avatar,
 .comment-input,
 .comment-submit {
   border: 1px solid rgba(255, 255, 255, 0.34);
@@ -1411,22 +1414,36 @@ h2 {
   -webkit-backdrop-filter: blur(16px) saturate(1.22);
 }
 
-.comment-author {
-  min-height: 44px;
-  padding: 0 12px;
+.comment-self-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 950;
+  background:
+    linear-gradient(135deg, rgba(31, 132, 255, 0.96), rgba(109, 99, 255, 0.9)),
+    rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 22px rgba(38, 107, 230, 0.18);
 }
 
 .comment-input {
-  min-height: 44px;
-  max-height: 120px;
-  padding: 11px 12px;
+  min-height: 34px;
+  max-height: 92px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: 12px;
   resize: vertical;
 }
 
 .comment-submit {
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
   color: var(--blue);
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -2117,7 +2134,6 @@ dialog::backdrop {
 .sketch-data,
 .sketch-suggestion,
 .sketch-invoice,
-.sketch-web-note,
 .sketch-people,
 .invoice-toggle,
 .people-picker,
@@ -2266,8 +2282,7 @@ dialog::backdrop {
       "people people"
       "kpi data"
       "suggestion suggestion"
-      "folders folders"
-      "webnote webnote";
+      "folders folders";
     min-height: auto;
   }
 
@@ -2496,8 +2511,7 @@ dialog::backdrop {
       "kpi"
       "data"
       "suggestion"
-      "folders"
-      "webnote";
+      "folders";
     gap: 10px;
     min-height: auto;
     width: 100%;
@@ -2519,7 +2533,6 @@ dialog::backdrop {
   .sketch-kpi,
   .sketch-data,
   .sketch-suggestion,
-  .sketch-web-note,
   .sketch-folder,
   .folder-details,
   .folder-copy {
@@ -2541,7 +2554,6 @@ dialog::backdrop {
   .sketch-right,
   .sketch-invoice,
   .sketch-people,
-  .sketch-web-note,
   .sketch-folder {
     min-height: auto;
     padding: 12px;
@@ -2611,11 +2623,11 @@ dialog::backdrop {
   }
 
   .comment-compose {
-    grid-template-columns: 1fr;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
   }
 
   .comment-submit {
-    width: 100%;
+    width: auto;
   }
 
   .sketch-kpi,

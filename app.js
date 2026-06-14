@@ -482,9 +482,12 @@ function render() {
           ${renderCurrentData(project, timing)}
         </section>
 
-        <section class="sketch-suggestion">
-          <span>优化建议</span>
-          <p>${escapeHtml(project.optimizationSuggestion || "补充监测数据后生成优化建议。")}</p>
+        <section class="sketch-suggestion sketch-comments">
+          <div class="section-title-row">
+            <span>备注</span>
+            <small>同步到飞书备注列</small>
+          </div>
+          ${renderProjectComments(project)}
         </section>
 
         <section class="sketch-folders">
@@ -504,14 +507,6 @@ function render() {
               ["报告", project.reportLinks]
             ])}
           </div>
-        </section>
-
-        <section class="sketch-web-note">
-          <div class="section-title-row">
-            <span>备注评论</span>
-            <small>同步到飞书备注列</small>
-          </div>
-          ${renderProjectComments(project)}
         </section>
 
         <section class="sketch-invoice">
@@ -834,7 +829,7 @@ function formatCommentTime(date) {
 
 function renderProjectComments(project) {
   const comments = parseProjectComments(project.notes);
-  const commenter = localStorage.getItem(COMMENTER_KEY) || "";
+  const commenter = localStorage.getItem(COMMENTER_KEY) || "我";
   const commentsHtml = comments.length
     ? comments.map(item => `
       <div class="comment-item">
@@ -848,24 +843,18 @@ function renderProjectComments(project) {
         </div>
       </div>
     `).join("")
-    : `<div class="comment-empty">还没有备注，可以记录下次跟进、风险或内部判断。</div>`;
+    : `<div class="comment-empty">暂无评论</div>`;
   return `
     <div class="comment-list">${commentsHtml}</div>
     <div class="comment-compose">
-      <input
-        class="comment-author"
-        data-action="comment-author"
-        data-id="${project.id}"
-        value="${escapeHtml(commenter)}"
-        placeholder="你的名字"
-      />
+      <span class="comment-self-avatar">${escapeHtml(commenter.slice(0, 1))}</span>
       <textarea
         class="comment-input"
         data-action="comment-input"
         data-id="${project.id}"
-        placeholder="写一条备注，保存后会同步到飞书。"
+        placeholder="写备注..."
       ></textarea>
-      <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">保存备注</button>
+      <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">发送</button>
     </div>
   `;
 }
@@ -1150,23 +1139,16 @@ els.board.addEventListener("change", event => {
   render();
 });
 
-els.board.addEventListener("input", event => {
-  const author = event.target.closest("[data-action='comment-author']");
-  if (!author) return;
-  localStorage.setItem(COMMENTER_KEY, author.value.trim());
-});
-
 els.board.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   const project = projects.find(item => item.id === button.dataset.id);
   if (button.dataset.action === "add-comment" && project) {
     const card = button.closest(".project-row");
-    const authorInput = card?.querySelector(`[data-action='comment-author'][data-id="${project.id}"]`);
     const textInput = card?.querySelector(`[data-action='comment-input'][data-id="${project.id}"]`);
     const text = textInput?.value.trim() || "";
     if (!text) return;
-    const author = authorInput?.value.trim() || "匿名";
+    const author = localStorage.getItem(COMMENTER_KEY) || "我";
     localStorage.setItem(COMMENTER_KEY, author);
     const comments = parseProjectComments(project.notes);
     comments.push({ author, text, time: formatCommentTime(new Date()) });
