@@ -888,7 +888,7 @@ function parseProjectComments(notes) {
       })
       .filter(Boolean);
   }
-  return [{ time: "", author: "备注", text }];
+  return [{ time: "", author: "历史备注", text, avatar: "", userId: "" }];
 }
 
 function serializeProjectComments(comments) {
@@ -900,11 +900,14 @@ function serializeProjectComments(comments) {
 }
 
 function normalizeComment(item) {
+  const rawAuthor = String(item.author || "匿名").trim() || "匿名";
+  const avatar = String(item.avatar || "").trim();
+  const userId = String(item.userId || item.openId || "").trim();
   return {
     time: item.time || formatCommentTime(new Date()),
-    author: String(item.author || "匿名").trim() || "匿名",
-    avatar: String(item.avatar || "").trim(),
-    userId: String(item.userId || item.openId || "").trim(),
+    author: rawAuthor === "备注" && !avatar && !userId ? "历史备注" : rawAuthor,
+    avatar,
+    userId,
     text: String(item.text || "").trim()
   };
 }
