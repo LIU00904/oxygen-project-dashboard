@@ -1,6 +1,7 @@
 const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
 const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
+const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v21",
   "oxygen-project-dashboard-v20",
@@ -56,6 +57,7 @@ let compactMode = false;
 let pickerState = {};
 let lockedScrollY = 0;
 let currentFeishuUser = readFeishuUserFromHash() || readFeishuUser();
+if (currentFeishuUser) sessionStorage.removeItem(AUTH_ATTEMPT_KEY);
 
 const els = {
   board: document.querySelector("#projectBoard"),
@@ -81,6 +83,7 @@ const els = {
 const peopleOptions = buildPeopleOptions(seedProjects);
 
 initIridescenceBackground();
+startAutoFeishuLogin();
 
 const fields = [
   "projectId",
@@ -235,6 +238,15 @@ function loginUrl() {
     ? "https://liu00904.github.io/oxygen-project-dashboard/"
     : window.location.href.split("#")[0];
   return `${FEISHU_SYNC_API}/auth/start?return_to=${encodeURIComponent(returnTo)}`;
+}
+
+function startAutoFeishuLogin() {
+  if (currentFeishuUser || !FEISHU_SYNC_API) return;
+  const isProductionPage = window.location.protocol === "https:" && window.location.hostname === "liu00904.github.io";
+  if (!isProductionPage) return;
+  if (sessionStorage.getItem(AUTH_ATTEMPT_KEY) === "1") return;
+  sessionStorage.setItem(AUTH_ATTEMPT_KEY, "1");
+  window.location.assign(loginUrl());
 }
 
 async function syncProjectToFeishu(project) {
@@ -936,7 +948,6 @@ function renderProjectComments(project) {
         placeholder="写备注..."
       ></textarea>
       <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">发送</button>
-      ${currentFeishuUser ? "" : `<a class="comment-login" href="${escapeHtml(loginUrl())}">飞书登录</a>`}
     </div>
   `;
 }
