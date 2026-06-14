@@ -848,8 +848,13 @@ function renderProjectComments(project) {
   const comments = parseProjectComments(project.notes);
   const commenter = localStorage.getItem(COMMENTER_KEY) || "我";
   const commentsHtml = comments.length
-    ? comments.map(item => `
-      <div class="comment-item">
+    ? comments.map((item, index) => `
+      <div
+        class="comment-item"
+        data-comment-index="${index}"
+        data-project-id="${project.id}"
+        title="右键可编辑或删除"
+      >
         <span class="avatar">${escapeHtml((item.author || "备").slice(0, 1))}</span>
         <div class="comment-body">
           <div class="comment-meta">
@@ -874,6 +879,31 @@ function renderProjectComments(project) {
       <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">发送</button>
     </div>
   `;
+}
+
+async function saveProjectComments(project, comments, successMessage = "备注已同步到飞书") {
+  project.notes = serializeProjectComments(comments);
+  persist();
+  const syncResult = await syncProjectToFeishu(project);
+  showSyncNotice(syncResult.ok ? successMessage : "备注已保存在本机，飞书同步暂未成功", syncResult.ok ? "success" : "warning");
+  render();
+}
+
+function closeCommentMenu() {
+  document.querySelector(".comment-menu")?.remove();
+}
+
+function openCommentMenu(event, project, index) {
+  closeCommentMenu();
+  const menu = document.createElement("div");
+  menu.className = "comment-menu";
+  menu.style.left = `${Math.min(event.clientX, window.innerWidth - 150)}px`;
+  menu.style.top = `${Math.min(event.clientY, window.innerHeight - 96)}px`;
+  menu.innerHTML = `
+    <button data-comment-menu="edit" data-id="${project.id}" data-index="${index}" type="button">编辑</button>
+    <button data-comment-menu="delete" data-id="${project.id}" data-index="${index}" type="button">删除</button>
+  `;
+  document.body.appendChild(menu);
 }
 
 function renderMetrics() {
@@ -1171,15 +1201,7 @@ els.board.addEventListener("click", async event => {
     localStorage.setItem(COMMENTER_KEY, author);
     const comments = parseProjectComments(project.notes);
     comments.push({ author, text, time: formatCommentTime(new Date()) });
-    project.notes = serializeProjectComments(comments);
-    persist();
-    const syncResult = await syncProjectToFeishu(project);
-    if (syncResult.ok) {
-      showSyncNotice("备注已同步到飞书", "success");
-    } else {
-      showSyncNotice("备注已保存在本机，飞书同步暂未成功", "warning");
-    }
-    render();
+    await saveProjectComments(project, comments);
     return;
   }
   if (button.dataset.action === "invoice" && project) {
@@ -1190,6 +1212,45 @@ els.board.addEventListener("click", async event => {
     return;
   }
 });
+
+els.board.addEventListener("contextmenu", event => {
+  const item = event.target.closest(".comment-item[data-project-id]");
+  if (!item) return;
+  const project = projects.find(projectItem => projectItem.id === item.dataset.projectId);
+  if (!project) return;
+  event.preventDefault();
+  openCommentMenu(event, project, Number(item.dataset.commentIndex));
+});
+
+document.addEventListener("click", async event => {
+  const menuButton = event.target.closest("[data-comment-menu]");
+  if (!menuButton) {
+    closeCommentMenu();
+    return;
+  }
+  const project = projects.find(item => item.id === menuButton.dataset.id);
+  const index = Number(menuButton.dataset.index);
+  if (!project || Number.isNaN(index)) return;
+  const comments = parseProjectComments(project.notes);
+  const current = comments[index];
+  if (!current) return;
+  closeCommentMenu();
+  if (menuButton.dataset.commentMenu === "edit") {
+    const nextText = window.prompt("修改备注", current.text);
+    if (nextText == null) return;
+    const cleaned = nextText.trim();
+    if (!cleaned) return;
+    comments[index] = { ...current, text: cleaned, time: formatCommentTime(new Date()) };
+    await saveProjectComments(project, comments, "备注已修改并同步");
+  }
+  if (menuButton.dataset.commentMenu === "delete") {
+    if (!window.confirm("删除这条备注吗？")) return;
+    comments.splice(index, 1);
+    await saveProjectComments(project, comments, "备注已删除并同步");
+  }
+});
+
+window.addEventListener("scroll", closeCommentMenu, { passive: true });
 
 els.exportBtn.addEventListener("click", async () => {
   const payload = JSON.stringify(projects, null, 2);
