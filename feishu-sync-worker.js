@@ -15,7 +15,7 @@ const FIELD_MAP = {
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
@@ -24,6 +24,11 @@ export default {
     try {
       if (request.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
+      }
+      if (request.method === "GET") {
+        const token = await tenantToken(env);
+        const notes = await readNotes(env, token);
+        return json({ ok: true, notes });
       }
       if (request.method !== "POST") {
         return json({ error: "Method not allowed" }, 405);
@@ -65,6 +70,32 @@ export default {
   }
 };
 
+async function readNotes(env, token) {
+  const notes = {};
+  let pageToken = "";
+  do {
+    const suffix = pageToken ? `&page_token=${pageToken}` : "";
+    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/search?page_size=100${suffix}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        field_names: ["备注"]
+      })
+    });
+    const result = await response.json();
+    if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+    for (const item of result.data?.items || []) {
+      notes[item.record_id] = textValue(item.fields?.["备注"]);
+    }
+    pageToken = result.data?.page_token || "";
+  } while (pageToken);
+  return notes;
+}
+
 async function tenantToken(env) {
   const response = await fetch("https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal", {
     method: "POST",
@@ -82,6 +113,16 @@ async function tenantToken(env) {
 function dateToMs(value) {
   if (!value) return null;
   return new Date(`${value}T00:00:00Z`).getTime();
+}
+
+function textValue(value) {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.map(textValue).join("");
+  if (typeof value === "object") {
+    if (Array.isArray(value.value)) return textValue(value.value);
+    return value.text || value.name || value.link || value.url || "";
+  }
+  return String(value);
 }
 
 function json(payload, status = 200) {

@@ -1024,7 +1024,8 @@ h2 {
     "left progress invoice"
     "people people people"
     "kpi data suggestion"
-    "folders folders folders";
+    "folders folders folders"
+    "webnote webnote webnote";
   gap: 18px 20px;
   min-height: 650px;
   padding: 30px 32px 24px;
@@ -1053,6 +1054,7 @@ h2 {
 .sketch-kpi,
 .sketch-data,
 .sketch-suggestion,
+.sketch-web-note,
 .sketch-folder {
   border: 1px solid rgba(255, 255, 255, 0.72);
   background:
@@ -1076,6 +1078,7 @@ h2 {
 .sketch-kpi:hover,
 .sketch-data:hover,
 .sketch-suggestion:hover,
+.sketch-web-note:hover,
 .sketch-folder:hover {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.95);
@@ -1101,7 +1104,8 @@ h2 {
 .sketch-invoice > span,
 .sketch-kpi > span,
 .sketch-data > span,
-.sketch-suggestion > span {
+.sketch-suggestion > span,
+.sketch-web-note > span {
   display: block;
   margin-bottom: 8px;
   color: var(--muted);
@@ -1319,6 +1323,117 @@ h2 {
   gap: 18px;
   position: relative;
   z-index: 1;
+}
+
+.sketch-web-note {
+  grid-area: webnote;
+  min-height: 160px;
+  padding: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.comment-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.comment-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
+}
+
+.comment-body {
+  min-width: 0;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.comment-meta strong {
+  font-size: 13px;
+}
+
+.comment-meta small {
+  color: rgba(100, 112, 133, 0.78);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.comment-body p,
+.comment-empty {
+  margin: 4px 0 0;
+  color: #172235;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.comment-empty {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(100, 112, 133, 0.86);
+}
+
+.comment-compose {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.22fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.comment-author,
+.comment-input,
+.comment-submit {
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.1)),
+    rgba(255, 255, 255, 0.14);
+  color: var(--ink);
+  font-weight: 850;
+  backdrop-filter: blur(16px) saturate(1.22);
+  -webkit-backdrop-filter: blur(16px) saturate(1.22);
+}
+
+.comment-author {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.comment-input {
+  min-height: 44px;
+  max-height: 120px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.comment-submit {
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.comment-submit:hover {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.16)),
+    rgba(255, 255, 255, 0.2);
 }
 
 .sketch-folder {
@@ -2002,6 +2117,7 @@ dialog::backdrop {
 .sketch-data,
 .sketch-suggestion,
 .sketch-invoice,
+.sketch-web-note,
 .sketch-people,
 .invoice-toggle,
 .people-picker,
@@ -2150,7 +2266,8 @@ dialog::backdrop {
       "people people"
       "kpi data"
       "suggestion suggestion"
-      "folders folders";
+      "folders folders"
+      "webnote webnote";
     min-height: auto;
   }
 
@@ -2379,7 +2496,8 @@ dialog::backdrop {
       "kpi"
       "data"
       "suggestion"
-      "folders";
+      "folders"
+      "webnote";
     gap: 10px;
     min-height: auto;
     width: 100%;
@@ -2401,6 +2519,7 @@ dialog::backdrop {
   .sketch-kpi,
   .sketch-data,
   .sketch-suggestion,
+  .sketch-web-note,
   .sketch-folder,
   .folder-details,
   .folder-copy {
@@ -2422,6 +2541,7 @@ dialog::backdrop {
   .sketch-right,
   .sketch-invoice,
   .sketch-people,
+  .sketch-web-note,
   .sketch-folder {
     min-height: auto;
     padding: 12px;
@@ -2488,6 +2608,14 @@ dialog::backdrop {
   .sketch-folders {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+
+  .comment-compose {
+    grid-template-columns: 1fr;
+  }
+
+  .comment-submit {
+    width: 100%;
   }
 
   .sketch-kpi,

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
+const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v21",
   "oxygen-project-dashboard-v20",
@@ -207,6 +208,29 @@ async function syncProjectToFeishu(project) {
     console.info("已同步飞书", project.name);
   } catch (error) {
     console.warn("飞书同步失败，已保存在网页本地", error);
+  }
+}
+
+async function loadSharedNotesFromFeishu() {
+  if (!FEISHU_SYNC_API) return;
+  try {
+    const response = await fetch(FEISHU_SYNC_API, { method: "GET" });
+    if (!response.ok) return;
+    const result = await response.json();
+    if (!result?.notes || typeof result.notes !== "object") return;
+    let changed = false;
+    projects = projects.map(project => {
+      const sharedNote = result.notes[project.id];
+      if (sharedNote === undefined || sharedNote === project.notes) return project;
+      changed = true;
+      return { ...project, notes: sharedNote };
+    });
+    if (changed) {
+      persist();
+      render();
+    }
+  } catch (error) {
+    console.info("共享备注读取暂不可用", error);
   }
 }
 
@@ -480,6 +504,14 @@ function render() {
               ["报告", project.reportLinks]
             ])}
           </div>
+        </section>
+
+        <section class="sketch-web-note">
+          <div class="section-title-row">
+            <span>备注评论</span>
+            <small>同步到飞书备注列</small>
+          </div>
+          ${renderProjectComments(project)}
         </section>
 
         <section class="sketch-invoice">
@@ -762,6 +794,82 @@ function renderDataSections(value) {
   return html;
 }
 
+function parseProjectComments(notes) {
+  const text = String(notes || "").trim();
+  if (!text) return [];
+  if (text.startsWith("[网页评论]")) {
+    return text
+      .split(/\n+/)
+      .slice(1)
+      .map(line => {
+        const match = line.match(/^(.+?)｜(.+?)：([\s\S]*)$/);
+        if (!match) return null;
+        return {
+          time: match[1].trim(),
+          author: match[2].trim(),
+          text: match[3].trim()
+        };
+      })
+      .filter(Boolean);
+  }
+  return [{ time: "", author: "备注", text }];
+}
+
+function serializeProjectComments(comments) {
+  const clean = comments
+    .map(item => ({
+      time: item.time || formatCommentTime(new Date()),
+      author: String(item.author || "匿名").trim() || "匿名",
+      text: String(item.text || "").trim()
+    }))
+    .filter(item => item.text);
+  if (!clean.length) return "";
+  return ["[网页评论]", ...clean.map(item => `${item.time}｜${item.author}：${item.text}`)].join("\n");
+}
+
+function formatCommentTime(date) {
+  const pad = value => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function renderProjectComments(project) {
+  const comments = parseProjectComments(project.notes);
+  const commenter = localStorage.getItem(COMMENTER_KEY) || "";
+  const commentsHtml = comments.length
+    ? comments.map(item => `
+      <div class="comment-item">
+        <span class="avatar">${escapeHtml((item.author || "备").slice(0, 1))}</span>
+        <div class="comment-body">
+          <div class="comment-meta">
+            <strong>${escapeHtml(item.author || "备注")}</strong>
+            ${item.time ? `<small>${escapeHtml(item.time)}</small>` : ""}
+          </div>
+          <p>${escapeHtml(item.text)}</p>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="comment-empty">还没有备注，可以记录下次跟进、风险或内部判断。</div>`;
+  return `
+    <div class="comment-list">${commentsHtml}</div>
+    <div class="comment-compose">
+      <input
+        class="comment-author"
+        data-action="comment-author"
+        data-id="${project.id}"
+        value="${escapeHtml(commenter)}"
+        placeholder="你的名字"
+      />
+      <textarea
+        class="comment-input"
+        data-action="comment-input"
+        data-id="${project.id}"
+        placeholder="写一条备注，保存后会同步到飞书。"
+      ></textarea>
+      <button class="comment-submit" data-action="add-comment" data-id="${project.id}" type="button">保存备注</button>
+    </div>
+  `;
+}
+
 function renderMetrics() {
   const activeProjects = projects.filter(item => item.status === "进行中");
   const timings = activeProjects.map(calculate);
@@ -1042,10 +1150,32 @@ els.board.addEventListener("change", event => {
   render();
 });
 
+els.board.addEventListener("input", event => {
+  const author = event.target.closest("[data-action='comment-author']");
+  if (!author) return;
+  localStorage.setItem(COMMENTER_KEY, author.value.trim());
+});
+
 els.board.addEventListener("click", event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   const project = projects.find(item => item.id === button.dataset.id);
+  if (button.dataset.action === "add-comment" && project) {
+    const card = button.closest(".project-row");
+    const authorInput = card?.querySelector(`[data-action='comment-author'][data-id="${project.id}"]`);
+    const textInput = card?.querySelector(`[data-action='comment-input'][data-id="${project.id}"]`);
+    const text = textInput?.value.trim() || "";
+    if (!text) return;
+    const author = authorInput?.value.trim() || "匿名";
+    localStorage.setItem(COMMENTER_KEY, author);
+    const comments = parseProjectComments(project.notes);
+    comments.push({ author, text, time: formatCommentTime(new Date()) });
+    project.notes = serializeProjectComments(comments);
+    persist();
+    syncProjectToFeishu(project);
+    render();
+    return;
+  }
   if (button.dataset.action === "invoice" && project) {
     project.invoiceStatus = button.dataset.value;
     persist();
@@ -1065,3 +1195,4 @@ els.exportBtn.addEventListener("click", async () => {
 });
 
 render();
+loadSharedNotesFromFeishu();
