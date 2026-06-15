@@ -1538,11 +1538,15 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "",
     "invoiceStatus": "待确认",
-    "publishLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/OeVowoj8dir6wpkX0HDcLDtunAd"
+      }
+    ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n当前尚未关联发稿表，发布 KPI 0/150 篇，还差 150 篇。\n【监测数据】\n每个平台每月需优化不少于 30 个关键词；月度至少 4 个平台稳定保持第二并占据第一梯队。\n核心优势信息准确率目标 95% 以上；月度关键词达标率目标 80%。\n待补充监测表后，才能更新真实排名与达标率。",
-    "optimizationSuggestion": "请先补齐发稿计划、发稿链接、监测表入口与负责人；项目启动首月建议按平台拆分 30 个高频核心关键词，并建立月度达标率统计。",
+    "currentData": "【发稿数据】\n已关联发稿表入口，待按有效发布链接实时统计 150 篇发布 KPI。\n【监测数据】\n每个平台每月需优化不少于 30 个关键词；月度至少 4 个平台稳定保持第二并占据第一梯队。\n核心优势信息准确率目标 95% 以上；月度关键词达标率目标 80%。\n待补充监测表后，才能更新真实排名与达标率。",
+    "optimizationSuggestion": "下一步按发稿表实时核对有效发布链接数量，并补齐监测表入口；项目启动首月建议按平台拆分 30 个高频核心关键词，并建立月度达标率统计。",
     "reportLinks": [],
     "briefLinks": []
   },
