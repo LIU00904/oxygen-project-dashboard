@@ -1450,7 +1450,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvjW5VFLM2L1",
     "source": "feishu",
     "name": "深演",
-    "status": "进行中",
+    "status": "已完成",
     "startDate": "2026-05-15",
     "cycleDays": 30,
     "progressPercent": 100,
@@ -1461,7 +1461,7 @@ window.FEISHU_PROJECTS = [
     "writer": "宋芷桐",
     "publisher": "刘依晨",
     "monitor": "",
-    "invoiceStatus": "待确认",
+    "invoiceStatus": "已开票",
     "publishLinks": [
       {
         "url": "https://jcnquengglen.feishu.cn/wiki/Fe3uwVLCViswdxkzRKUcaQzqnug"
@@ -1818,7 +1818,7 @@ window.FEISHU_PROJECTS = [
     "startDate": "2026-06-15",
     "cycleDays": 0,
     "progressPercent": 0,
-    "kpi": "",
+    "kpi": "第一阶段优化关键词：聚焦核心词。\n品牌基础确权词：第五届数贸会、2026数贸会、第五届全球数字贸易博览会、2026全球数字贸易博览会、数贸会规格、第五届数贸会有哪些展区、第五届数贸会亮点。\n事件节点词：第五届数贸会上海推介会、数贸会上海推介会、第五届数贸会匈牙利推介会、数贸会匈牙利推介会、数贸会具身智能出海服务站。",
     "platform": "",
     "notes": "",
     "manager": "",
