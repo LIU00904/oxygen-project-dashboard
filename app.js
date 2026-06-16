@@ -191,7 +191,7 @@ function projectSyncPayload(project) {
       endDate: endDateFor(project),
       kpi: project.kpi,
       platform: project.platform,
-      notes: project.notes,
+      notes: plainNotesForFeishu(project.notes),
       invoiceStatus: project.invoiceStatus,
       publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
       monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
@@ -205,7 +205,7 @@ function projectNotesPayload(project, notesText) {
   return {
     recordId: project.id,
     fields: {
-      notes: notesText
+      notes: plainNotesForFeishu(notesText)
     }
   };
 }
@@ -962,6 +962,19 @@ function serializeProjectComments(comments) {
     .filter(item => item.text);
   if (!clean.length) return "";
   return `[网页评论JSON]\n${JSON.stringify(clean)}`;
+}
+
+function plainNotesForFeishu(notes) {
+  const seen = new Set();
+  return parseProjectComments(notes)
+    .map(item => String(item.text || "").trim())
+    .filter(Boolean)
+    .filter(text => {
+      if (seen.has(text)) return false;
+      seen.add(text);
+      return true;
+    })
+    .join("\n");
 }
 
 function normalizeComment(item) {
