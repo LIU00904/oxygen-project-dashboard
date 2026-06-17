@@ -78,6 +78,13 @@ const els = {
   densityBtn: document.querySelector("#densityBtn"),
   pageTitle: document.querySelector("#pageTitle"),
   pageMeta: document.querySelector("#pageMeta"),
+  dialog: document.querySelector("#projectDialog"),
+  projectForm: document.querySelector("#projectForm"),
+  openFormBtn: document.querySelector("#openFormBtn"),
+  closeProjectDialog: document.querySelector("#closeProjectDialog"),
+  cancelProjectBtn: document.querySelector("#cancelProjectBtn"),
+  saveProjectBtn: document.querySelector("#saveProjectBtn"),
+  projectFormState: document.querySelector("#projectFormState"),
   exportBtn: document.querySelector("#exportBtn")
 };
 
@@ -192,6 +199,10 @@ function projectSyncPayload(project) {
       kpi: project.kpi,
       platform: project.platform,
       notes: plainNotesForFeishu(project.notes),
+      manager: project.manager,
+      writer: project.writer,
+      publisher: project.publisher,
+      monitor: project.monitor,
       invoiceStatus: project.invoiceStatus,
       publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
       monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
@@ -282,7 +293,7 @@ function startAutoFeishuLogin() {
 }
 
 async function syncProjectToFeishu(project) {
-  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
+  if (!FEISHU_SYNC_API || !project) return { ok: false, skipped: true };
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
@@ -292,8 +303,11 @@ async function syncProjectToFeishu(project) {
     if (!response.ok) throw new Error(await response.text());
     const result = await response.json();
     if (!result?.ok) throw new Error(JSON.stringify(result));
+    if (result.version !== "20260617-project-write-v1") {
+      throw new Error("Cloudflare Worker 需要更新到项目编辑版本");
+    }
     console.info("已同步飞书", project.name);
-    return { ok: true };
+    return { ok: true, recordId: result.recordId || project.id, result };
   } catch (error) {
     console.warn("飞书同步失败，已保存在网页本地", error);
     return { ok: false, error };
@@ -654,6 +668,8 @@ function render() {
           <span>项目人员</span>
           ${renderPeople(project)}
         </section>
+
+        <button class="ghost-btn sketch-edit" data-action="edit" data-id="${project.id}" type="button">编辑</button>
 
       </article>
     `;
@@ -1200,10 +1216,16 @@ function openForm(project) {
   populatePeoplePickers(project);
   if (!project) {
     document.querySelector("#status").value = "进行中";
-    document.querySelector("#startDate").value = "2026-06-08";
-    document.querySelector("#cycleDays").value = 30;
+    document.querySelector("#startDate").value = "";
+    document.querySelector("#cycleDays").value = "";
     document.querySelector("#invoiceStatus").value = "待确认";
   }
+  document.querySelector("#projectDialogEyebrow").textContent = project ? "Edit Project" : "New Project";
+  document.querySelector("#projectDialogTitle").textContent = project ? "编辑项目" : "添加项目";
+  els.projectFormState.textContent = "";
+  els.saveProjectBtn.disabled = false;
+  els.saveProjectBtn.textContent = "保存并同步飞书";
+  lockPageScroll();
   els.dialog.showModal();
 }
 
@@ -1258,8 +1280,11 @@ function renderPeoplePicker(id) {
 }
 
 function collectForm() {
+  const id = document.querySelector("#projectId").value;
+  const existing = projects.find(item => item.id === id) || {};
   return {
-    id: document.querySelector("#projectId").value || crypto.randomUUID(),
+    ...existing,
+    id,
     name: document.querySelector("#name").value.trim(),
     status: document.querySelector("#status").value,
     startDate: document.querySelector("#startDate").value,
@@ -1273,8 +1298,8 @@ function collectForm() {
     invoiceStatus: document.querySelector("#invoiceStatus").value,
     publishLinks: parseLinks(document.querySelector("#publishLinks")?.value),
     monitorLinks: parseLinks(document.querySelector("#monitorLinks")?.value),
-    reportLinks: parseLinks(document.querySelector("#reportLinks")?.value),
-    briefLinks: parseLinks(document.querySelector("#briefLinks")?.value),
+    reportLinks: existing.reportLinks || [],
+    briefLinks: existing.briefLinks || [],
     optimizationSuggestion: document.querySelector("#optimizationSuggestion")?.value.trim() || "",
     notes: document.querySelector("#notes").value.trim()
   };
@@ -1298,6 +1323,85 @@ function unlockPageScroll() {
   document.body.style.top = "";
   window.scrollTo(0, lockedScrollY);
 }
+
+function closeProjectForm() {
+  document.querySelectorAll(".people-picker.open").forEach(item => item.classList.remove("open"));
+  els.dialog?.close();
+}
+
+els.openFormBtn?.addEventListener("click", () => openForm());
+els.closeProjectDialog?.addEventListener("click", closeProjectForm);
+els.cancelProjectBtn?.addEventListener("click", closeProjectForm);
+
+els.dialog?.addEventListener("close", unlockPageScroll);
+els.dialog?.addEventListener("click", event => {
+  if (event.target === els.dialog) {
+    closeProjectForm();
+    return;
+  }
+  const remove = event.target.closest("[data-remove-person]");
+  if (remove) {
+    const field = remove.dataset.removeField;
+    pickerState[field] = (pickerState[field] || []).filter(name => name !== remove.dataset.removePerson);
+    renderPeoplePicker(field);
+    return;
+  }
+  const trigger = event.target.closest(".picker-trigger");
+  if (!trigger && !event.target.closest(".people-picker")) {
+    document.querySelectorAll(".people-picker.open").forEach(item => item.classList.remove("open"));
+    return;
+  }
+  if (!trigger) return;
+  const picker = trigger.closest(".people-picker");
+  document.querySelectorAll(".people-picker.open").forEach(item => {
+    if (item !== picker) item.classList.remove("open");
+  });
+  picker.classList.toggle("open");
+});
+
+els.dialog?.addEventListener("change", event => {
+  const input = event.target.closest("input[data-people-field]");
+  if (!input) return;
+  const field = input.dataset.peopleField;
+  const selected = new Set(pickerState[field] || []);
+  if (input.checked) selected.add(input.value);
+  else selected.delete(input.value);
+  pickerState[field] = [...selected];
+  renderPeoplePicker(field);
+  document.querySelector(`.people-picker[data-field="${field}"]`)?.classList.add("open");
+});
+
+els.projectForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+  const formProject = collectForm();
+  if (!formProject.name) {
+    els.projectFormState.textContent = "请先填写项目名称。";
+    return;
+  }
+  if (formProject.status !== "待开始" && (!formProject.startDate || !formProject.cycleDays)) {
+    els.projectFormState.textContent = "进行中、已完成或停滞项目需要填写开始时间和周期。";
+    return;
+  }
+  els.saveProjectBtn.disabled = true;
+  els.saveProjectBtn.textContent = "正在同步…";
+  els.projectFormState.textContent = "正在保存到飞书，请稍候。";
+  const syncResult = await syncProjectToFeishu(formProject);
+  if (!syncResult.ok) {
+    els.saveProjectBtn.disabled = false;
+    els.saveProjectBtn.textContent = "重新同步";
+    els.projectFormState.textContent = "同步失败，内容尚未保存。请检查网络或 Worker 后重试。";
+    showSyncNotice("项目同步飞书失败，编辑窗口已保留", "warning");
+    return;
+  }
+  formProject.id = syncResult.recordId;
+  const index = projects.findIndex(item => item.id === formProject.id || item.id === document.querySelector("#projectId").value);
+  if (index >= 0) projects[index] = formProject;
+  else projects.unshift(formProject);
+  persist();
+  closeProjectForm();
+  render();
+  showSyncNotice("项目已保存并同步到飞书", "success");
+});
 
 els.statusTabs.addEventListener("click", event => {
   const button = event.target.closest("button[data-filter]");
@@ -1351,14 +1455,20 @@ els.publishRequirementsDialog?.addEventListener("close", () => {
   unlockPageScroll();
 });
 
-els.board.addEventListener("change", event => {
+els.board.addEventListener("change", async event => {
   const select = event.target.closest("select[data-action='status']");
   if (!select) return;
   const project = projects.find(item => item.id === select.dataset.id);
   if (!project) return;
+  const previousStatus = project.status;
   project.status = select.value;
   persist();
-  syncProjectToFeishu(project);
+  const syncResult = await syncProjectToFeishu(project);
+  if (!syncResult.ok) {
+    project.status = previousStatus;
+    persist();
+    showSyncNotice("状态同步失败，已恢复原状态", "warning");
+  }
   render();
 });
 
@@ -1366,6 +1476,10 @@ els.board.addEventListener("click", async event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   const project = projects.find(item => item.id === button.dataset.id);
+  if (button.dataset.action === "edit" && project) {
+    openForm(project);
+    return;
+  }
   if (button.dataset.action === "add-comment" && project) {
     const card = button.closest(".project-row");
     const textInput = card?.querySelector(`[data-action='comment-input'][data-id="${project.id}"]`);
@@ -1385,9 +1499,15 @@ els.board.addEventListener("click", async event => {
     return;
   }
   if (button.dataset.action === "invoice" && project) {
+    const previousInvoiceStatus = project.invoiceStatus;
     project.invoiceStatus = button.dataset.value;
     persist();
-    syncProjectToFeishu(project);
+    const syncResult = await syncProjectToFeishu(project);
+    if (!syncResult.ok) {
+      project.invoiceStatus = previousInvoiceStatus;
+      persist();
+      showSyncNotice("开票状态同步失败，已恢复原状态", "warning");
+    }
     render();
     return;
   }

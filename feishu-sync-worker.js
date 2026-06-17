@@ -10,8 +10,15 @@ const FIELD_MAP = {
   publishLinks: "发稿链接",
   monitorLinks: "监测表",
   briefLinks: "Brief",
-  optimizationSuggestion: "优化建议"
+  optimizationSuggestion: "优化建议",
+  manager: "客户对接",
+  writer: "写稿审稿",
+  publisher: "发稿",
+  monitor: "监测"
 };
+
+const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
+const WORKER_VERSION = "20260617-project-write-v1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,24 +49,28 @@ export default {
       }
 
       const body = await request.json();
-      if (!body.recordId || !body.fields) {
-        return json({ error: "Missing recordId or fields" }, 400);
+      if (!body.fields) {
+        return json({ error: "Missing fields" }, 400);
       }
 
       const token = await tenantToken(env);
+      const peopleDirectory = await readPeopleDirectory(env, token);
       const fields = {};
       for (const [key, feishuField] of Object.entries(FIELD_MAP)) {
         if (body.fields[key] === undefined) continue;
         if (key === "startDate" || key === "endDate") {
           fields[feishuField] = dateToMs(body.fields[key]);
+        } else if (PERSON_KEYS.has(key)) {
+          fields[feishuField] = peopleValue(body.fields[key], peopleDirectory);
         } else {
           fields[feishuField] = body.fields[key] || "";
         }
       }
 
-      const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/${body.recordId}`;
+      const baseUrl = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records`;
+      const url = body.recordId ? `${baseUrl}/${body.recordId}` : baseUrl;
       const response = await fetch(url, {
-        method: "PUT",
+        method: body.recordId ? "PUT" : "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -70,7 +81,8 @@ export default {
       if (!response.ok || result.code) {
         return json({ error: result }, 500);
       }
-      return json({ ok: true, updated: Object.keys(fields) });
+      const recordId = result.data?.record?.record_id || result.data?.record_id || body.recordId;
+      return json({ ok: true, recordId, updated: Object.keys(fields), version: WORKER_VERSION });
     } catch (error) {
       return json({ error: String(error?.message || error) }, 500);
     }
@@ -131,6 +143,48 @@ async function readNotes(env, token) {
     pageToken = result.data?.page_token || "";
   } while (pageToken);
   return notes;
+}
+
+async function readPeopleDirectory(env, token) {
+  const directory = new Map();
+  let pageToken = "";
+  const fieldNames = [...PERSON_KEYS].map(key => FIELD_MAP[key]);
+  do {
+    const suffix = pageToken ? `&page_token=${pageToken}` : "";
+    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/search?page_size=100${suffix}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ field_names: fieldNames })
+    });
+    const result = await response.json();
+    if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+    for (const item of result.data?.items || []) {
+      for (const fieldName of fieldNames) {
+        const people = Array.isArray(item.fields?.[fieldName]) ? item.fields[fieldName] : [];
+        for (const person of people) {
+          const name = person?.name || person?.en_name;
+          const id = person?.id || person?.open_id || person?.user_id;
+          if (name && id && !directory.has(name)) directory.set(name, id);
+        }
+      }
+    }
+    pageToken = result.data?.page_token || "";
+  } while (pageToken);
+  return directory;
+}
+
+function peopleValue(value, directory) {
+  const names = String(value || "")
+    .split(/、|,|，|\//)
+    .map(item => item.trim())
+    .filter(Boolean);
+  const missing = names.filter(name => !directory.has(name));
+  if (missing.length) throw new Error(`无法匹配飞书人员：${missing.join("、")}`);
+  return names.map(name => ({ id: directory.get(name) }));
 }
 
 async function tenantToken(env) {

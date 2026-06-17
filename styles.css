@@ -1540,6 +1540,60 @@ h2 {
   color: #986100;
 }
 
+.sketch-edit {
+  grid-area: edit;
+  justify-self: end;
+  min-width: 108px;
+  position: relative;
+  z-index: 2;
+}
+
+.form-sync-state {
+  min-height: 20px;
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.project-form .primary-btn:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@media (min-width: 901px) {
+  .sketch-card {
+    grid-template-areas:
+      "left progress right"
+      "left progress invoice"
+      "people people people"
+      "kpi data suggestion"
+      "folders folders folders"
+      ". . edit";
+  }
+}
+
+@media (max-width: 900px) {
+  .sketch-card {
+    grid-template-areas:
+      "left"
+      "progress"
+      "right"
+      "invoice"
+      "people"
+      "kpi"
+      "data"
+      "suggestion"
+      "folders"
+      "edit";
+  }
+
+  .sketch-edit {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
 .comment-menu {
   position: fixed;
   z-index: 60;

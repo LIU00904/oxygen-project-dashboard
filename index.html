@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>氧气科技项目管理</title>
-    <link rel="stylesheet" href="./styles.css?v=20260616-full-sync-clean-notes-v72" />
+    <link rel="stylesheet" href="./styles.css?v=20260617-project-editor-v73" />
   </head>
   <body>
     <div class="iridescence-container" id="iridescenceBg" aria-hidden="true"></div>
@@ -91,6 +91,10 @@
               <strong data-count="停滞">0</strong>
             </button>
           </nav>
+          <button class="sidebar-add-btn" id="openFormBtn" type="button">
+            <span>＋</span>
+            新增项目
+          </button>
         </aside>
 
         <section class="project-page">
@@ -119,10 +123,83 @@
       <p class="publish-dialog-meta" id="publishRequirementsMeta"></p>
     </dialog>
 
+    <dialog id="projectDialog" aria-labelledby="projectDialogTitle">
+      <form class="project-form glass" id="projectForm">
+        <div class="form-head">
+          <div>
+            <p class="eyebrow" id="projectDialogEyebrow">New Project</p>
+            <h2 id="projectDialogTitle">添加项目</h2>
+          </div>
+          <button class="icon-btn" id="closeProjectDialog" type="button" aria-label="关闭">×</button>
+        </div>
+        <input type="hidden" id="projectId" />
+        <div class="form-grid">
+          <label>项目名称 <input id="name" required /></label>
+          <label>状态
+            <select id="status">
+              <option>进行中</option>
+              <option>待开始</option>
+              <option>已完成</option>
+              <option>停滞</option>
+            </select>
+          </label>
+          <label>开始时间 <input id="startDate" type="date" /></label>
+          <label>周期（天） <input id="cycleDays" type="number" min="0" /></label>
+          <label class="wide">项目 KPI <textarea id="kpi"></textarea></label>
+          <label>优化平台 <input id="platform" placeholder="如：5个平台" /></label>
+          <label>开票信息
+            <select id="invoiceStatus">
+              <option>待确认</option>
+              <option>待开票</option>
+              <option>已开票</option>
+              <option>无需开票</option>
+            </select>
+          </label>
+          <label>项目经理
+            <div class="people-picker" data-field="manager">
+              <div class="selected-people" data-selected="manager"></div>
+              <button class="picker-trigger" type="button">选择</button>
+              <div class="picker-options" data-options="manager"></div>
+            </div>
+          </label>
+          <label>写稿
+            <div class="people-picker" data-field="writer">
+              <div class="selected-people" data-selected="writer"></div>
+              <button class="picker-trigger" type="button">选择</button>
+              <div class="picker-options" data-options="writer"></div>
+            </div>
+          </label>
+          <label>发稿
+            <div class="people-picker" data-field="publisher">
+              <div class="selected-people" data-selected="publisher"></div>
+              <button class="picker-trigger" type="button">选择</button>
+              <div class="picker-options" data-options="publisher"></div>
+            </div>
+          </label>
+          <label>监测
+            <div class="people-picker" data-field="monitor">
+              <div class="selected-people" data-selected="monitor"></div>
+              <button class="picker-trigger" type="button">选择</button>
+              <div class="picker-options" data-options="monitor"></div>
+            </div>
+          </label>
+          <label class="wide">发稿链接 <textarea id="publishLinks" placeholder="一行一个链接"></textarea></label>
+          <label class="wide">监测表 <textarea id="monitorLinks" placeholder="一行一个链接"></textarea></label>
+          <label class="wide">优化建议 <textarea id="optimizationSuggestion"></textarea></label>
+          <label class="wide">备注 <textarea id="notes"></textarea></label>
+        </div>
+        <p class="form-sync-state" id="projectFormState" aria-live="polite"></p>
+        <div class="form-actions">
+          <button class="ghost-btn" id="cancelProjectBtn" type="button">取消</button>
+          <button class="primary-btn" id="saveProjectBtn" type="submit">保存并同步飞书</button>
+        </div>
+      </form>
+    </dialog>
+
     <script>
       window.FEISHU_SYNC_API = "https://oxygen-feishu-sync.liuyichen021231.workers.dev";
     </script>
-    <script src="./data.js?v=20260616-full-sync-clean-notes-v72"></script>
-    <script src="./app.js?v=20260616-full-sync-clean-notes-v72"></script>
+    <script src="./data.js?v=20260617-project-editor-v73"></script>
+    <script src="./app.js?v=20260617-project-editor-v73"></script>
   </body>
 </html>
