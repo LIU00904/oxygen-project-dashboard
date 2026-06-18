@@ -160,7 +160,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-04-14",
     "cycleDays": 364,
-    "progressPercent": 18,
+    "progressPercent": 32,
     "kpi": "10个关键词排名第一 需要发稿500篇（-27.4.14）",
     "platform": "全平台4及以上",
     "notes": "开票",
@@ -426,7 +426,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-04-12",
     "cycleDays": 90,
-    "progressPercent": 73,
+    "progressPercent": 88,
     "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）3.一个季度发稿不少于150篇，需要提供所有发稿链接4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
     "platform": "5个平台",
     "notes": "",
@@ -449,6 +449,20 @@ window.FEISHU_PROJECTS = [
     "currentData": "【发稿数据】\n华硕主板 106/150 篇，还差 44 篇。\n华硕商城 86/150 篇，还差 64 篇。\n两个子项目均要求各 150 篇，不能合并判断达标。\n【监测数据】\n监测表已读取，排名表现整体较稳定；当前按表内 Top1 / Top3 口径展示。\n当前主要未达标项是主板/商城两个子项目各自的发稿数量。",
     "optimizationSuggestion": "优先补齐发稿缺口：华硕主板补 44 篇、华硕商城补 64 篇；后续每次都按实时有效发稿链接行数复核，并排除拒稿/发布中/空白行。",
     "reportLinks": [
+      {
+        "label": "华硕GEO监测报告（5.12-6.10）.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "GjRgbzVCIomWupxLuZnclwkqntf",
+        "fileType": "application/pdf",
+        "size": 2068108
+      },
+      {
+        "label": "华硕GEO监测报告（5.12-6.10）.docx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JpXZbBtkHoXYowxwHxucg2cpnfe",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 2485560
+      },
       {
         "label": "华硕主板GEO优化双周报0603.pptx",
         "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
@@ -1092,7 +1106,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-05-08",
     "cycleDays": 153,
-    "progressPercent": 26,
+    "progressPercent": 24,
     "kpi": "- 优化目标：产品展示度，提升至不低于90%",
     "platform": "DeepSeek、豆包、Kimi、通义千\n问、元宝中的80%有效收录",
     "notes": "",
@@ -1300,7 +1314,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-05-06",
     "cycleDays": 91,
-    "progressPercent": 46,
+    "progressPercent": 43,
     "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
     "platform": "5个平台",
     "notes": "发稿暂停，等打款",
@@ -1417,7 +1431,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-07",
     "cycleDays": 24,
-    "progressPercent": 42,
+    "progressPercent": 29,
     "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "有四个平台收录（截图）",
@@ -1431,7 +1445,11 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/PB2vw2oOXiWAqwk1qLicKoHEnEp?from=from_copylink"
       }
     ],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/QnwhwApsjigA4QkOtgZcz24ZnRh"
+      }
+    ],
     "kpiStatus": "未达标",
     "currentData": "【发稿数据】\n有效发稿 5/20 篇，还差 15 篇。\n【监测数据】\n尚未关联监测表，暂无法判断收录、目标信源和近一周/近一月趋势。",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
@@ -1529,7 +1547,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-12",
     "cycleDays": 48,
-    "progressPercent": 10,
+    "progressPercent": 13,
     "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
     "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
     "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
@@ -1629,7 +1647,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-01",
     "cycleDays": 91,
-    "progressPercent": 18,
+    "progressPercent": 14,
     "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
     "platform": "六个平台中四个及以上，80%时间",
     "notes": "",
@@ -1661,7 +1679,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-09",
     "cycleDays": 61,
-    "progressPercent": 13,
+    "progressPercent": 8,
     "kpi": "\nkpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
     "platform": "",
     "notes": "企业，EMBA重点关注\n一篇3个媒体",
@@ -1675,7 +1693,11 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/FuwzwceVxi8PZ3kTp8Ocixffn7e"
       }
     ],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/Q4HJwJhiiiOGaZk6dsScOi5UnVc"
+      }
+    ],
     "kpiStatus": "推进中",
     "currentData": "【发稿数据】\n已关联北大发稿链接，当前有效发稿 0 篇。\nKPI 以收录和关键词效果为主，未写明固定发稿数量。\n【监测数据】\n已关联 1 个 Brief 文件；尚未关联监测表，暂无法判断收录与关键词表现。",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
@@ -1840,7 +1862,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-16T09:14:48.135Z",
+  "syncedAt": "2026-06-18T07:59:27.198Z",
   "source": "feishu",
   "recordCount": 54,
   "note": "main-table-sync-v20",
@@ -1848,7 +1870,5 @@ window.FEISHU_SYNC_META = {
     "太太乐松茸鲜",
     "华硕",
     "一丰 荣放 亚洲龙"
-  ],
-  "progressUpdatedAt": "2026-06-17T02:01:06.896Z",
-  "progressUpdateNote": "progress-only"
+  ]
 };
