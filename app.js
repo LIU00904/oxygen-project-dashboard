@@ -206,10 +206,18 @@ function projectSyncPayload(project) {
       invoiceStatus: project.invoiceStatus,
       publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
       monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
-      briefLinks: normalizeLinks(project.briefLinks).map(item => item.url).filter(Boolean).join("\n"),
       optimizationSuggestion: project.optimizationSuggestion
     }
   };
+}
+
+function syncErrorMessage(result, fallback = "飞书拒绝了本次写入") {
+  const detail = result?.error?.error?.message
+    || result?.error?.msg
+    || result?.error?.message
+    || result?.message
+    || result?.error;
+  return typeof detail === "string" && detail.trim() ? detail.trim() : fallback;
 }
 
 function projectNotesPayload(project, notesText) {
@@ -300,16 +308,15 @@ async function syncProjectToFeishu(project) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(projectSyncPayload(project))
     });
-    if (!response.ok) throw new Error(await response.text());
-    const result = await response.json();
-    if (!result?.ok) throw new Error(JSON.stringify(result));
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result));
     if (result.version !== "20260617-project-write-v1") {
       throw new Error("Cloudflare Worker 需要更新到项目编辑版本");
     }
     console.info("已同步飞书", project.name);
     return { ok: true, recordId: result.recordId || project.id, result };
   } catch (error) {
-    console.warn("飞书同步失败，已保存在网页本地", error);
+    console.warn("飞书同步失败", error);
     return { ok: false, error };
   }
 }
@@ -1389,7 +1396,8 @@ els.projectForm?.addEventListener("submit", async event => {
   if (!syncResult.ok) {
     els.saveProjectBtn.disabled = false;
     els.saveProjectBtn.textContent = "重新同步";
-    els.projectFormState.textContent = "同步失败，内容尚未保存。请检查网络或 Worker 后重试。";
+    const reason = syncResult.error?.message || "请检查网络或 Worker 后重试";
+    els.projectFormState.textContent = `同步失败，内容尚未保存：${reason}`;
     showSyncNotice("项目同步飞书失败，编辑窗口已保留", "warning");
     return;
   }
