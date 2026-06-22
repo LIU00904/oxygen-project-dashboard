@@ -426,7 +426,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-04-12",
     "cycleDays": 90,
-    "progressPercent": 78,
+    "progressPercent": 79,
     "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）3.一个季度发稿不少于150篇，需要提供所有发稿链接4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
     "platform": "5个平台",
     "notes": "",
@@ -803,7 +803,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "optimizationSuggestion": "先补齐最后 1 篇发稿；监测侧重点推动豆包、千问、DeepSeek、元宝收录，当前距离每日 4 平台目标还差 3 个平台。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -827,7 +827,7 @@ window.FEISHU_PROJECTS = [
     "monitorLinks": [],
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
+    "optimizationSuggestion": "优先推进企业高管培训、EMBA总裁班收录，其次补总裁班；保持深圳总裁班 5/5 和 AI总裁研修班 4/5 的稳定性。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1314,7 +1314,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-05-06",
     "cycleDays": 91,
-    "progressPercent": 51,
+    "progressPercent": 52,
     "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
     "platform": "5个平台",
     "notes": "发稿暂停，等打款",
@@ -1431,7 +1431,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-07",
     "cycleDays": 24,
-    "progressPercent": 58,
+    "progressPercent": 63,
     "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "有四个平台收录（截图）",
@@ -1452,7 +1452,7 @@ window.FEISHU_PROJECTS = [
     ],
     "kpiStatus": "未达标",
     "currentData": "【发稿数据】\n有效发稿 19/20 篇，还差 1 篇。\n【监测数据｜最新 6.18】\n“儿童益生菌”在 5 个平台中收录 1/5=20%，目前仅 KIMI 收录，未达到每天至少 4 个平台收录的目标。\n6.15 为 0/5；6.16、6.17、6.18 均为 1/5，近几日暂无进一步提升。",
-    "optimizationSuggestion": "先补齐最后 1 篇发稿；监测侧重点推动豆包、千问、DeepSeek、元宝收录，当前距离每日 4 平台目标还差 3 个平台。",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1547,7 +1547,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-12",
     "cycleDays": 48,
-    "progressPercent": 19,
+    "progressPercent": 21,
     "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
     "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
     "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
@@ -1647,7 +1647,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-01",
     "cycleDays": 91,
-    "progressPercent": 22,
+    "progressPercent": 23,
     "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
     "platform": "六个平台中四个及以上，80%时间",
     "notes": "",
@@ -1679,7 +1679,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-09",
     "cycleDays": 61,
-    "progressPercent": 20,
+    "progressPercent": 21,
     "kpi": "\nkpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
     "platform": "",
     "notes": "企业，EMBA重点关注\n一篇3个媒体",
@@ -1700,7 +1700,7 @@ window.FEISHU_PROJECTS = [
     ],
     "kpiStatus": "推进中",
     "currentData": "【发稿数据】\n有效发稿 9 篇；KPI 以收录和关键词效果为主，未写明固定发稿数量。\n【监测数据｜最新 6.18】\n5 个关键词 × 5 个平台，共收录 11/25=44.0%。\n总裁班 2/5；企业高管培训 0/5；AI总裁研修班 4/5；深圳总裁班 5/5；EMBA总裁班 0/5。\n6.15→6.18 总收录由 8/25 升至 11/25；深圳总裁班已全平台收录，AI总裁研修班接近达标，企业高管培训与 EMBA总裁班仍是主要缺口。",
-    "optimizationSuggestion": "优先推进企业高管培训、EMBA总裁班收录，其次补总裁班；保持深圳总裁班 5/5 和 AI总裁研修班 4/5 的稳定性。",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1862,7 +1862,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-18T07:59:27.198Z",
+  "syncedAt": "2026-06-22T00:00:10.030Z",
   "analysisUpdatedAt": "2026-06-18T10:00:00+08:00",
   "source": "feishu",
   "recordCount": 54,
@@ -1872,6 +1872,6 @@ window.FEISHU_SYNC_META = {
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "progressUpdatedAt": "2026-06-20T16:42:16.639Z",
+  "progressUpdatedAt": "2026-06-22T00:01:09.544Z",
   "progressUpdateNote": "progress-only"
 };
