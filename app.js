@@ -137,6 +137,26 @@ const feishuSyncedFields = [
   "optimizationSuggestion"
 ];
 
+const locallyEditableFields = [
+  "name",
+  "status",
+  "startDate",
+  "cycleDays",
+  "kpi",
+  "platform",
+  "manager",
+  "writer",
+  "publisher",
+  "monitor",
+  "invoiceStatus",
+  "publishLinks",
+  "monitorLinks",
+  "reportLinks",
+  "briefLinks",
+  "optimizationSuggestion",
+  "notes"
+];
+
 function loadProjects() {
   const saved = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
   if (!saved) {
@@ -150,6 +170,7 @@ function loadProjects() {
     const savedByName = new Map(parsed.map(project => [project.name, project]));
     const merged = seedProjects.map(project => {
       const savedProject = savedById.get(project.id) || savedByName.get(project.name) || {};
+      const savedIsNewer = isSavedProjectNewerThanSeed(savedProject);
       const mergedProject = {
         ...project,
         ...savedProject
@@ -159,6 +180,12 @@ function loadProjects() {
           ? project[field]
           : (Array.isArray(mergedProject[field]) ? [] : "");
       });
+      if (savedIsNewer) {
+        locallyEditableFields.forEach(field => {
+          if (Object.prototype.hasOwnProperty.call(savedProject, field)) mergedProject[field] = savedProject[field];
+        });
+        mergedProject._localEditedAt = savedProject._localEditedAt;
+      }
       return mergedProject;
     });
     const seedIds = new Set(seedProjects.map(project => project.id));
@@ -173,10 +200,23 @@ function loadProjects() {
   }
 }
 
+function isSavedProjectNewerThanSeed(project) {
+  if (!project?._localEditedAt) return false;
+  const savedAt = Date.parse(project._localEditedAt);
+  const seedAt = Date.parse(syncMeta.syncedAt || syncMeta.progressUpdatedAt || "");
+  if (!Number.isFinite(savedAt)) return false;
+  if (!Number.isFinite(seedAt)) return true;
+  return savedAt > seedAt;
+}
+
 function startOfToday() {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   return date;
+}
+
+function markProjectLocalEdit(project) {
+  if (project) project._localEditedAt = new Date().toISOString();
 }
 
 function persist() {
@@ -227,6 +267,34 @@ function projectNotesPayload(project, notesText) {
       notes: plainNotesForFeishu(notesText)
     }
   };
+}
+
+function projectPatchPayload(project, fieldsToSync) {
+  return {
+    recordId: project.id,
+    fields: fieldsToSync
+  };
+}
+
+async function syncProjectFieldsToFeishu(project, fieldsToSync) {
+  if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
+  try {
+    const response = await fetch(FEISHU_SYNC_API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(projectPatchPayload(project, fieldsToSync))
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result));
+    if (result.version !== "20260617-project-write-v1") {
+      throw new Error("Cloudflare Worker 需要更新到项目编辑版本");
+    }
+    console.info("字段已同步飞书", project.name, Object.keys(fieldsToSync));
+    return { ok: true, recordId: result.recordId || project.id, result };
+  } catch (error) {
+    console.warn("字段同步失败", error);
+    return { ok: false, error };
+  }
 }
 
 function readDirtyNotes() {
@@ -1079,6 +1147,7 @@ function renderAvatar(name, avatar, className = "avatar") {
 
 async function saveProjectComments(project, comments, successMessage = "备注已同步到飞书") {
   project.notes = serializeProjectComments(comments);
+  markProjectLocalEdit(project);
   persist();
   markNoteDirty(project.id, true);
   const syncResult = await syncProjectNotesToFeishu(project);
@@ -1403,6 +1472,7 @@ els.projectForm?.addEventListener("submit", async event => {
   }
   formProject.id = syncResult.recordId;
   const index = projects.findIndex(item => item.id === formProject.id || item.id === document.querySelector("#projectId").value);
+  markProjectLocalEdit(formProject);
   if (index >= 0) projects[index] = formProject;
   else projects.unshift(formProject);
   persist();
@@ -1469,13 +1539,19 @@ els.board.addEventListener("change", async event => {
   const project = projects.find(item => item.id === select.dataset.id);
   if (!project) return;
   const previousStatus = project.status;
+  const previousLocalEditedAt = project._localEditedAt;
   project.status = select.value;
+  markProjectLocalEdit(project);
   persist();
-  const syncResult = await syncProjectToFeishu(project);
+  const syncResult = await syncProjectFieldsToFeishu(project, { status: project.status });
   if (!syncResult.ok) {
     project.status = previousStatus;
+    project._localEditedAt = previousLocalEditedAt;
     persist();
-    showSyncNotice("状态同步失败，已恢复原状态", "warning");
+    const reason = syncResult.error?.message || "请检查网络或 Worker 后重试";
+    showSyncNotice(`状态同步失败，已恢复原状态：${reason}`, "warning");
+  } else {
+    showSyncNotice("状态已同步到飞书", "success");
   }
   render();
 });
@@ -1508,13 +1584,19 @@ els.board.addEventListener("click", async event => {
   }
   if (button.dataset.action === "invoice" && project) {
     const previousInvoiceStatus = project.invoiceStatus;
+    const previousLocalEditedAt = project._localEditedAt;
     project.invoiceStatus = button.dataset.value;
+    markProjectLocalEdit(project);
     persist();
-    const syncResult = await syncProjectToFeishu(project);
+    const syncResult = await syncProjectFieldsToFeishu(project, { invoiceStatus: project.invoiceStatus });
     if (!syncResult.ok) {
       project.invoiceStatus = previousInvoiceStatus;
+      project._localEditedAt = previousLocalEditedAt;
       persist();
-      showSyncNotice("开票状态同步失败，已恢复原状态", "warning");
+      const reason = syncResult.error?.message || "请检查网络或 Worker 后重试";
+      showSyncNotice(`开票状态同步失败，已恢复原状态：${reason}`, "warning");
+    } else {
+      showSyncNotice("开票状态已同步到飞书", "success");
     }
     render();
     return;
