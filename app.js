@@ -1,6 +1,7 @@
 const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
 const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
+const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const LEGACY_STORAGE_KEYS = [
@@ -13,7 +14,7 @@ const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v15"
 ];
 const FEISHU_SYNC_API = window.FEISHU_SYNC_API || localStorage.getItem("FEISHU_SYNC_API") || "";
-const syncMeta = window.FEISHU_SYNC_META || {};
+let syncMeta = window.FEISHU_SYNC_META || {};
 const today = startOfToday();
 
 const statusColors = {
@@ -31,26 +32,9 @@ const statusPriority = {
   "停滞": 3
 };
 
-const seedProjects = window.FEISHU_PROJECTS || [
-  {
-    id: crypto.randomUUID(),
-    name: "示例项目：品牌 SEO 提升",
-    status: "进行中",
-    startDate: "2026-06-01",
-    cycleDays: 45,
-    kpi: "核心词排名进入首页，月曝光提升 30%",
-    platform: "百度 / 小红书",
-    notes: "等待飞书 API 权限后替换为真实项目数据。",
-    manager: "待补充",
-    writer: "待补充",
-    publisher: "待补充",
-    monitor: "待补充",
-    reportStatus: "待更新",
-    invoiceStatus: "待确认"
-  }
-];
+let seedProjects = window.FEISHU_PROJECTS || [];
 
-let projects = loadProjects();
+let projects = [];
 let currentFilter = "all";
 let currentSort = "progress";
 let invoiceOnly = false;
@@ -88,10 +72,9 @@ const els = {
   exportBtn: document.querySelector("#exportBtn")
 };
 
-const peopleOptions = buildPeopleOptions(seedProjects);
+let peopleOptions = [];
 
 initIridescenceBackground();
-startAutoFeishuLogin();
 
 const fields = [
   "projectId",
@@ -320,7 +303,7 @@ async function syncProjectFieldsToFeishu(project, fieldsToSync) {
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: authHeaders({ "content-type": "application/json" }),
       body: JSON.stringify(projectPatchPayload(project, fieldsToSync))
     });
     const result = await response.json().catch(() => null);
@@ -367,6 +350,15 @@ function readFeishuUser() {
   }
 }
 
+function readFeishuSession() {
+  return localStorage.getItem(FEISHU_SESSION_KEY) || "";
+}
+
+function authHeaders(headers = {}) {
+  const session = readFeishuSession();
+  return session ? { ...headers, Authorization: `Bearer ${session}` } : headers;
+}
+
 function saveFeishuUser(user) {
   if (!user?.name) return;
   currentFeishuUser = user;
@@ -377,6 +369,8 @@ function saveFeishuUser(user) {
 function readFeishuUserFromHash() {
   const hash = window.location.hash || "";
   const match = hash.match(/(?:^#|&)feishu_user=([^&]+)/);
+  const tokenMatch = hash.match(/(?:^#|&)feishu_token=([^&]+)/);
+  if (tokenMatch) localStorage.setItem(FEISHU_SESSION_KEY, decodeURIComponent(tokenMatch[1]));
   if (!match) return null;
   try {
     const user = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(match[1])))));
@@ -399,7 +393,7 @@ function loginUrl() {
 }
 
 function startAutoFeishuLogin() {
-  if (currentFeishuUser || !FEISHU_SYNC_API) return;
+  if ((currentFeishuUser && readFeishuSession()) || !FEISHU_SYNC_API) return;
   const isProductionPage = window.location.protocol === "https:" && window.location.hostname === "liu00904.github.io";
   if (!isProductionPage) return;
   if (sessionStorage.getItem(AUTH_ATTEMPT_KEY) === "1") return;
@@ -407,19 +401,39 @@ function startAutoFeishuLogin() {
   window.location.assign(loginUrl());
 }
 
+async function loadProjectsFromWorker() {
+  if (!FEISHU_SYNC_API) throw new Error("没有配置飞书同步服务");
+  const response = await fetch(`${FEISHU_SYNC_API}/projects`, {
+    method: "GET",
+    headers: authHeaders()
+  });
+  const result = await response.json().catch(() => null);
+  if (response.status === 401 || response.status === 403) {
+    localStorage.removeItem(FEISHU_SESSION_KEY);
+    localStorage.removeItem(FEISHU_USER_KEY);
+    currentFeishuUser = null;
+    startAutoFeishuLogin();
+    throw new Error("请先通过飞书登录");
+  }
+  if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
+  seedProjects = Array.isArray(result.projects) ? result.projects : [];
+  syncMeta = result.meta || {};
+  if (result.user?.name) saveFeishuUser(result.user);
+  peopleOptions = buildPeopleOptions(seedProjects);
+  projects = loadProjects();
+  persist();
+}
+
 async function syncProjectToFeishu(project) {
   if (!FEISHU_SYNC_API || !project) return { ok: false, skipped: true };
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: authHeaders({ "content-type": "application/json" }),
       body: JSON.stringify(projectSyncPayload(project))
     });
     const result = await response.json().catch(() => null);
     if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result));
-    if (result.version !== "20260617-project-write-v1") {
-      throw new Error("Cloudflare Worker 需要更新到项目编辑版本");
-    }
     console.info("已同步飞书", project.name);
     return { ok: true, recordId: result.recordId || project.id, result };
   } catch (error) {
@@ -433,7 +447,7 @@ async function syncProjectNotesToFeishu(project) {
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: authHeaders({ "content-type": "application/json" }),
       body: JSON.stringify(projectNotesPayload(project, project.notes || ""))
     });
     if (!response.ok) throw new Error(await response.text());
@@ -452,7 +466,7 @@ async function syncProjectNotesToFeishu(project) {
 async function loadSharedNotesFromFeishu() {
   if (!FEISHU_SYNC_API) return;
   try {
-    const response = await fetch(FEISHU_SYNC_API, { method: "GET" });
+    const response = await fetch(FEISHU_SYNC_API, { method: "GET", headers: authHeaders() });
     if (!response.ok) return;
     const result = await response.json();
     if (!result?.notes || typeof result.notes !== "object") return;
@@ -788,6 +802,35 @@ function render() {
       </article>
     `;
   }).join("");
+}
+
+function renderLoading(message = "正在验证飞书账号并读取项目数据…") {
+  renderMetrics();
+  renderStatusCounts();
+  els.pageTitle.textContent = "项目数据";
+  els.pageMeta.textContent = "登录后可见";
+  els.controlTitle.textContent = "受保护数据";
+  els.controlMeta.textContent = "项目数据不再公开写入网页文件";
+  els.board.innerHTML = `<div class="empty glass"><h2>${escapeHtml(message)}</h2><p class="subline">请稍候。</p></div>`;
+}
+
+async function bootstrap() {
+  renderLoading();
+  startAutoFeishuLogin();
+  if (!readFeishuSession() && window.location.hostname === "liu00904.github.io") return;
+  try {
+    await loadProjectsFromWorker();
+    render();
+    await loadSharedNotesFromFeishu();
+  } catch (error) {
+    console.warn("项目数据读取失败", error);
+    els.board.innerHTML = `
+      <div class="empty glass">
+        <h2>${escapeHtml(error.message || "项目数据读取失败")}</h2>
+        <p class="subline">请刷新或重新登录飞书。</p>
+      </div>
+    `;
+  }
 }
 
 function lastUpdateLabel() {
@@ -1693,5 +1736,4 @@ els.exportBtn.addEventListener("click", async () => {
   }, 1200);
 });
 
-render();
-loadSharedNotesFromFeishu();
+bootstrap();
