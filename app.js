@@ -403,16 +403,26 @@ function startAutoFeishuLogin() {
 
 async function loadProjectsFromWorker() {
   if (!FEISHU_SYNC_API) throw new Error("没有配置飞书同步服务");
-  const response = await fetch(`${FEISHU_SYNC_API}/projects`, {
-    method: "GET",
-    headers: authHeaders()
-  });
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 12000);
+  let response;
+  try {
+    response = await fetch(`${FEISHU_SYNC_API}/projects`, {
+      method: "GET",
+      headers: authHeaders(),
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error?.name === "AbortError") throw new Error("飞书数据服务连接超时，请稍后重试");
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
   const result = await response.json().catch(() => null);
   if (response.status === 401 || response.status === 403) {
     localStorage.removeItem(FEISHU_SESSION_KEY);
     localStorage.removeItem(FEISHU_USER_KEY);
     currentFeishuUser = null;
-    startAutoFeishuLogin();
     throw new Error("请先通过飞书登录");
   }
   if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
@@ -814,22 +824,35 @@ function renderLoading(message = "正在验证飞书账号并读取项目数据�
   els.board.innerHTML = `<div class="empty glass"><h2>${escapeHtml(message)}</h2><p class="subline">请稍候。</p></div>`;
 }
 
+function renderLoginPrompt(message = "项目数据需要登录后查看") {
+  renderMetrics();
+  renderStatusCounts();
+  els.pageTitle.textContent = "项目数据";
+  els.pageMeta.textContent = "登录后可见";
+  els.controlTitle.textContent = "受保护数据";
+  els.controlMeta.textContent = "项目数据不会写入公开网页文件";
+  els.board.innerHTML = `
+    <div class="empty glass">
+      <h2>${escapeHtml(message)}</h2>
+      <p class="subline">请使用企业飞书账号登录。</p>
+      <button class="primary-btn protected-login-btn" data-action="feishu-login" type="button">飞书登录</button>
+    </div>
+  `;
+}
+
 async function bootstrap() {
+  if (!readFeishuSession()) {
+    renderLoginPrompt();
+    return;
+  }
   renderLoading();
-  startAutoFeishuLogin();
-  if (!readFeishuSession() && window.location.hostname === "liu00904.github.io") return;
   try {
     await loadProjectsFromWorker();
     render();
     await loadSharedNotesFromFeishu();
   } catch (error) {
     console.warn("项目数据读取失败", error);
-    els.board.innerHTML = `
-      <div class="empty glass">
-        <h2>${escapeHtml(error.message || "项目数据读取失败")}</h2>
-        <p class="subline">请刷新或重新登录飞书。</p>
-      </div>
-    `;
+    renderLoginPrompt(error.message || "项目数据读取失败");
   }
 }
 
@@ -1644,6 +1667,11 @@ els.board.addEventListener("change", async event => {
 els.board.addEventListener("click", async event => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
+  if (button.dataset.action === "feishu-login") {
+    sessionStorage.setItem(AUTH_ATTEMPT_KEY, "1");
+    window.location.assign(loginUrl());
+    return;
+  }
   const project = projects.find(item => item.id === button.dataset.id);
   if (button.dataset.action === "edit" && project) {
     openForm(project);

@@ -2259,6 +2259,11 @@ dialog::backdrop {
   text-align: center;
 }
 
+.protected-login-btn {
+  margin-top: 20px;
+  min-width: 132px;
+}
+
 .topbar,
 .metric,
 .control-panel,
