@@ -276,8 +276,40 @@ function projectPatchPayload(project, fieldsToSync) {
   };
 }
 
+function editableSyncFields(project) {
+  return {
+    status: project.status,
+    name: project.name,
+    startDate: project.startDate,
+    endDate: endDateFor(project),
+    kpi: project.kpi,
+    platform: project.platform,
+    notes: plainNotesForFeishu(project.notes),
+    manager: project.manager,
+    writer: project.writer,
+    publisher: project.publisher,
+    monitor: project.monitor,
+    invoiceStatus: project.invoiceStatus,
+    publishLinks: normalizeLinks(project.publishLinks).map(item => item.url).filter(Boolean).join("\n"),
+    monitorLinks: normalizeLinks(project.monitorLinks).map(item => item.url).filter(Boolean).join("\n"),
+    optimizationSuggestion: project.optimizationSuggestion
+  };
+}
+
+function changedSyncFields(previousProject, nextProject) {
+  const previous = editableSyncFields(previousProject || {});
+  const next = editableSyncFields(nextProject);
+  const changed = {};
+  Object.keys(next).forEach(key => {
+    if (String(previous[key] ?? "") !== String(next[key] ?? "")) changed[key] = next[key];
+  });
+  if ((changed.startDate || changed.endDate) && !changed.endDate) changed.endDate = next.endDate;
+  return changed;
+}
+
 async function syncProjectFieldsToFeishu(project, fieldsToSync) {
   if (!FEISHU_SYNC_API || !project?.id?.startsWith("rec")) return { ok: false, skipped: true };
+  if (!Object.keys(fieldsToSync || {}).length) return { ok: true, skipped: true };
   try {
     const response = await fetch(FEISHU_SYNC_API, {
       method: "POST",
@@ -1461,7 +1493,10 @@ els.projectForm?.addEventListener("submit", async event => {
   els.saveProjectBtn.disabled = true;
   els.saveProjectBtn.textContent = "正在同步…";
   els.projectFormState.textContent = "正在保存到飞书，请稍候。";
-  const syncResult = await syncProjectToFeishu(formProject);
+  const existingProject = projects.find(item => item.id === formProject.id);
+  const syncResult = existingProject?.id?.startsWith("rec")
+    ? await syncProjectFieldsToFeishu(formProject, changedSyncFields(existingProject, formProject))
+    : await syncProjectToFeishu(formProject);
   if (!syncResult.ok) {
     els.saveProjectBtn.disabled = false;
     els.saveProjectBtn.textContent = "重新同步";

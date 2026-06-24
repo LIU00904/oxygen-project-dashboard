@@ -1429,9 +1429,9 @@ window.FEISHU_PROJECTS = [
     "source": "feishu",
     "name": "格力高",
     "status": "进行中",
-    "startDate": "2026-06-07",
-    "cycleDays": 24,
-    "progressPercent": 63,
+    "startDate": "2026-06-11",
+    "cycleDays": 30,
+    "progressPercent": 43,
     "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "有四个平台收录（截图）",
@@ -1872,6 +1872,6 @@ window.FEISHU_SYNC_META = {
     "华硕",
     "一丰 荣放 亚洲龙"
   ],
-  "progressUpdatedAt": "2026-06-22T00:01:09.544Z",
+  "progressUpdatedAt": "2026-06-24T00:00:00.000+08:00",
   "progressUpdateNote": "progress-only"
 };
