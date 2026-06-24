@@ -170,7 +170,7 @@ function loadProjects() {
     const savedByName = new Map(parsed.map(project => [project.name, project]));
     const merged = seedProjects.map(project => {
       const savedProject = savedById.get(project.id) || savedByName.get(project.name) || {};
-      const savedIsNewer = isSavedProjectNewerThanSeed(savedProject);
+      const savedIsNewer = shouldKeepLocalProjectEdits(savedProject);
       const mergedProject = {
         ...project,
         ...savedProject
@@ -200,10 +200,15 @@ function loadProjects() {
   }
 }
 
-function isSavedProjectNewerThanSeed(project) {
+function shouldKeepLocalProjectEdits(project) {
+  if (project?._preserveLocalEdit) return true;
   if (!project?._localEditedAt) return false;
   const savedAt = Date.parse(project._localEditedAt);
-  const seedAt = Date.parse(syncMeta.syncedAt || syncMeta.progressUpdatedAt || "");
+  const seedAt = Math.max(
+    Date.parse(syncMeta.syncedAt || ""),
+    Date.parse(syncMeta.progressUpdatedAt || ""),
+    Date.parse(syncMeta.analysisUpdatedAt || "")
+  );
   if (!Number.isFinite(savedAt)) return false;
   if (!Number.isFinite(seedAt)) return true;
   return savedAt > seedAt;
@@ -216,7 +221,9 @@ function startOfToday() {
 }
 
 function markProjectLocalEdit(project) {
-  if (project) project._localEditedAt = new Date().toISOString();
+  if (!project) return;
+  project._localEditedAt = new Date().toISOString();
+  project._preserveLocalEdit = true;
 }
 
 function persist() {
