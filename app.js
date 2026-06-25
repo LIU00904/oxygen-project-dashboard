@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v3";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v4";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const LEGACY_STORAGE_KEYS = [
@@ -176,7 +176,10 @@ function loadProjects() {
     const seedIds = new Set(seedProjects.map(project => project.id));
     const seedNames = new Set(seedProjects.map(project => project.name));
     parsed.forEach(project => {
-      if (!seedIds.has(project.id) && !seedNames.has(project.name)) merged.unshift(project);
+      const isUnsyncedLocalProject = !String(project.id || "").startsWith("rec");
+      if (isUnsyncedLocalProject && !seedIds.has(project.id) && !seedNames.has(project.name)) {
+        merged.unshift(project);
+      }
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
     return merged;
