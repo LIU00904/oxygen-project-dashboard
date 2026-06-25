@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260625-private-projects-v4";
+const WORKER_VERSION = "20260625-private-projects-v5";
 const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -27,6 +27,8 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
+
+let memoryProjectsCache = null;
 
 export default {
   async fetch(request, env) {
@@ -112,35 +114,29 @@ export default {
   }
 };
 
-function projectsCacheRequest(env) {
-  return new Request(
-    `https://oxygen-project-cache.internal/${env.FEISHU_APP_TOKEN}/${env.FEISHU_TABLE_ID}/${WORKER_VERSION}`
-  );
-}
-
 async function readCachedProjects(env, token) {
-  const cache = caches.default;
-  const cacheKey = projectsCacheRequest(env);
-  const cachedResponse = await cache.match(cacheKey);
-  if (cachedResponse) {
+  const cacheKey = `${env.FEISHU_APP_TOKEN}:${env.FEISHU_TABLE_ID}:${WORKER_VERSION}`;
+  if (
+    memoryProjectsCache?.key === cacheKey &&
+    Date.now() < memoryProjectsCache.expiresAt
+  ) {
     return {
-      projects: await cachedResponse.json(),
+      projects: memoryProjectsCache.projects,
       cached: true
     };
   }
 
   const projects = await readProjects(env, token);
-  await cache.put(cacheKey, new Response(JSON.stringify(projects), {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": `public, max-age=${PROJECT_CACHE_SECONDS}`
-    }
-  }));
+  memoryProjectsCache = {
+    key: cacheKey,
+    projects,
+    expiresAt: Date.now() + PROJECT_CACHE_SECONDS * 1000
+  };
   return { projects, cached: false };
 }
 
 async function clearProjectsCache(env) {
-  await caches.default.delete(projectsCacheRequest(env));
+  memoryProjectsCache = null;
 }
 
 class HttpError extends Error {
@@ -268,27 +264,14 @@ async function readNotes(env, token) {
 async function readProjects(env, token) {
   const projects = [];
   let pageToken = "";
-  const existingFields = await readTableFieldNames(env, token);
-  const requestedFields = [
-    ...Object.values(FIELD_MAP),
-    "当前数据",
-    "报告链接 / 飞书报告文件",
-    "Brief",
-    "项目资料"
-  ].filter((fieldName, index, list) =>
-    existingFields.has(fieldName) && list.indexOf(fieldName) === index
-  );
 
   do {
     const suffix = pageToken ? `&page_token=${pageToken}` : "";
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records/search?page_size=100${suffix}`;
+    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/records?page_size=500${suffix}`;
     const response = await fetch(url, {
-      method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ field_names: requestedFields })
+        Authorization: `Bearer ${token}`
+      }
     });
     const result = await response.json();
     if (!response.ok || result.code) throw new Error(feishuErrorMessage(result, "读取项目表失败"));
@@ -304,31 +287,6 @@ async function readProjects(env, token) {
     return (priority[a.status] ?? 9) - (priority[b.status] ?? 9)
       || String(a.name).localeCompare(String(b.name), "zh-Hans-CN");
   });
-}
-
-async function readTableFieldNames(env, token) {
-  const fieldNames = new Set();
-  let pageToken = "";
-
-  do {
-    const suffix = pageToken ? `&page_token=${pageToken}` : "";
-    const url = `https://open.feishu.cn/open-apis/bitable/v1/apps/${env.FEISHU_APP_TOKEN}/tables/${env.FEISHU_TABLE_ID}/fields?page_size=100${suffix}`;
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    const result = await response.json();
-    if (!response.ok || result.code) {
-      throw new Error(feishuErrorMessage(result, "读取项目表字段失败"));
-    }
-    for (const field of result.data?.items || []) {
-      if (field?.field_name) fieldNames.add(field.field_name);
-    }
-    pageToken = result.data?.page_token || "";
-  } while (pageToken);
-
-  return fieldNames;
 }
 
 function feishuErrorMessage(result, fallback) {
