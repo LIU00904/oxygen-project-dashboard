@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260624-private-projects-v1";
+const WORKER_VERSION = "20260625-private-projects-v2";
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -234,27 +234,6 @@ async function readNotes(env, token) {
 async function readProjects(env, token) {
   const projects = [];
   let pageToken = "";
-  const fieldNames = [
-    FIELD_MAP.status,
-    FIELD_MAP.name,
-    FIELD_MAP.startDate,
-    FIELD_MAP.endDate,
-    FIELD_MAP.kpi,
-    FIELD_MAP.platform,
-    FIELD_MAP.notes,
-    FIELD_MAP.invoiceStatus,
-    FIELD_MAP.publishLinks,
-    FIELD_MAP.monitorLinks,
-    FIELD_MAP.optimizationSuggestion,
-    FIELD_MAP.manager,
-    FIELD_MAP.writer,
-    FIELD_MAP.publisher,
-    FIELD_MAP.monitor,
-    "当前数据",
-    "报告链接 / 飞书报告文件",
-    "Brief",
-    "项目资料"
-  ];
 
   do {
     const suffix = pageToken ? `&page_token=${pageToken}` : "";
@@ -265,10 +244,12 @@ async function readProjects(env, token) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ field_names: fieldNames })
+      // Do not pin optional field names here. Feishu rejects the whole request
+      // when any requested field has been renamed or deleted.
+      body: JSON.stringify({})
     });
     const result = await response.json();
-    if (!response.ok || result.code) throw new Error(JSON.stringify(result));
+    if (!response.ok || result.code) throw new Error(feishuErrorMessage(result, "读取项目表失败"));
     for (const item of result.data?.items || []) {
       const project = recordToProject(item);
       if (project.name) projects.push(project);
@@ -281,6 +262,13 @@ async function readProjects(env, token) {
     return (priority[a.status] ?? 9) - (priority[b.status] ?? 9)
       || String(a.name).localeCompare(String(b.name), "zh-Hans-CN");
   });
+}
+
+function feishuErrorMessage(result, fallback) {
+  return result?.msg
+    || result?.error?.message
+    || result?.error?.details?.[0]?.message
+    || fallback;
 }
 
 function recordToProject(record) {
