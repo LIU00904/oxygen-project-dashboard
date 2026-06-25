@@ -2,6 +2,7 @@ const STORAGE_KEY = "oxygen-project-dashboard-local-edits";
 const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
+const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const LEGACY_STORAGE_KEYS = [
@@ -354,6 +355,15 @@ function readFeishuSession() {
   return localStorage.getItem(FEISHU_SESSION_KEY) || "";
 }
 
+function localDateKey() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
 function authHeaders(headers = {}) {
   const session = readFeishuSession();
   return session ? { ...headers, Authorization: `Bearer ${session}` } : headers;
@@ -370,7 +380,10 @@ function readFeishuUserFromHash() {
   const hash = window.location.hash || "";
   const match = hash.match(/(?:^#|&)feishu_user=([^&]+)/);
   const tokenMatch = hash.match(/(?:^#|&)feishu_token=([^&]+)/);
-  if (tokenMatch) localStorage.setItem(FEISHU_SESSION_KEY, decodeURIComponent(tokenMatch[1]));
+  if (tokenMatch) {
+    localStorage.setItem(FEISHU_SESSION_KEY, decodeURIComponent(tokenMatch[1]));
+    localStorage.setItem(FEISHU_LOGIN_DATE_KEY, localDateKey());
+  }
   if (!match) return null;
   try {
     const user = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(match[1])))));
@@ -404,7 +417,7 @@ function startAutoFeishuLogin() {
 async function loadProjectsFromWorker() {
   if (!FEISHU_SYNC_API) throw new Error("没有配置飞书同步服务");
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 12000);
+  const timeoutId = window.setTimeout(() => controller.abort(), 60000);
   let response;
   try {
     response = await fetch(`${FEISHU_SYNC_API}/projects`, {
@@ -840,6 +853,22 @@ function renderLoginPrompt(message = "项目数据需要登录后查看") {
   `;
 }
 
+function renderDataRetry(message = "飞书数据服务暂时没有响应") {
+  renderMetrics();
+  renderStatusCounts();
+  els.pageTitle.textContent = "项目数据";
+  els.pageMeta.textContent = currentFeishuUser?.name ? `${currentFeishuUser.name} 已登录` : "飞书已登录";
+  els.controlTitle.textContent = "受保护数据";
+  els.controlMeta.textContent = "登录状态已保留，无需重复登录";
+  els.board.innerHTML = `
+    <div class="empty glass">
+      <h2>${escapeHtml(message)}</h2>
+      <p class="subline">你的登录状态仍然有效，请稍后重新加载数据。</p>
+      <button class="primary-btn protected-login-btn" data-action="retry-projects" type="button">重新加载数据</button>
+    </div>
+  `;
+}
+
 async function bootstrap() {
   if (!readFeishuSession()) {
     renderLoginPrompt();
@@ -852,7 +881,11 @@ async function bootstrap() {
     await loadSharedNotesFromFeishu();
   } catch (error) {
     console.warn("项目数据读取失败", error);
-    renderLoginPrompt(error.message || "项目数据读取失败");
+    if (!readFeishuSession()) {
+      renderLoginPrompt(error.message || "登录状态已过期");
+    } else {
+      renderDataRetry(error.message || "项目数据读取失败");
+    }
   }
 }
 
@@ -1670,6 +1703,12 @@ els.board.addEventListener("click", async event => {
   if (button.dataset.action === "feishu-login") {
     sessionStorage.setItem(AUTH_ATTEMPT_KEY, "1");
     window.location.assign(loginUrl());
+    return;
+  }
+  if (button.dataset.action === "retry-projects") {
+    button.disabled = true;
+    button.textContent = "正在加载…";
+    await bootstrap();
     return;
   }
   const project = projects.find(item => item.id === button.dataset.id);
