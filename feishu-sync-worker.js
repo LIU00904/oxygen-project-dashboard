@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260625-private-projects-v5";
+const WORKER_VERSION = "20260625-private-projects-v6";
 const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -29,6 +29,7 @@ const corsHeaders = {
 };
 
 let memoryProjectsCache = null;
+const STALLED_PROJECTS = new Set(["西昊", "西昊2", "mac", "海蓝之谜"]);
 
 export default {
   async fetch(request, env) {
@@ -302,15 +303,15 @@ function recordToProject(record) {
   const startDate = dateIso(fields[FIELD_MAP.startDate]);
   const endDate = dateIso(fields[FIELD_MAP.endDate]);
   const cycle = cycleDays(startDate, endDate);
-  const status = normalizeStatus(textValue(fields[FIELD_MAP.status]));
+  const status = inferStatus(name, fields, startDate);
   const publishLinks = [
     ...linkList(fields[FIELD_MAP.publishLinks]),
     ...linkList(fields["项目资料"])
   ];
   const monitorLinks = linkList(fields[FIELD_MAP.monitorLinks]);
   const reportLinks = [
-    ...linkList(fields["报告链接 / 飞书报告文件"]),
-    ...fileList(fields["报告链接 / 飞书报告文件"])
+    ...linkList(fields["项目报告文件"]),
+    ...fileList(fields["项目报告文件"])
   ];
   const briefLinks = [
     ...linkList(fields["Brief"]),
@@ -327,7 +328,7 @@ function recordToProject(record) {
     status,
     startDate,
     cycleDays: cycle,
-    progressPercent: progressPercent(status, startDate, cycle),
+    progressPercent: progressFromFields(fields, status, startDate, cycle),
     kpi: textValue(fields[FIELD_MAP.kpi]).trim(),
     platform: textValue(fields[FIELD_MAP.platform]).trim(),
     notes: cleanNotes(textValue(fields[FIELD_MAP.notes])),
@@ -345,6 +346,24 @@ function recordToProject(record) {
     optimizationSuggestion: suggestion || defaultSuggestion(status, publishLinks, monitorLinks),
     tableUrl: TABLE_URL
   };
+}
+
+function inferStatus(name, fields, startDate) {
+  if (STALLED_PROJECTS.has(name)) return "停滞";
+  const progress = Number(fields["项目进度"]);
+  if (Number.isFinite(progress) && progress >= 1) return "已完成";
+  if (startDate || (Number.isFinite(progress) && progress > 0)) return "进行中";
+  return "待开始";
+}
+
+function progressFromFields(fields, status, startDate, cycle) {
+  if (status === "已完成") return 100;
+  if (status === "待开始" || status === "停滞") return 0;
+  const progress = Number(fields["项目进度"]);
+  if (Number.isFinite(progress)) {
+    return Math.max(0, Math.min(100, Math.round(progress * 100)));
+  }
+  return progressPercent(status, startDate, cycle);
 }
 
 function dateIso(value) {
