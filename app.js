@@ -3,6 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const LEGACY_STORAGE_KEYS = [
@@ -212,6 +213,23 @@ function markProjectLocalEdit(project) {
 
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+}
+
+function readProjectCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PROJECT_CACHE_KEY) || "null");
+    return Array.isArray(cached?.projects) && cached.projects.length ? cached : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveProjectCache(nextProjects, meta) {
+  localStorage.setItem(PROJECT_CACHE_KEY, JSON.stringify({
+    projects: nextProjects,
+    meta: meta || {},
+    cachedAt: new Date().toISOString()
+  }));
 }
 
 function endDateFor(project) {
@@ -441,6 +459,7 @@ async function loadProjectsFromWorker() {
   if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
   seedProjects = Array.isArray(result.projects) ? result.projects : [];
   syncMeta = result.meta || {};
+  saveProjectCache(seedProjects, syncMeta);
   if (result.user?.name) saveFeishuUser(result.user);
   peopleOptions = buildPeopleOptions(seedProjects);
   projects = loadProjects();
@@ -874,13 +893,29 @@ async function bootstrap() {
     renderLoginPrompt();
     return;
   }
-  renderLoading();
+  const cached = readProjectCache();
+  if (cached) {
+    seedProjects = cached.projects;
+    syncMeta = { ...cached.meta, cachedAt: cached.cachedAt };
+    peopleOptions = buildPeopleOptions(seedProjects);
+    projects = loadProjects();
+    render();
+    els.controlMeta.textContent = "正在后台检查飞书最新数据…";
+  } else {
+    renderLoading();
+  }
   try {
     await loadProjectsFromWorker();
     render();
-    await loadSharedNotesFromFeishu();
+    loadSharedNotesFromFeishu().catch(error => {
+      console.warn("备注后台更新失败", error);
+    });
   } catch (error) {
     console.warn("项目数据读取失败", error);
+    if (cached && readFeishuSession()) {
+      els.controlMeta.textContent = "当前显示最近缓存，稍后可重新加载";
+      return;
+    }
     if (!readFeishuSession()) {
       renderLoginPrompt(error.message || "登录状态已过期");
     } else {

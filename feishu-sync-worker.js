@@ -17,7 +17,8 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260625-private-projects-v3";
+const WORKER_VERSION = "20260625-private-projects-v4";
+const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -43,7 +44,7 @@ export default {
       if (requestUrl.pathname === "/projects") {
         const user = await authorizeRequest(request, env);
         const token = await tenantToken(env);
-        const projects = await readProjects(env, token);
+        const { projects, cached } = await readCachedProjects(env, token);
         return json({
           ok: true,
           user,
@@ -52,7 +53,8 @@ export default {
             syncedAt: new Date().toISOString(),
             source: "feishu-worker",
             recordCount: projects.length,
-            version: WORKER_VERSION
+            version: WORKER_VERSION,
+            cached
           }
         });
       }
@@ -100,6 +102,7 @@ export default {
       if (!response.ok || result.code) {
         return json({ error: result }, 500);
       }
+      await clearProjectsCache(env);
       const recordId = result.data?.record?.record_id || result.data?.record_id || body.recordId;
       return json({ ok: true, recordId, updated: Object.keys(fields), version: WORKER_VERSION });
     } catch (error) {
@@ -108,6 +111,37 @@ export default {
     }
   }
 };
+
+function projectsCacheRequest(env) {
+  return new Request(
+    `https://oxygen-project-cache.internal/${env.FEISHU_APP_TOKEN}/${env.FEISHU_TABLE_ID}/${WORKER_VERSION}`
+  );
+}
+
+async function readCachedProjects(env, token) {
+  const cache = caches.default;
+  const cacheKey = projectsCacheRequest(env);
+  const cachedResponse = await cache.match(cacheKey);
+  if (cachedResponse) {
+    return {
+      projects: await cachedResponse.json(),
+      cached: true
+    };
+  }
+
+  const projects = await readProjects(env, token);
+  await cache.put(cacheKey, new Response(JSON.stringify(projects), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": `public, max-age=${PROJECT_CACHE_SECONDS}`
+    }
+  }));
+  return { projects, cached: false };
+}
+
+async function clearProjectsCache(env) {
+  await caches.default.delete(projectsCacheRequest(env));
+}
 
 class HttpError extends Error {
   constructor(message, status = 500) {
