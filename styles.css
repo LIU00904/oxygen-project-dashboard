@@ -1775,6 +1775,19 @@ h2 {
   background: linear-gradient(135deg, var(--blue), var(--cyan));
 }
 
+.folder-links a.is-loading {
+  pointer-events: none;
+  color: rgba(10, 132, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.folder-links a.is-loading::after {
+  content: "下载中";
+  margin-left: 6px;
+  color: rgba(102, 114, 137, 0.9);
+  font-size: 11px;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1103,7 +1103,13 @@ function renderResourceFolder(title, subtitle, color, icon, groups) {
   );
   const countLabel = links.length ? `${links.length} 个文件` : "0 个文件";
   const linkHtml = links.length
-    ? links.map(item => `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`).join("")
+    ? links.map(item => {
+      if (!item.url) {
+        return `<span class="folder-empty">${escapeHtml(item.label || "文件暂不可打开")}</span>`;
+      }
+      const proxyAttrs = item.authRequired ? ` data-proxy-file="true" data-file-name="${escapeHtml(item.label || "飞书文件")}"` : "";
+      return `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"${proxyAttrs}>${escapeHtml(item.label)}</a>`;
+    }).join("")
     : `<span class="folder-empty">待上传至飞书</span>`;
   return `
     <details class="folder-details">
@@ -1130,6 +1136,30 @@ function normalizeLinks(value) {
     if (typeof item === "string") return { label: item, url: item };
     return item;
   }).filter(item => item && (item.url || item.label));
+}
+
+async function openProtectedFile(link) {
+  const url = link.getAttribute("href");
+  if (!url) return;
+  link.classList.add("is-loading");
+  try {
+    const response = await fetch(url, { headers: authHeaders() });
+    if (!response.ok) throw new Error(await response.text());
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const download = document.createElement("a");
+    download.href = objectUrl;
+    download.download = link.dataset.fileName || link.textContent.trim() || "飞书文件";
+    document.body.appendChild(download);
+    download.click();
+    download.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
+  } catch (error) {
+    console.warn("文件打开失败", error);
+    alert("文件暂时打不开，请确认 Cloudflare Worker 已更新，并稍后重试。");
+  } finally {
+    link.classList.remove("is-loading");
+  }
 }
 
 function renderCurrentData(project, timing) {
@@ -1736,6 +1766,12 @@ els.board.addEventListener("change", async event => {
 });
 
 els.board.addEventListener("click", async event => {
+  const protectedFile = event.target.closest("a[data-proxy-file='true']");
+  if (protectedFile) {
+    event.preventDefault();
+    await openProtectedFile(protectedFile);
+    return;
+  }
   const button = event.target.closest("button[data-action]");
   if (!button) return;
   if (button.dataset.action === "feishu-login") {

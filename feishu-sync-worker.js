@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260625-private-projects-v6";
+const WORKER_VERSION = "20260626-file-download-proxy-v1";
 const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -47,7 +47,7 @@ export default {
       if (requestUrl.pathname === "/projects") {
         const user = await authorizeRequest(request, env);
         const token = await tenantToken(env);
-        const { projects, cached } = await readCachedProjects(env, token);
+        const { projects, cached } = await readCachedProjects(env, token, requestUrl.origin);
         return json({
           ok: true,
           user,
@@ -60,6 +60,11 @@ export default {
             cached
           }
         });
+      }
+      if (requestUrl.pathname === "/download") {
+        await authorizeRequest(request, env);
+        const token = await tenantToken(env);
+        return downloadFeishuFile(requestUrl, token);
       }
       if (request.method === "GET") {
         await authorizeRequest(request, env);
@@ -115,8 +120,8 @@ export default {
   }
 };
 
-async function readCachedProjects(env, token) {
-  const cacheKey = `${env.FEISHU_APP_TOKEN}:${env.FEISHU_TABLE_ID}:${WORKER_VERSION}`;
+async function readCachedProjects(env, token, origin) {
+  const cacheKey = `${env.FEISHU_APP_TOKEN}:${env.FEISHU_TABLE_ID}:${WORKER_VERSION}:${origin}`;
   if (
     memoryProjectsCache?.key === cacheKey &&
     Date.now() < memoryProjectsCache.expiresAt
@@ -127,7 +132,7 @@ async function readCachedProjects(env, token) {
     };
   }
 
-  const projects = await readProjects(env, token);
+  const projects = await readProjects(env, token, origin);
   memoryProjectsCache = {
     key: cacheKey,
     projects,
@@ -262,7 +267,7 @@ async function readNotes(env, token) {
   return notes;
 }
 
-async function readProjects(env, token) {
+async function readProjects(env, token, origin) {
   const projects = [];
   let pageToken = "";
 
@@ -277,7 +282,7 @@ async function readProjects(env, token) {
     const result = await response.json();
     if (!response.ok || result.code) throw new Error(feishuErrorMessage(result, "读取项目表失败"));
     for (const item of result.data?.items || []) {
-      const project = recordToProject(item);
+      const project = recordToProject(item, origin);
       if (project.name) projects.push(project);
     }
     pageToken = result.data?.page_token || "";
@@ -297,7 +302,7 @@ function feishuErrorMessage(result, fallback) {
     || fallback;
 }
 
-function recordToProject(record) {
+function recordToProject(record, origin) {
   const fields = record.fields || {};
   const name = textValue(fields[FIELD_MAP.name]).trim();
   const startDate = dateIso(fields[FIELD_MAP.startDate]);
@@ -311,11 +316,11 @@ function recordToProject(record) {
   const monitorLinks = linkList(fields[FIELD_MAP.monitorLinks]);
   const reportLinks = [
     ...linkList(fields["项目报告文件"]),
-    ...fileList(fields["项目报告文件"])
+    ...fileList(fields["项目报告文件"], origin)
   ];
   const briefLinks = [
     ...linkList(fields["Brief"]),
-    ...fileList(fields["Brief"])
+    ...fileList(fields["Brief"], origin)
   ];
   const currentData = textValue(fields["当前数据"]).trim();
   const suggestion = textValue(fields[FIELD_MAP.optimizationSuggestion]).trim();
@@ -439,7 +444,7 @@ function linkList(value) {
   return uniqueLinks(output);
 }
 
-function fileList(value) {
+function fileList(value, origin) {
   const output = [];
   const visit = item => {
     if (!item) return;
@@ -448,14 +453,69 @@ function fileList(value) {
       return;
     }
     if (typeof item === "object") {
-      const url = item.url || item.link || item.tmp_url || item.file_url;
+      const directUrl = item.url || item.link || item.tmp_url || item.file_url;
+      const fileToken = item.file_token || item.token;
       const label = item.name || item.file_name || item.text || "飞书文件";
-      if (url) output.push({ label, url });
+      const url = fileToken && origin
+        ? downloadProxyUrl(origin, fileToken, label, directUrl)
+        : directUrl;
+      if (url || label) {
+        output.push({
+          label,
+          url,
+          fileToken,
+          fileType: item.type || item.mime_type || "",
+          size: item.size || 0,
+          authRequired: Boolean(fileToken && origin)
+        });
+      }
       if (Array.isArray(item.value)) visit(item.value);
     }
   };
   visit(value);
   return uniqueLinks(output);
+}
+
+function downloadProxyUrl(origin, fileToken, label, directUrl) {
+  const url = new URL("/download", origin);
+  url.searchParams.set("file_token", fileToken);
+  if (label) url.searchParams.set("name", label);
+  const extra = extractExtraParam(directUrl);
+  if (extra) url.searchParams.set("extra", extra);
+  return url.toString();
+}
+
+function extractExtraParam(value) {
+  if (!value) return "";
+  try {
+    const url = new URL(value);
+    return url.searchParams.get("extra") || "";
+  } catch {
+    return "";
+  }
+}
+
+async function downloadFeishuFile(requestUrl, token) {
+  const fileToken = requestUrl.searchParams.get("file_token");
+  if (!fileToken) return json({ error: "Missing file_token" }, 400);
+  const name = requestUrl.searchParams.get("name") || "feishu-file";
+  const extra = requestUrl.searchParams.get("extra") || "";
+  const downloadUrl = new URL(`https://open.feishu.cn/open-apis/drive/v1/medias/${encodeURIComponent(fileToken)}/download`);
+  if (extra) downloadUrl.searchParams.set("extra", extra);
+  const response = await fetch(downloadUrl.toString(), {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    return json({ error: text || `下载文件失败：${response.status}` }, response.status);
+  }
+  const headers = new Headers(response.headers);
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(name)}`);
+  return new Response(response.body, {
+    status: response.status,
+    headers
+  });
 }
 
 function uniqueLinks(list) {
