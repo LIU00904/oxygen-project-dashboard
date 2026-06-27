@@ -1096,11 +1096,14 @@ function renderResourceLink(label, links) {
 
 function renderResourceFolder(title, subtitle, color, icon, groups) {
   const links = groups.flatMap(([label, value]) =>
-    normalizeLinks(value).map((item, index, group) => ({
-      label: item.label || `${label}${group.length > 1 ? ` ${index + 1}` : ""}`,
-      url: item.url,
-      authRequired: item.authRequired
-    }))
+    normalizeLinks(value).map((item, index, group) => {
+      const protectedItem = normalizeProtectedDownloadItem(item, label);
+      return {
+        label: protectedItem.label || `${label}${group.length > 1 ? ` ${index + 1}` : ""}`,
+        url: protectedItem.url,
+        authRequired: protectedItem.authRequired
+      };
+    })
   );
   const countLabel = links.length ? `${links.length} 个文件` : "0 个文件";
   const linkHtml = links.length
@@ -1153,6 +1156,35 @@ function normalizeHref(value) {
   if (naked) return `https://${naked[0]}`;
   if (/^[\w.-]+\.[a-z]{2,}$/i.test(text)) return `https://${text}`;
   return "";
+}
+
+function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
+  if (!item?.url || item.authRequired) return item;
+  const parsed = parseFeishuMediaDownload(item.url);
+  if (!parsed || !FEISHU_SYNC_API) return item;
+  const proxyUrl = new URL("/download", FEISHU_SYNC_API);
+  proxyUrl.searchParams.set("file_token", parsed.fileToken);
+  proxyUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
+  if (parsed.extra) proxyUrl.searchParams.set("extra", parsed.extra);
+  return {
+    ...item,
+    url: proxyUrl.toString(),
+    authRequired: true
+  };
+}
+
+function parseFeishuMediaDownload(value) {
+  try {
+    const url = new URL(value);
+    const match = url.pathname.match(/\/open-apis\/drive\/v1\/medias\/([^/]+)\/download/i);
+    if (!match) return null;
+    return {
+      fileToken: decodeURIComponent(match[1]),
+      extra: url.searchParams.get("extra") || ""
+    };
+  } catch {
+    return null;
+  }
 }
 
 async function openProtectedFile(link) {

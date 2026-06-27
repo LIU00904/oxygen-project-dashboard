@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260626-file-download-proxy-v1";
+const WORKER_VERSION = "20260627-file-download-proxy-v2";
 const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -314,14 +314,8 @@ function recordToProject(record, origin) {
     ...linkList(fields["项目资料"])
   ];
   const monitorLinks = linkList(fields[FIELD_MAP.monitorLinks]);
-  const reportLinks = [
-    ...linkList(fields["项目报告文件"]),
-    ...fileList(fields["项目报告文件"], origin)
-  ];
-  const briefLinks = [
-    ...linkList(fields["Brief"]),
-    ...fileList(fields["Brief"], origin)
-  ];
+  const reportLinks = fileList(fields["项目报告文件"], origin);
+  const briefLinks = fileList(fields["Brief"], origin);
   const currentData = textValue(fields["当前数据"]).trim();
   const suggestion = textValue(fields[FIELD_MAP.optimizationSuggestion]).trim();
 
@@ -433,6 +427,7 @@ function linkList(value) {
       return;
     }
     if (typeof item === "object") {
+      if (item.file_token || item.tmp_url || item.file_url || isFeishuMediaDownload(item.url || item.link)) return;
       const url = normalizeHref(item.link || item.url || item.text || item.name);
       if (url) {
         output.push({ label: item.text || item.name || url.replace(/^https?:\/\//, "").slice(0, 32), url });
@@ -454,6 +449,10 @@ function normalizeHref(value) {
   if (naked) return `https://${naked[0]}`;
   if (/^[\w.-]+\.[a-z]{2,}$/i.test(text)) return `https://${text}`;
   return "";
+}
+
+function isFeishuMediaDownload(value) {
+  return /open\.feishu\.cn\/open-apis\/drive\/v1\/medias\/[^/]+\/download/i.test(String(value || ""));
 }
 
 function fileList(value, origin) {
