@@ -423,8 +423,8 @@ function linkList(value) {
     if (!item) return;
     if (typeof item === "string") {
       item.split(/\n+/).forEach(part => {
-        const trimmed = part.trim();
-        if (trimmed) output.push({ label: trimmed.replace(/^https?:\/\//, "").slice(0, 32), url: trimmed });
+        const url = normalizeHref(part);
+        if (url) output.push({ label: url.replace(/^https?:\/\//, "").slice(0, 32), url });
       });
       return;
     }
@@ -433,15 +433,27 @@ function linkList(value) {
       return;
     }
     if (typeof item === "object") {
-      const url = item.link || item.url || item.text || item.name;
-      if (url && /^https?:\/\//.test(String(url))) {
-        output.push({ label: item.text || item.name || String(url).replace(/^https?:\/\//, "").slice(0, 32), url: String(url) });
+      const url = normalizeHref(item.link || item.url || item.text || item.name);
+      if (url) {
+        output.push({ label: item.text || item.name || url.replace(/^https?:\/\//, "").slice(0, 32), url });
       }
       if (Array.isArray(item.value)) visit(item.value);
     }
   };
   visit(value);
   return uniqueLinks(output);
+}
+
+function normalizeHref(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  if (/^https?:\/\//i.test(text)) return text;
+  const embedded = text.match(/https?:\/\/[^\s，。；;,）)]+/i);
+  if (embedded) return embedded[0];
+  const naked = text.match(/(?:[\w-]+\.)+[a-z]{2,}\/[^\s，。；;,）)]*/i);
+  if (naked) return `https://${naked[0]}`;
+  if (/^[\w.-]+\.[a-z]{2,}$/i.test(text)) return `https://${text}`;
+  return "";
 }
 
 function fileList(value, origin) {

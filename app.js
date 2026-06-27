@@ -1098,7 +1098,8 @@ function renderResourceFolder(title, subtitle, color, icon, groups) {
   const links = groups.flatMap(([label, value]) =>
     normalizeLinks(value).map((item, index, group) => ({
       label: item.label || `${label}${group.length > 1 ? ` ${index + 1}` : ""}`,
-      url: item.url
+      url: item.url,
+      authRequired: item.authRequired
     }))
   );
   const countLabel = links.length ? `${links.length} 个文件` : "0 个文件";
@@ -1133,9 +1134,25 @@ function normalizeLinks(value) {
   if (!value) return [];
   const list = Array.isArray(value) ? value : [value];
   return list.map(item => {
-    if (typeof item === "string") return { label: item, url: item };
-    return item;
+    if (typeof item === "string") {
+      const url = normalizeHref(item);
+      return { label: url.replace(/^https?:\/\//, "").slice(0, 48), url };
+    }
+    const url = normalizeHref(item.url || item.link || "");
+    return { ...item, url };
   }).filter(item => item && (item.url || item.label));
+}
+
+function normalizeHref(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  if (/^(https?:|mailto:|tel:|blob:)/i.test(text)) return text;
+  const embedded = text.match(/https?:\/\/[^\s，。；;,）)]+/i);
+  if (embedded) return embedded[0];
+  const naked = text.match(/(?:[\w-]+\.)+[a-z]{2,}\/[^\s，。；;,）)]*/i);
+  if (naked) return `https://${naked[0]}`;
+  if (/^[\w.-]+\.[a-z]{2,}$/i.test(text)) return `https://${text}`;
+  return "";
 }
 
 async function openProtectedFile(link) {
