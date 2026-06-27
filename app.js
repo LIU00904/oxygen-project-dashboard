@@ -6,6 +6,7 @@ const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
 const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v4";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
+const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const LEGACY_STORAGE_KEYS = [
   "oxygen-project-dashboard-v21",
   "oxygen-project-dashboard-v20",
@@ -1161,15 +1162,12 @@ function normalizeHref(value) {
 function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
   if (!item?.url || item.authRequired) return item;
   const parsed = parseFeishuMediaDownload(item.url);
-  if (!parsed || !FEISHU_SYNC_API) return item;
-  const proxyUrl = new URL("/download", FEISHU_SYNC_API);
-  proxyUrl.searchParams.set("file_token", parsed.fileToken);
-  proxyUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
-  if (parsed.extra) proxyUrl.searchParams.set("extra", parsed.extra);
+  if (!parsed) return item;
   return {
     ...item,
-    url: proxyUrl.toString(),
-    authRequired: true
+    label: item.label || fallbackLabel || "飞书文件",
+    url: FEISHU_TABLE_URL,
+    authRequired: false
   };
 }
 

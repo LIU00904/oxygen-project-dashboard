@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260627-file-download-proxy-v2";
+const WORKER_VERSION = "20260627-file-open-feishu-v3";
 const PROJECT_CACHE_SECONDS = 120;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -464,12 +464,13 @@ function fileList(value, origin) {
       return;
     }
     if (typeof item === "object") {
-      const directUrl = item.url || item.link || item.tmp_url || item.file_url;
+      const directUrl = item.tmp_url || item.file_url || item.link || item.url;
       const fileToken = item.file_token || item.token;
       const label = item.name || item.file_name || item.text || "飞书文件";
-      const url = fileToken && origin
-        ? downloadProxyUrl(origin, fileToken, label, directUrl)
-        : directUrl;
+      const normalizedDirectUrl = normalizeHref(directUrl);
+      const url = normalizedDirectUrl && !isFeishuMediaDownload(normalizedDirectUrl)
+        ? normalizedDirectUrl
+        : TABLE_URL;
       if (url || label) {
         output.push({
           label,
@@ -477,7 +478,7 @@ function fileList(value, origin) {
           fileToken,
           fileType: item.type || item.mime_type || "",
           size: item.size || 0,
-          authRequired: Boolean(fileToken && origin)
+          authRequired: false
         });
       }
       if (Array.isArray(item.value)) visit(item.value);
