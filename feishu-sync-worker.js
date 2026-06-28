@@ -17,10 +17,19 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260627-file-open-feishu-v3";
-const PROJECT_CACHE_SECONDS = 120;
+const WORKER_VERSION = "20260628-status-links-cache-v1";
+const PROJECT_CACHE_SECONDS = 30 * 60;
+const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const FIELD_ALIASES = {
+  reportLinks: ["项目报告文件", "报告文件", "报告"],
+  briefLinks: ["Brief", "brief", "项目Brief", "项目简报"],
+  projectLinks: ["项目资料", "资料", "链接"],
+  currentData: ["当前数据", "数据分析", "KPI分析"],
+  optimizationSuggestion: ["优化建议", "建议"],
+  notes: ["备注"]
+};
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +41,9 @@ let memoryProjectsCache = null;
 const STALLED_PROJECTS = new Set(["西昊", "西昊2", "mac", "海蓝之谜"]);
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(refreshScheduledCache(env));
+  },
   async fetch(request, env) {
     try {
       const requestUrl = new URL(request.url);
@@ -47,7 +59,8 @@ export default {
       if (requestUrl.pathname === "/projects") {
         const user = await authorizeRequest(request, env);
         const token = await tenantToken(env);
-        const { projects, cached } = await readCachedProjects(env, token, requestUrl.origin);
+        const forceRefresh = requestUrl.searchParams.get("refresh") === "1";
+        const { projects, cached } = await readCachedProjects(env, token, requestUrl.origin, forceRefresh);
         return json({
           ok: true,
           user,
@@ -110,7 +123,7 @@ export default {
       if (!response.ok || result.code) {
         return json({ error: result }, 500);
       }
-      await clearProjectsCache(env);
+      await clearProjectsCache(env, requestUrl.origin);
       const recordId = result.data?.record?.record_id || result.data?.record_id || body.recordId;
       return json({ ok: true, recordId, updated: Object.keys(fields), version: WORKER_VERSION });
     } catch (error) {
@@ -120,9 +133,10 @@ export default {
   }
 };
 
-async function readCachedProjects(env, token, origin) {
+async function readCachedProjects(env, token, origin, forceRefresh = false) {
   const cacheKey = `${env.FEISHU_APP_TOKEN}:${env.FEISHU_TABLE_ID}:${WORKER_VERSION}:${origin}`;
   if (
+    !forceRefresh &&
     memoryProjectsCache?.key === cacheKey &&
     Date.now() < memoryProjectsCache.expiresAt
   ) {
@@ -132,17 +146,74 @@ async function readCachedProjects(env, token, origin) {
     };
   }
 
-  const projects = await readProjects(env, token, origin);
-  memoryProjectsCache = {
-    key: cacheKey,
-    projects,
-    expiresAt: Date.now() + PROJECT_CACHE_SECONDS * 1000
-  };
-  return { projects, cached: false };
+  const edgeCached = await readEdgeProjectsCache(env, origin);
+  if (!forceRefresh && edgeCached && Date.now() < edgeCached.freshUntil) {
+    memoryProjectsCache = {
+      key: cacheKey,
+      projects: edgeCached.projects,
+      expiresAt: edgeCached.freshUntil
+    };
+    return { projects: edgeCached.projects, cached: true };
+  }
+
+  try {
+    const projects = await readProjects(env, token, origin);
+    const freshUntil = Date.now() + PROJECT_CACHE_SECONDS * 1000;
+    memoryProjectsCache = {
+      key: cacheKey,
+      projects,
+      expiresAt: freshUntil
+    };
+    await writeEdgeProjectsCache(env, origin, projects, freshUntil);
+    return { projects, cached: false };
+  } catch (error) {
+    if (edgeCached?.projects?.length) {
+      return { projects: edgeCached.projects, cached: "stale" };
+    }
+    throw error;
+  }
 }
 
-async function clearProjectsCache(env) {
+async function clearProjectsCache(env, origin) {
   memoryProjectsCache = null;
+  if (typeof caches !== "undefined" && origin) {
+    await caches.default.delete(projectsCacheRequest(env, origin));
+  }
+}
+
+async function refreshScheduledCache(env) {
+  try {
+    const token = await tenantToken(env);
+    await readCachedProjects(env, token, "https://oxygen-feishu-sync.liuyichen021231.workers.dev", true);
+  } catch (error) {
+    console.warn("scheduled cache refresh failed", error);
+  }
+}
+
+function projectsCacheRequest(env, origin) {
+  return new Request(`${origin}/__project-cache/${env.FEISHU_APP_TOKEN}/${env.FEISHU_TABLE_ID}/${WORKER_VERSION}`);
+}
+
+async function readEdgeProjectsCache(env, origin) {
+  if (typeof caches === "undefined") return null;
+  const cached = await caches.default.match(projectsCacheRequest(env, origin));
+  if (!cached) return null;
+  return cached.json().catch(() => null);
+}
+
+async function writeEdgeProjectsCache(env, origin, projects, freshUntil) {
+  if (typeof caches === "undefined") return;
+  const payload = JSON.stringify({
+    projects,
+    freshUntil,
+    cachedAt: new Date().toISOString()
+  });
+  await caches.default.put(projectsCacheRequest(env, origin), new Response(payload, {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": `public, max-age=${PROJECT_STALE_CACHE_SECONDS}`
+    }
+  }));
 }
 
 class HttpError extends Error {
@@ -311,13 +382,14 @@ function recordToProject(record, origin) {
   const status = inferStatus(name, fields, startDate);
   const publishLinks = [
     ...linkList(fields[FIELD_MAP.publishLinks]),
-    ...linkList(fields["项目资料"])
+    ...FIELD_ALIASES.projectLinks.flatMap(fieldName => linkList(fields[fieldName]))
   ];
   const monitorLinks = linkList(fields[FIELD_MAP.monitorLinks]);
-  const reportLinks = fileList(fields["项目报告文件"], origin);
-  const briefLinks = fileList(fields["Brief"], origin);
-  const currentData = textValue(fields["当前数据"]).trim();
-  const suggestion = textValue(fields[FIELD_MAP.optimizationSuggestion]).trim();
+  const reportLinks = FIELD_ALIASES.reportLinks.flatMap(fieldName => fileList(fields[fieldName], origin));
+  const briefLinks = FIELD_ALIASES.briefLinks.flatMap(fieldName => fileList(fields[fieldName], origin));
+  const currentData = firstText(fields, FIELD_ALIASES.currentData).trim();
+  const suggestion = (textValue(fields[FIELD_MAP.optimizationSuggestion]) || firstText(fields, FIELD_ALIASES.optimizationSuggestion)).trim();
+  const notes = (textValue(fields[FIELD_MAP.notes]) || firstText(fields, FIELD_ALIASES.notes)).trim();
 
   return {
     id: record.record_id,
@@ -330,7 +402,7 @@ function recordToProject(record, origin) {
     progressPercent: progressFromFields(fields, status, startDate, cycle),
     kpi: textValue(fields[FIELD_MAP.kpi]).trim(),
     platform: textValue(fields[FIELD_MAP.platform]).trim(),
-    notes: cleanNotes(textValue(fields[FIELD_MAP.notes])),
+    notes: cleanNotes(notes),
     manager: names(fields[FIELD_MAP.manager]),
     writer: names(fields[FIELD_MAP.writer]),
     publisher: names(fields[FIELD_MAP.publisher]),
@@ -348,6 +420,8 @@ function recordToProject(record, origin) {
 }
 
 function inferStatus(name, fields, startDate) {
+  const explicit = normalizeStatus(textValue(fields[FIELD_MAP.status]));
+  if (explicit) return explicit;
   if (STALLED_PROJECTS.has(name)) return "停滞";
   const progress = Number(fields["项目进度"]);
   if (Number.isFinite(progress) && progress >= 1) return "已完成";
@@ -387,13 +461,14 @@ function cycleDays(startDate, endDate) {
 function names(value) {
   if (!Array.isArray(value)) return textValue(value).trim();
   return value
-    .map(item => item?.name || item?.en_name || item?.email || textValue(item))
+    .map(item => item?.name || item?.en_name || item?.text || item?.email || textValue(item))
     .filter(Boolean)
     .join("、");
 }
 
 function normalizeStatus(value) {
   const text = String(value || "");
+  if (!text) return "";
   if (text.includes("完成")) return "已完成";
   if (text.includes("停滞")) return "停滞";
   if (text.includes("待") || text.includes("已提交")) return "待开始";
@@ -466,7 +541,7 @@ function fileList(value, origin) {
     if (typeof item === "object") {
       const directUrl = item.tmp_url || item.file_url || item.link || item.url;
       const fileToken = item.file_token || item.token;
-      const label = item.name || item.file_name || item.text || "飞书文件";
+      const label = item.name || item.file_name || item.text || textValue(item) || "飞书文件";
       const normalizedDirectUrl = normalizeHref(directUrl);
       const url = normalizedDirectUrl && !isFeishuMediaDownload(normalizedDirectUrl)
         ? normalizedDirectUrl
@@ -486,6 +561,14 @@ function fileList(value, origin) {
   };
   visit(value);
   return uniqueLinks(output);
+}
+
+function firstText(fields, fieldNames) {
+  for (const fieldName of fieldNames) {
+    const value = textValue(fields[fieldName]).trim();
+    if (value) return value;
+  }
+  return "";
 }
 
 function downloadProxyUrl(origin, fileToken, label, directUrl) {

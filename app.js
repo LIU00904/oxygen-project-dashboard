@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v4";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v5";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -236,6 +236,36 @@ function saveProjectCache(nextProjects, meta) {
   }));
 }
 
+function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
+  const fallbackById = new Map((fallbackProjects || []).map(project => [project.id, project]));
+  const fallbackByName = new Map((fallbackProjects || []).map(project => [project.name, project]));
+  return (nextProjects || []).map(project => {
+    const fallback = fallbackById.get(project.id) || fallbackByName.get(project.name) || {};
+    return {
+      ...project,
+      currentData: hasUsefulCurrentData(project.currentData) ? project.currentData : (fallback.currentData || project.currentData || ""),
+      optimizationSuggestion: hasUsefulSuggestion(project.optimizationSuggestion) ? project.optimizationSuggestion : (fallback.optimizationSuggestion || project.optimizationSuggestion || ""),
+      kpiStatus: project.kpiStatus || fallback.kpiStatus || "",
+      publishLinks: normalizeLinks(project.publishLinks).length ? project.publishLinks : (fallback.publishLinks || project.publishLinks || []),
+      monitorLinks: normalizeLinks(project.monitorLinks).length ? project.monitorLinks : (fallback.monitorLinks || project.monitorLinks || []),
+      reportLinks: normalizeLinks(project.reportLinks).length ? project.reportLinks : (fallback.reportLinks || project.reportLinks || []),
+      briefLinks: normalizeLinks(project.briefLinks).length ? project.briefLinks : (fallback.briefLinks || project.briefLinks || [])
+    };
+  });
+}
+
+function hasUsefulCurrentData(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  return !/待补充发稿\/监测分析|项目数据已从飞书读取|当前完成度\s*0%$/.test(text);
+}
+
+function hasUsefulSuggestion(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  return !/补齐发稿链接与监测表|持续按发稿链接与监测表|项目启动前补齐/.test(text);
+}
+
 function endDateFor(project) {
   if (!project.startDate || !project.cycleDays) return "";
   return addDays(dateFrom(project.startDate), Number(project.cycleDays)).toISOString().slice(0, 10);
@@ -436,13 +466,14 @@ function startAutoFeishuLogin() {
   window.location.assign(loginUrl());
 }
 
-async function loadProjectsFromWorker() {
+async function loadProjectsFromWorker(forceRefresh = false) {
   if (!FEISHU_SYNC_API) throw new Error("没有配置飞书同步服务");
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), 60000);
   let response;
   try {
-    response = await fetch(`${FEISHU_SYNC_API}/projects`, {
+    const endpoint = `${FEISHU_SYNC_API}/projects${forceRefresh ? "?refresh=1" : ""}`;
+    response = await fetch(endpoint, {
       method: "GET",
       headers: authHeaders(),
       signal: controller.signal
@@ -461,7 +492,9 @@ async function loadProjectsFromWorker() {
     throw new Error("请先通过飞书登录");
   }
   if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
-  seedProjects = Array.isArray(result.projects) ? result.projects : [];
+  const previousProjects = (projects && projects.length ? projects : seedProjects) || [];
+  const workerProjects = Array.isArray(result.projects) ? result.projects : [];
+  seedProjects = mergeWorkerProjectsWithFallback(workerProjects, previousProjects);
   syncMeta = result.meta || {};
   saveProjectCache(seedProjects, syncMeta);
   if (result.user?.name) saveFeishuUser(result.user);
@@ -1099,8 +1132,9 @@ function renderResourceFolder(title, subtitle, color, icon, groups) {
   const links = groups.flatMap(([label, value]) =>
     normalizeLinks(value).map((item, index, group) => {
       const protectedItem = normalizeProtectedDownloadItem(item, label);
+      const displayLabel = readableResourceLabel(protectedItem.label, label, index, group.length);
       return {
-        label: protectedItem.label || `${label}${group.length > 1 ? ` ${index + 1}` : ""}`,
+        label: displayLabel,
         url: protectedItem.url,
         authRequired: protectedItem.authRequired
       };
@@ -1140,11 +1174,20 @@ function normalizeLinks(value) {
   return list.map(item => {
     if (typeof item === "string") {
       const url = normalizeHref(item);
-      return { label: url.replace(/^https?:\/\//, "").slice(0, 48), url };
+      return { label: url.replace(/^https?:\/\//, "").slice(0, 48), url: safeFeishuOpenUrl(url) };
     }
     const url = normalizeHref(item.url || item.link || "");
-    return { ...item, url };
+    return { ...item, url: safeFeishuOpenUrl(url) };
   }).filter(item => item && (item.url || item.label));
+}
+
+function readableResourceLabel(value, fallback, index = 0, total = 1) {
+  const text = String(value || "").trim();
+  const fallbackText = `${fallback}${total > 1 ? ` ${index + 1}` : ""}`;
+  if (!text) return fallbackText;
+  if (/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}\//i.test(text)) return fallbackText;
+  if (/open-apis|medias\/.+\/download/i.test(text)) return fallbackText;
+  return text;
 }
 
 function normalizeHref(value) {
@@ -1169,6 +1212,20 @@ function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
     url: FEISHU_TABLE_URL,
     authRequired: false
   };
+}
+
+function safeFeishuOpenUrl(url) {
+  if (!url) return "";
+  return isFeishuApiUrl(url) ? FEISHU_TABLE_URL : url;
+}
+
+function isFeishuApiUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname === "open.feishu.cn" && parsed.pathname.includes("/open-apis/");
+  } catch {
+    return /open\.feishu\.cn\/open-apis\//i.test(String(url || ""));
+  }
 }
 
 function parseFeishuMediaDownload(value) {
@@ -1829,7 +1886,12 @@ els.board.addEventListener("click", async event => {
   if (button.dataset.action === "retry-projects") {
     button.disabled = true;
     button.textContent = "正在加载…";
-    await bootstrap();
+    try {
+      await loadProjectsFromWorker(true);
+      render();
+    } catch (error) {
+      renderDataRetry(error.message || "项目数据读取失败");
+    }
     return;
   }
   const project = projects.find(item => item.id === button.dataset.id);
