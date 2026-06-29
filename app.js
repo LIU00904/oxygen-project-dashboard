@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v5";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v6";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -35,7 +35,8 @@ const statusPriority = {
   "停滞": 3
 };
 
-let seedProjects = window.FEISHU_PROJECTS || [];
+const staticProjects = window.FEISHU_PROJECTS || [];
+let seedProjects = staticProjects;
 
 let projects = [];
 let currentFilter = "all";
@@ -239,19 +240,63 @@ function saveProjectCache(nextProjects, meta) {
 function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
   const fallbackById = new Map((fallbackProjects || []).map(project => [project.id, project]));
   const fallbackByName = new Map((fallbackProjects || []).map(project => [project.name, project]));
+  const staticById = new Map((staticProjects || []).map(project => [project.id, project]));
+  const staticByName = new Map((staticProjects || []).map(project => [project.name, project]));
+  const workerStatusBroken = hasSuspiciousWorkerStatus(nextProjects);
   return (nextProjects || []).map(project => {
-    const fallback = fallbackById.get(project.id) || fallbackByName.get(project.name) || {};
-    return {
+    const savedFallback = fallbackById.get(project.id) || fallbackByName.get(project.name) || {};
+    const staticFallback = staticById.get(project.id) || staticByName.get(project.name) || {};
+    const fallback = {
+      ...savedFallback,
+      ...staticFallback
+    };
+    const baseProject = workerStatusBroken && fallback.id ? {
       ...project,
-      currentData: hasUsefulCurrentData(project.currentData) ? project.currentData : (fallback.currentData || project.currentData || ""),
-      optimizationSuggestion: hasUsefulSuggestion(project.optimizationSuggestion) ? project.optimizationSuggestion : (fallback.optimizationSuggestion || project.optimizationSuggestion || ""),
-      kpiStatus: project.kpiStatus || fallback.kpiStatus || "",
-      publishLinks: normalizeLinks(project.publishLinks).length ? project.publishLinks : (fallback.publishLinks || project.publishLinks || []),
-      monitorLinks: normalizeLinks(project.monitorLinks).length ? project.monitorLinks : (fallback.monitorLinks || project.monitorLinks || []),
-      reportLinks: normalizeLinks(project.reportLinks).length ? project.reportLinks : (fallback.reportLinks || project.reportLinks || []),
-      briefLinks: normalizeLinks(project.briefLinks).length ? project.briefLinks : (fallback.briefLinks || project.briefLinks || [])
+      name: fallback.name || project.name,
+      status: fallback.status || project.status,
+      startDate: fallback.startDate || project.startDate,
+      cycleDays: fallback.cycleDays || project.cycleDays,
+      progressPercent: fallback.progressPercent ?? project.progressPercent,
+      kpi: fallback.kpi || project.kpi,
+      platform: fallback.platform || project.platform,
+      manager: fallback.manager || project.manager,
+      writer: fallback.writer || project.writer,
+      publisher: fallback.publisher || project.publisher,
+      monitor: fallback.monitor || project.monitor,
+      invoiceStatus: fallback.invoiceStatus || project.invoiceStatus
+    } : project;
+    return {
+      ...baseProject,
+      currentData: hasUsefulCurrentData(baseProject.currentData) ? baseProject.currentData : (fallback.currentData || baseProject.currentData || ""),
+      optimizationSuggestion: hasUsefulSuggestion(baseProject.optimizationSuggestion) ? baseProject.optimizationSuggestion : (fallback.optimizationSuggestion || baseProject.optimizationSuggestion || ""),
+      kpiStatus: baseProject.kpiStatus || fallback.kpiStatus || "",
+      publishLinks: chooseUsefulLinks(baseProject.publishLinks, fallback.publishLinks),
+      monitorLinks: chooseUsefulLinks(baseProject.monitorLinks, fallback.monitorLinks),
+      reportLinks: chooseUsefulLinks(baseProject.reportLinks, fallback.reportLinks),
+      briefLinks: chooseUsefulLinks(baseProject.briefLinks, fallback.briefLinks)
     };
   });
+}
+
+function hasSuspiciousWorkerStatus(workerProjects) {
+  if (!Array.isArray(workerProjects) || workerProjects.length < 10 || !staticProjects.length) return false;
+  const workerOngoing = workerProjects.filter(project => project.status === "进行中").length;
+  const workerPending = workerProjects.filter(project => project.status === "待开始").length;
+  const staticOngoing = staticProjects.filter(project => project.status === "进行中").length;
+  const staticCompleted = staticProjects.filter(project => project.status === "已完成").length;
+  return staticOngoing > 0
+    && staticCompleted > 0
+    && workerOngoing === 0
+    && workerPending / workerProjects.length > 0.8;
+}
+
+function chooseUsefulLinks(primary, fallback) {
+  const primaryLinks = normalizeLinks(primary);
+  const fallbackLinks = normalizeLinks(fallback);
+  if (!primaryLinks.length) return fallback || primary || [];
+  if (!fallbackLinks.length) return primary || [];
+  const primaryHasOnlyApiDownloads = primaryLinks.every(item => isFeishuApiUrl(item.url));
+  return primaryHasOnlyApiDownloads ? (fallback || primary || []) : (primary || fallback || []);
 }
 
 function hasUsefulCurrentData(value) {
@@ -492,7 +537,7 @@ async function loadProjectsFromWorker(forceRefresh = false) {
     throw new Error("请先通过飞书登录");
   }
   if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
-  const previousProjects = (projects && projects.length ? projects : seedProjects) || [];
+  const previousProjects = (projects && projects.length ? projects : staticProjects) || [];
   const workerProjects = Array.isArray(result.projects) ? result.projects : [];
   seedProjects = mergeWorkerProjectsWithFallback(workerProjects, previousProjects);
   syncMeta = result.meta || {};
@@ -1147,7 +1192,7 @@ function renderResourceFolder(title, subtitle, color, icon, groups) {
         return `<span class="folder-empty">${escapeHtml(item.label || "文件暂不可打开")}</span>`;
       }
       const proxyAttrs = item.authRequired ? ` data-proxy-file="true" data-file-name="${escapeHtml(item.label || "飞书文件")}"` : "";
-      return `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"${proxyAttrs}>${escapeHtml(item.label)}</a>`;
+      return `<a href="${escapeHtml(safeFeishuOpenUrl(item.url))}" target="_blank" rel="noopener noreferrer"${proxyAttrs}>${escapeHtml(item.label)}</a>`;
     }).join("")
     : `<span class="folder-empty">待上传至飞书</span>`;
   return `
