@@ -180,8 +180,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n历史阶段 2.12-3.5：有效发稿 90 篇，单独归档，不纳入本期 500 篇考核。\n本期 4.2-至今：有效发稿 263/500 篇，还差 237 篇；4.2- 54 篇、5月 155 篇、6月 54 篇。\n【监测数据｜最新 6.28】\n自动识别排名记录 185 条：Top1 102 条、Top3 163 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
-    "optimizationSuggestion": "本期发稿还差 237 篇；监测侧继续按 Top1 / Top3 口径跟进最近一周和一月变化。",
+    "currentData": "【发稿数据】\n历史阶段 2.12-3.5：有效发稿 90 篇，单独归档，不纳入本期 500 篇考核。\n本期 4.2-至今：有效发稿 266/500 篇，还差 234 篇；4.2- 54 篇、5月 155 篇、6月 57 篇。\n【监测数据｜最新 6.28】\n自动识别排名记录 185 条：Top1 102 条、Top3 163 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "本期发稿还差 234 篇；监测侧继续按 Top1 / Top3 口径跟进最近一周和一月变化。",
     "reportLinks": [
       {
         "label": "太太乐0504-0531监测折线图.pdf",
@@ -446,8 +446,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n华硕主板 135/150 篇，还差 15 篇。\n华硕商城 122/150 篇，还差 28 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新 6.28】\n自动识别排名记录 146 条：Top1 115 条、Top3 146 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
-    "optimizationSuggestion": "主板还差 15 篇，商城还差 28 篇；继续按两个子项目分别复核发稿链接有效性。",
+    "currentData": "【发稿数据】\n华硕主板 137/150 篇，还差 13 篇。\n华硕商城 122/150 篇，还差 28 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新 6.28】\n自动识别排名记录 146 条：Top1 115 条、Top3 146 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "主板还差 13 篇，商城还差 28 篇；继续按两个子项目分别复核发稿链接有效性。",
     "reportLinks": [
       {
         "label": "华硕GEO监测报告（5.12-6.10）.pdf",
@@ -1330,8 +1330,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n尚未读取到可统计的发稿表，无法核算发稿数量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "补充发稿表入口或将有效发布链接整理到发稿表。 补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
+    "currentData": "【发稿数据】\n该发稿链接是飞书文档，不是电子表格；当前应用缺少 docx:document:readonly 权限，暂不能读取文档内表格。\n发稿 KPI 目标为 100 篇；因权限不足，暂不能自动核算当前发稿量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "在飞书开放平台为应用开通 docx:document:readonly 权限后，可自动读取该文档内发稿表。 补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1563,7 +1563,7 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 358/150 篇，已达标，超出 208 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "currentData": "【发稿数据】\n有效发稿 361/150 篇，已达标，超出 211 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
@@ -1863,7 +1863,7 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 309 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n监测表已读取，但暂未识别到标准化 Top1 / Top3 或收录统计列，需按项目口径人工核对。",
+    "currentData": "【发稿数据】\n有效发稿 311 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n监测表已读取，但暂未识别到标准化 Top1 / Top3 或收录统计列，需按项目口径人工核对。",
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": []
@@ -1894,8 +1894,8 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-29T04:16:25.817Z",
-  "analysisUpdatedAt": "2026-06-29T04:16:25.817Z",
+  "syncedAt": "2026-06-29T07:09:19.753Z",
+  "analysisUpdatedAt": "2026-06-29T07:09:19.753Z",
   "source": "feishu",
   "recordCount": 55,
   "note": "main-table-plus-live-kpi-analysis-20260629",
