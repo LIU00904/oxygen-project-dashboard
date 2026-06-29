@@ -160,7 +160,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-04-14",
     "cycleDays": 364,
-    "progressPercent": 19,
+    "progressPercent": 32,
     "kpi": "10个关键词排名第一 需要发稿500篇（-27.4.14）",
     "platform": "全平台4及以上",
     "notes": "开票",
@@ -180,8 +180,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n历史阶段 2.12-3.5：有效发稿 90 篇，单独归档，不纳入本期考核。\n本期 4.2-至今：有效发稿 246/500 篇，还差 254 篇；其中 4.2- 54 篇、5月 155 篇、6月 37 篇。\n【监测数据｜最新 6.17】\n10 个关键词 × 6 个平台：Top1 43/60=71.7%，Top3 59/60=98.3%。\n松茸鲜 Top1 5/6、Top3 6/6；松茸调料 4/6、6/6；煲汤提鲜调味料品牌 5/6、6/6；替代味精的调料品品牌 3/6、6/6；馅料调味料品牌 4/6、6/6。\n凉拌菜提鲜调料品品牌 6/6、6/6；追求健康生活家庭选择的调味料品牌 2/6、5/6；提鲜调味料品牌 5/6、6/6；0添加提鲜调料品牌 3/6、6/6；家常菜常备调料品牌 6/6、6/6。\n近一周：Top1 由 6.10 的 45/60 降至 43/60，Top3 由 60/60 降至 59/60，轻微回落。\n近一月：Top1 由 5.20 的 33/60 升至 43/60，Top3 由 46/60 升至 59/60，整体明显提升。\n阶段 KPI：松茸鲜、松茸调料已达到至少 4 个平台 Top1；“追求健康生活家庭选择的调味料品牌”仅 2/6，尚未达标；其余关键词 Top3 均达到至少 4 个平台。",
-    "optimizationSuggestion": "本期发稿还差 254 篇；监测侧优先提升“追求健康生活家庭选择的调味料品牌”Top1，并关注替代味精、0添加两个词的 Top1 稳定性。",
+    "currentData": "【发稿数据】\n历史阶段 2.12-3.5：有效发稿 90 篇，单独归档，不纳入本期 500 篇考核。\n本期 4.2-至今：有效发稿 263/500 篇，还差 237 篇；4.2- 54 篇、5月 155 篇、6月 54 篇。\n【监测数据｜最新 6.28】\n自动识别排名记录 185 条：Top1 102 条、Top3 163 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "本期发稿还差 237 篇；监测侧继续按 Top1 / Top3 口径跟进最近一周和一月变化。",
     "reportLinks": [
       {
         "label": "太太乐0504-0531监测折线图.pdf",
@@ -426,7 +426,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-04-12",
     "cycleDays": 90,
-    "progressPercent": 78,
+    "progressPercent": 88,
     "kpi": "1.在服务周期结束时，该语义包在指定的主流AI大模型矩阵（按照本次项目指定的五大平台：DeepSeek、豆包、kimi、腾讯元宝、通义千问）中的智能搜索结果，实现正面、准确信息的覆盖率为5个的大模型平台华硕主板，华硕商城在推荐位≥3位。2.从项目启动开始的20天需要看到优化结果，从项目启动30天需要看到稳定的优化结果，一直到项目合作结束。需提供必要的搜索验证页面截图（至少30个账号）3.一个季度发稿不少于150篇，需要提供所有发稿链接4.报告反馈：双周报、月报（PPT）、结案报告（PPT）",
     "platform": "5个平台",
     "notes": "",
@@ -446,8 +446,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n华硕主板 120/150 篇，还差 30 篇。\n华硕商城 119/150 篇，还差 31 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新有效日期 6.16】\n主板侧 5 个关键词 Top1 24/25=96.0%，整体已达到主板 Top1 目标。\n商城侧 6 个关键词 Top3 27/30=90.0%；“华硕购买质保”4/5、“华硕官方优惠”3/5，其余商城词均为 5/5。\n整体近一月：Top1 由 5.19 的 38/55=69.1% 升至 43/55=78.2%；Top3 由 47/55=85.5% 升至 51/55=92.7%。\n当前主要未达标项仍是主板、商城各自的发稿数量。",
-    "optimizationSuggestion": "主板补 30 篇、商城补 31 篇；商城监测优先补强“华硕官方优惠”和“华硕购买质保”。",
+    "currentData": "【发稿数据】\n华硕主板 135/150 篇，还差 15 篇。\n华硕商城 122/150 篇，还差 28 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新 6.28】\n自动识别排名记录 146 条：Top1 115 条、Top3 146 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "主板还差 15 篇，商城还差 28 篇；继续按两个子项目分别复核发稿链接有效性。",
     "reportLinks": [
       {
         "label": "华硕GEO监测报告（5.12-6.10）.pdf",
@@ -1106,7 +1106,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-05-08",
     "cycleDays": 153,
-    "progressPercent": 29,
+    "progressPercent": 24,
     "kpi": "- 优化目标：产品展示度，提升至不低于90%",
     "platform": "DeepSeek、豆包、Kimi、通义千\n问、元宝中的80%有效收录",
     "notes": "",
@@ -1122,8 +1122,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 68 篇。\nKPI 未写明固定发稿数量，当前只能记录发布量，不能判断数量是否达标。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月排名、收录和趋势。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "【发稿数据】\n有效发稿 73 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1313,11 +1313,11 @@ window.FEISHU_PROJECTS = [
     "name": "一丰 荣放 亚洲龙",
     "status": "进行中",
     "startDate": "2026-05-06",
-    "cycleDays": 91,
-    "progressPercent": 51,
+    "cycleDays": 90,
+    "progressPercent": 43,
     "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
     "platform": "5个平台",
-    "notes": "发稿暂停，等打款",
+    "notes": "",
     "manager": "辛味珈",
     "writer": "辛味珈",
     "publisher": "刘依晨",
@@ -1329,9 +1329,9 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "monitorLinks": [],
-    "kpiStatus": "待核验",
-    "currentData": "【发稿数据】\n当前发稿明细位于另一飞书租户；本次只能读取目录，执行表明细无权限，因此不沿用旧数量，也不冒充实时结果。\n需要为当前飞书应用开放该执行表，或将发稿明细迁入当前租户后，才能按“已发稿”状态重新统计。\n【监测数据】\n主表未关联可由当前应用读取的监测表，本次无法重新核验亚洲龙、荣放的 SOV 与 Top3 趋势。",
-    "optimizationSuggestion": "先打通跨租户发稿与监测表读取权限，再按已发稿/拒稿/审核中/空白状态实时重算；当前不使用历史手工数量。",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n尚未读取到可统计的发稿表，无法核算发稿数量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充发稿表入口或将有效发布链接整理到发稿表。 补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1429,9 +1429,9 @@ window.FEISHU_PROJECTS = [
     "source": "feishu",
     "name": "格力高",
     "status": "进行中",
-    "startDate": "2026-06-07",
-    "cycleDays": 24,
-    "progressPercent": 58,
+    "startDate": "2026-06-11",
+    "cycleDays": 30,
+    "progressPercent": 29,
     "kpi": "收录即可 \n有目标信源\n一个月投放20篇稿件",
     "platform": "五个平台",
     "notes": "有四个平台收录（截图）",
@@ -1450,9 +1450,9 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/QnwhwApsjigA4QkOtgZcz24ZnRh"
       }
     ],
-    "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n有效发稿 19/20 篇，还差 1 篇。\n【监测数据｜最新 6.18】\n“儿童益生菌”在 5 个平台中收录 1/5=20%，目前仅 KIMI 收录，未达到每天至少 4 个平台收录的目标。\n6.15 为 0/5；6.16、6.17、6.18 均为 1/5，近几日暂无进一步提升。",
-    "optimizationSuggestion": "先补齐最后 1 篇发稿；监测侧重点推动豆包、千问、DeepSeek、元宝收录，当前距离每日 4 平台目标还差 3 个平台。",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n有效发稿 67 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.26】\n自动识别排名记录 8 条：Top1 0 条、Top3 1 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1546,8 +1546,8 @@ window.FEISHU_PROJECTS = [
     "name": "咪咕体育",
     "status": "进行中",
     "startDate": "2026-06-12",
-    "cycleDays": 48,
-    "progressPercent": 19,
+    "cycleDays": 47,
+    "progressPercent": 36,
     "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
     "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
     "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
@@ -1563,8 +1563,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 130/150 篇，还差 20 篇。\n【监测数据】\n每个平台每月需优化不少于 30 个关键词；月度至少 4 个平台稳定保持第二并占据第一梯队。\n核心优势信息准确率目标 95% 以上；月度关键词达标率目标 80%。\n尚未关联监测表，暂无法核验真实排名、准确率和月度达标率。",
-    "optimizationSuggestion": "补齐 20 篇有效发布；同时关联监测表，按平台核验不少于 30 个关键词、准确率 95% 和月度达标率 80%。",
+    "currentData": "【发稿数据】\n有效发稿 358/150 篇，已达标，超出 208 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1621,12 +1621,12 @@ window.FEISHU_PROJECTS = [
     "source": "feishu",
     "name": "pxn",
     "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
+    "startDate": "2026-06-18",
+    "cycleDays": 29,
+    "progressPercent": 38,
+    "kpi": "审计报告",
     "platform": "",
-    "notes": "",
+    "notes": "审计报告制作",
     "manager": "辛味珈",
     "writer": "",
     "publisher": "",
@@ -1647,7 +1647,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-01",
     "cycleDays": 91,
-    "progressPercent": 22,
+    "progressPercent": 14,
     "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
     "platform": "六个平台中四个及以上，80%时间",
     "notes": "",
@@ -1667,8 +1667,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 13 篇。\nKPI 暂未要求固定数量，当前不按发稿量判断达标。\n【监测数据｜最新 6.15】\n2 个关键词 × 6 个平台：已收录/推荐 9/12=75.0%，前5 9/12=75.0%，前3 8/12=66.7%。\n“广州适合约会的高端餐厅”：收录 4/6、前5 4/6、前3 4/6；“广州适合过生日的高端餐厅”：收录 5/6、前5 5/6、前3 4/6。\n近一周（6.8→6.15）：收录由 8/12 升至 9/12，前3保持 8/12。\n近半月（6.1→6.15）：收录由 0/12 升至 9/12，前3由 0/12 升至 8/12，趋势明显向好。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
+    "currentData": "【发稿数据】\n有效发稿 13 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.29】\n自动识别排名记录 14 条：Top1 8 条、Top3 14 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": []
   },
@@ -1679,7 +1679,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-09",
     "cycleDays": 61,
-    "progressPercent": 20,
+    "progressPercent": 8,
     "kpi": "\nkpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
     "platform": "",
     "notes": "企业，EMBA重点关注\n一篇3个媒体",
@@ -1699,8 +1699,8 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 9 篇；KPI 以收录和关键词效果为主，未写明固定发稿数量。\n【监测数据｜最新 6.18】\n5 个关键词 × 5 个平台，共收录 11/25=44.0%。\n总裁班 2/5；企业高管培训 0/5；AI总裁研修班 4/5；深圳总裁班 5/5；EMBA总裁班 0/5。\n6.15→6.18 总收录由 8/25 升至 11/25；深圳总裁班已全平台收录，AI总裁研修班接近达标，企业高管培训与 EMBA总裁班仍是主要缺口。",
-    "optimizationSuggestion": "优先推进企业高管培训、EMBA总裁班收录，其次补总裁班；保持深圳总裁班 5/5 和 AI总裁研修班 4/5 的稳定性。",
+    "currentData": "【发稿数据】\n有效发稿 24 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.26】\n自动识别排名记录 14 条：Top1 9 条、Top3 11 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": [
       {
@@ -1767,13 +1767,13 @@ window.FEISHU_PROJECTS = [
   {
     "id": "recvmzZQyAlC6z",
     "source": "feishu",
-    "name": "万事达信用卡",
+    "name": "万事达银联",
     "status": "待开始",
     "startDate": "",
     "cycleDays": 0,
     "progressPercent": 0,
     "kpi": "",
-    "platform": "",
+    "platform": "监测",
     "notes": "",
     "manager": "",
     "writer": "",
@@ -1852,21 +1852,53 @@ window.FEISHU_PROJECTS = [
     "publisher": "刘依晨",
     "monitor": "",
     "invoiceStatus": "待确认",
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/DxvOwh8wEihhs7k5rcscnF4OnOc?sheet=cba4a4"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/AsD0wR7j3ipx4YklSJYcWtWEnGf"
+      }
+    ],
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n有效发稿 309 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n监测表已读取，但暂未识别到标准化 Top1 / Top3 或收录统计列，需按项目口径人工核对。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
+    "reportLinks": [],
+    "briefLinks": []
+  },
+  {
+    "id": "recvneIqRkkqaX",
+    "source": "feishu",
+    "name": "希尔顿",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
     "publishLinks": [],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n主表尚未关联发稿表，无法统计有效发布链接。\n【监测数据】\n主表尚未关联监测表，当前只能确认第一阶段 12 个核心关键词，无法判断收录、排名及趋势。",
-    "optimizationSuggestion": "补充发稿表与监测表入口后，按 12 个核心词分别建立收录、Top1、Top3 的阶段基线。",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。",
     "reportLinks": [],
     "briefLinks": []
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-18T07:59:27.198Z",
-  "analysisUpdatedAt": "2026-06-18T10:00:00+08:00",
+  "syncedAt": "2026-06-29T04:16:25.817Z",
+  "analysisUpdatedAt": "2026-06-29T04:16:25.817Z",
   "source": "feishu",
-  "recordCount": 54,
-  "note": "main-table-sync-v20",
+  "recordCount": 55,
+  "note": "main-table-plus-live-kpi-analysis-20260629",
   "preservedAnalysis": [
     "太太乐松茸鲜",
     "华硕",
