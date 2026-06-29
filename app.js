@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v6";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v7";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -783,13 +783,14 @@ function calculate(project) {
   const deadline = addDays(start, Number(project.cycleDays || 1));
   const elapsed = Math.max(0, Math.ceil((today - start) / 86400000));
   const feishuProgress = Number(project.progressPercent);
-  const progress = Number.isFinite(feishuProgress)
-    ? Math.min(100, Math.max(0, Math.round(feishuProgress)))
-    : project.status === "已完成"
+  const dateProgress = Math.min(100, Math.max(0, Math.round((elapsed / Number(project.cycleDays || 1)) * 100)));
+  const progress = project.status === "已完成"
     ? 100
-    : project.status === "待开始"
-      ? 0
-      : Math.min(100, Math.max(0, Math.round((elapsed / Number(project.cycleDays || 1)) * 100)));
+    : project.status === "停滞"
+      ? (Number.isFinite(feishuProgress) ? Math.min(100, Math.max(0, Math.round(feishuProgress))) : dateProgress)
+      : project.status === "进行中"
+        ? Math.max(Number.isFinite(feishuProgress) ? Math.min(100, Math.max(0, Math.round(feishuProgress))) : 0, dateProgress)
+        : 0;
   const remaining = Math.ceil((deadline - today) / 86400000);
   return { start, deadline, progress, remaining };
 }
