@@ -1330,8 +1330,8 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n该发稿链接是飞书文档，不是电子表格；当前应用缺少 docx:document:readonly 权限，暂不能读取文档内表格。\n发稿 KPI 目标为 100 篇；因权限不足，暂不能自动核算当前发稿量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "在飞书开放平台为应用开通 docx:document:readonly 权限后，可自动读取该文档内发稿表。 补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
+    "currentData": "【发稿数据】\n已按当前飞书发稿表筛选结果核对：状态为“已发稿”的有效发布链接共 139 篇。\n发稿 KPI：139/100 篇，已达标，超出 39 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "发稿数量已达标；下一步建议补齐监测表入口，用于持续判断荣放与亚洲龙的 SOV、Top3、Top10 趋势。",
     "reportLinks": [
       {
         "label": "亚洲龙-5月14号-GEO截图.pptx",
@@ -1895,7 +1895,7 @@ window.FEISHU_PROJECTS = [
 ];
 window.FEISHU_SYNC_META = {
   "syncedAt": "2026-06-29T07:09:19.753Z",
-  "analysisUpdatedAt": "2026-06-29T07:09:19.753Z",
+  "analysisUpdatedAt": "2026-07-01T00:00:00.000Z",
   "source": "feishu",
   "recordCount": 55,
   "note": "main-table-plus-live-kpi-analysis-20260629",
