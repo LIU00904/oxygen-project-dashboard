@@ -238,6 +238,9 @@ function saveProjectCache(nextProjects, meta) {
 }
 
 function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
+  if (shouldIgnoreWorkerProjects(nextProjects)) {
+    return cloneProjects(staticProjects.length ? staticProjects : fallbackProjects);
+  }
   const fallbackById = new Map((fallbackProjects || []).map(project => [project.id, project]));
   const fallbackByName = new Map((fallbackProjects || []).map(project => [project.name, project]));
   const staticById = new Map((staticProjects || []).map(project => [project.id, project]));
@@ -276,6 +279,45 @@ function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
       briefLinks: chooseUsefulLinks(baseProject.briefLinks, fallback.briefLinks)
     };
   });
+}
+
+function cloneProjects(list) {
+  return JSON.parse(JSON.stringify(Array.isArray(list) ? list : []));
+}
+
+function shouldIgnoreWorkerProjects(workerProjects) {
+  if (!Array.isArray(workerProjects) || !workerProjects.length) return true;
+  if (!staticProjects.length) return false;
+  const staticByName = new Map(staticProjects.map(project => [project.name, project]));
+  const workerOngoing = workerProjects.filter(project => project.status === "进行中").length;
+  const workerCompleted = workerProjects.filter(project => project.status === "已完成").length;
+  const workerPending = workerProjects.filter(project => project.status === "待开始").length;
+  const staticOngoing = staticProjects.filter(project => project.status === "进行中").length;
+  const staticCompleted = staticProjects.filter(project => project.status === "已完成").length;
+  const staticPending = staticProjects.filter(project => project.status === "待开始").length;
+  const workerHasAnalysis = workerProjects.some(project => hasUsefulCurrentData(project.currentData));
+  const staticHasAnalysis = staticProjects.some(project => hasUsefulCurrentData(project.currentData));
+  const staticHasMoreRecords = staticProjects.length >= workerProjects.length + 2;
+  const statusCollapsed = staticOngoing > 0
+    && staticCompleted > 0
+    && workerOngoing === 0
+    && workerCompleted === 0
+    && workerPending / workerProjects.length > 0.8;
+  const statusClearlyOlder = staticOngoing >= 5
+    && staticCompleted >= 5
+    && workerOngoing < Math.max(2, Math.floor(staticOngoing / 2))
+    && workerPending > staticPending + 5;
+  const analysisWouldBeLost = staticHasAnalysis && !workerHasAnalysis;
+  const knownProjectWouldRegress = workerProjects.some(project => {
+    const fallback = staticByName.get(project.name);
+    return fallback
+      && fallback.status
+      && project.status
+      && fallback.status !== project.status
+      && hasUsefulCurrentData(fallback.currentData)
+      && !hasUsefulCurrentData(project.currentData);
+  });
+  return staticHasMoreRecords || statusCollapsed || statusClearlyOlder || analysisWouldBeLost || knownProjectWouldRegress;
 }
 
 function hasSuspiciousWorkerStatus(workerProjects) {
@@ -1050,6 +1092,8 @@ function currentPublishCountFor(project) {
   if (project.name.includes("一丰")) {
     const auditedTotal = text.match(/有效发稿条目\s*(\d+)\s*条/);
     if (auditedTotal) return `${auditedTotal[1]} 篇`;
+    const publishedTotal = text.match(/有效发布链接(?:共)?\s*(\d+)\s*(?:条|篇|个)/);
+    if (publishedTotal) return `${publishedTotal[1]} 篇`;
     const total = text.match(/有效发布链接\s*(\d+)\s*条/);
     const rav4 = text.match(/荣放\s*(\d+)\s*条/);
     const avalon = text.match(/亚洲龙\s*(\d+)\s*条/);
@@ -1223,7 +1267,7 @@ function normalizeLinks(value) {
       return { label: url.replace(/^https?:\/\//, "").slice(0, 48), url: safeFeishuOpenUrl(url) };
     }
     const url = normalizeHref(item.url || item.link || "");
-    return { ...item, url: safeFeishuOpenUrl(url) };
+    return { ...item, url: safeFeishuOpenUrl(url), fileToken: item.fileToken || item.file_token || item.token || "" };
   }).filter(item => item && (item.url || item.label));
 }
 
@@ -1249,9 +1293,36 @@ function normalizeHref(value) {
 }
 
 function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
-  if (!item?.url || item.authRequired) return item;
+  if (!item || item.authRequired) return item;
+  const fileToken = item.fileToken || item.file_token || item.token || "";
+  if (fileToken && FEISHU_SYNC_API) {
+    const downloadUrl = new URL("/download", FEISHU_SYNC_API);
+    downloadUrl.searchParams.set("file_token", fileToken);
+    downloadUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
+    const extra = extractFeishuExtra(item.url || item.link || "");
+    if (extra) downloadUrl.searchParams.set("extra", extra);
+    return {
+      ...item,
+      label: item.label || fallbackLabel || "飞书文件",
+      url: downloadUrl.toString(),
+      authRequired: true
+    };
+  }
+  if (!item.url) return item;
   const parsed = parseFeishuMediaDownload(item.url);
   if (!parsed) return item;
+  if (FEISHU_SYNC_API && parsed.fileToken) {
+    const downloadUrl = new URL("/download", FEISHU_SYNC_API);
+    downloadUrl.searchParams.set("file_token", parsed.fileToken);
+    downloadUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
+    if (parsed.extra) downloadUrl.searchParams.set("extra", parsed.extra);
+    return {
+      ...item,
+      label: item.label || fallbackLabel || "飞书文件",
+      url: downloadUrl.toString(),
+      authRequired: true
+    };
+  }
   return {
     ...item,
     label: item.label || fallbackLabel || "飞书文件",
@@ -1262,7 +1333,17 @@ function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
 
 function safeFeishuOpenUrl(url) {
   if (!url) return "";
+  if (FEISHU_SYNC_API && String(url).startsWith(`${FEISHU_SYNC_API}/download`)) return url;
   return isFeishuApiUrl(url) ? FEISHU_TABLE_URL : url;
+}
+
+function extractFeishuExtra(value) {
+  try {
+    const parsed = new URL(value);
+    return parsed.searchParams.get("extra") || "";
+  } catch {
+    return "";
+  }
 }
 
 function isFeishuApiUrl(url) {
