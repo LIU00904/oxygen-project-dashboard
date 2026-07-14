@@ -1435,7 +1435,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvjW5TB0WiZd",
     "source": "feishu",
     "name": "格力高",
-    "status": "进行中",
+    "status": "已完成",
     "startDate": "2026-06-11",
     "cycleDays": 30,
     "progressPercent": 29,
@@ -2005,7 +2005,7 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-07-14T09:00:05.154Z",
+  "syncedAt": "2026-07-14T10:53:42.464Z",
   "analysisUpdatedAt": "2026-07-14T02:36:04.070Z",
   "source": "feishu",
   "recordCount": 59,
