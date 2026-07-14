@@ -445,9 +445,9 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/VzrDwYafWixoRqkTMdHcBKupngx?sheet=DGmpZZ"
       }
     ],
-    "kpiStatus": "未达标",
-    "currentData": "【发稿数据】\n华硕主板 137/150 篇，还差 13 篇。\n华硕商城 122/150 篇，还差 28 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新 6.28】\n自动识别排名记录 146 条：Top1 115 条、Top3 146 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
-    "optimizationSuggestion": "主板还差 13 篇，商城还差 28 篇；继续按两个子项目分别复核发稿链接有效性。",
+    "kpiStatus": "已达标",
+    "currentData": "【发稿数据】\n华硕主板 159/150 篇，已达标，超出 9 篇。\n华硕商城 166/150 篇，已达标，超出 16 篇。\n两个子项目均要求各 150 篇，分别考核，不能合并判断达标。\n【监测数据｜最新 7.12】\n自动识别排名记录 175 条：Top1 143 条、Top3 175 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "主板还差 0 篇，商城还差 0 篇；继续按两个子项目分别复核发稿链接有效性。",
     "reportLinks": [
       {
         "label": "华硕GEO监测报告（5.12-6.10）.pdf",
@@ -1122,7 +1122,7 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 73 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
@@ -1317,7 +1317,7 @@ window.FEISHU_PROJECTS = [
     "progressPercent": 43,
     "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
     "platform": "5个平台",
-    "notes": "",
+    "notes": "行政",
     "manager": "辛味珈",
     "writer": "辛味珈",
     "publisher": "刘依晨",
@@ -1451,7 +1451,7 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 67 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.26】\n自动识别排名记录 8 条：Top1 0 条、Top3 1 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "currentData": "【发稿数据】\n有效发稿 73 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.13】\n自动识别排名记录 16 条：Top1 2 条、Top3 3 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": [
@@ -1547,7 +1547,7 @@ window.FEISHU_PROJECTS = [
     "status": "进行中",
     "startDate": "2026-06-12",
     "cycleDays": 47,
-    "progressPercent": 36,
+    "progressPercent": 68,
     "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
     "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
     "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
@@ -1563,7 +1563,7 @@ window.FEISHU_PROJECTS = [
     ],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 361/150 篇，已达标，超出 211 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "currentData": "【发稿数据】\n有效发稿 571/150 篇，已达标，超出 421 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
     "optimizationSuggestion": "补充监测表入口，否则只能核算发稿，无法判断排名、收录和趋势。",
     "reportLinks": [],
     "briefLinks": []
@@ -1623,7 +1623,7 @@ window.FEISHU_PROJECTS = [
     "status": "待开始",
     "startDate": "2026-06-18",
     "cycleDays": 29,
-    "progressPercent": 38,
+    "progressPercent": 90,
     "kpi": "审计报告",
     "platform": "",
     "notes": "审计报告制作",
@@ -1667,7 +1667,7 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 13 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.29】\n自动识别排名记录 14 条：Top1 8 条、Top3 14 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "currentData": "【发稿数据】\n有效发稿 19 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.12】\n自动识别排名记录 82 条：Top1 66 条、Top3 82 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": []
@@ -1699,7 +1699,7 @@ window.FEISHU_PROJECTS = [
       }
     ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 24 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 6.26】\n自动识别排名记录 14 条：Top1 9 条、Top3 11 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "currentData": "【发稿数据】\n有效发稿 35 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.13】\n自动识别排名记录 30 条：Top1 16 条、Top3 22 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。",
     "reportLinks": [],
     "briefLinks": [
@@ -1894,8 +1894,8 @@ window.FEISHU_PROJECTS = [
   }
 ];
 window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-06-29T07:09:19.753Z",
-  "analysisUpdatedAt": "2026-07-01T00:00:00.000Z",
+  "syncedAt": "2026-07-14T02:36:04.070Z",
+  "analysisUpdatedAt": "2026-07-14T02:36:04.070Z",
   "source": "feishu",
   "recordCount": 55,
   "note": "main-table-plus-live-kpi-analysis-20260629",
