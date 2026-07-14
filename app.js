@@ -297,9 +297,8 @@ function shouldIgnoreWorkerProjects(workerProjects) {
   const staticPending = staticProjects.filter(project => project.status === "待开始").length;
   const workerHasAnalysis = workerProjects.some(project => hasUsefulCurrentData(project.currentData));
   const staticHasAnalysis = staticProjects.some(project => hasUsefulCurrentData(project.currentData));
-  const staticHasMoreRecords = staticProjects.length >= workerProjects.length + 2;
+  const staticHasMoreRecords = staticProjects.length > workerProjects.length;
   const statusCollapsed = staticOngoing > 0
-    && staticCompleted > 0
     && workerOngoing === 0
     && workerCompleted === 0
     && workerPending / workerProjects.length > 0.8;
@@ -327,7 +326,6 @@ function hasSuspiciousWorkerStatus(workerProjects) {
   const staticOngoing = staticProjects.filter(project => project.status === "进行中").length;
   const staticCompleted = staticProjects.filter(project => project.status === "已完成").length;
   return staticOngoing > 0
-    && staticCompleted > 0
     && workerOngoing === 0
     && workerPending / workerProjects.length > 0.8;
 }
