@@ -1121,9 +1121,13 @@
         "url": "https://jcnquengglen.feishu.cn/wiki/V0MZwOwgWicvockfGZicr0r1nvb"
       }
     ],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/MwrTwhkKoiPhvukY8XscDpr3nbd"
+      }
+    ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n已关联 1 个监测表入口，待下一轮汇总近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
     "reportLinks": [],
     "briefLinks": []
@@ -2011,6 +2015,6 @@
   window.FEISHU_PROJECTS = Array.from(byId.values());
   window.FEISHU_SYNC_META = {
     ...(window.FEISHU_SYNC_META || {}),
-    ...{"syncedAt":"2026-07-16T00:00:00.000+08:00","analysisUpdatedAt":"2026-07-14T02:36:04.070Z","source":"feishu","recordCount":59,"note":"main-table-sync-v20","preservedAnalysis":["太太乐松茸鲜","华硕","一丰 荣放 亚洲龙"],"progressUpdatedAt":"2026-06-20T16:42:16.639Z","progressUpdateNote":"progress-only","hotfixUpdatedAt":"2026-07-16T00:00:00.000+08:00","hotfixNote":"status-correction-20260716"}
+    ...{"syncedAt":"2026-07-16T00:00:00.000+08:00","analysisUpdatedAt":"2026-07-14T02:36:04.070Z","source":"feishu","recordCount":59,"note":"main-table-sync-v20","preservedAnalysis":["太太乐松茸鲜","华硕","一丰 荣放 亚洲龙"],"progressUpdatedAt":"2026-06-20T16:42:16.639Z","progressUpdateNote":"progress-only","hotfixUpdatedAt":"2026-07-16T00:00:00.000+08:00","hotfixNote":"add-zhekulink-monitor-20260716"}
   };
 })();

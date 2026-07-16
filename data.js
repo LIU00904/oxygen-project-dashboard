@@ -1120,9 +1120,13 @@ window.FEISHU_PROJECTS = [
         "url": "https://jcnquengglen.feishu.cn/wiki/V0MZwOwgWicvockfGZicr0r1nvb"
       }
     ],
-    "monitorLinks": [],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/MwrTwhkKoiPhvukY8XscDpr3nbd"
+      }
+    ],
     "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n已关联 1 个监测表入口，待下一轮汇总近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。",
     "reportLinks": [],
     "briefLinks": []
