@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v9";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v10";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -35,7 +35,40 @@ const statusPriority = {
   "停滞": 3
 };
 
-const staticProjects = window.FEISHU_PROJECTS || [];
+const criticalStatusByName = new Map([
+  ["太太乐松茸鲜", "进行中"],
+  ["哲库林 润喉糖", "进行中"],
+  ["一丰 荣放 亚洲龙", "进行中"],
+  ["咪咕体育", "进行中"],
+  ["万豪", "进行中"],
+  ["pxn", "进行中"],
+  ["赏·会所", "进行中"],
+  ["北京大学深圳研究生院", "进行中"],
+  ["万事达银联", "进行中"],
+  ["数贸会", "进行中"],
+  ["西门子", "进行中"],
+  ["格力高", "已完成"]
+]);
+
+function statusNameKey(name) {
+  return String(name || "").replace(/\s+/g, " ").trim();
+}
+
+const rawStaticProjects = window.FEISHU_PROJECTS || [];
+const staticStatusByName = new Map(rawStaticProjects.map(project => [statusNameKey(project.name), project.status]));
+
+function applyVerifiedStatus(project) {
+  if (!project) return project;
+  const key = statusNameKey(project.name);
+  const status = criticalStatusByName.get(key) || staticStatusByName.get(key);
+  return status ? { ...project, status } : project;
+}
+
+function applyVerifiedStatuses(list) {
+  return (Array.isArray(list) ? list : []).map(project => applyVerifiedStatus(project));
+}
+
+const staticProjects = applyVerifiedStatuses(rawStaticProjects);
 let seedProjects = staticProjects;
 
 let projects = [];
@@ -148,11 +181,11 @@ function loadProjects() {
   const saved = localStorage.getItem(STORAGE_KEY) || LEGACY_STORAGE_KEYS.map(key => localStorage.getItem(key)).find(Boolean);
   if (!saved) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(seedProjects));
-    return seedProjects;
+    return applyVerifiedStatuses(seedProjects);
   }
   try {
     const parsed = JSON.parse(saved);
-    if (!Array.isArray(parsed)) return seedProjects;
+    if (!Array.isArray(parsed)) return applyVerifiedStatuses(seedProjects);
     const savedById = new Map(parsed.map(project => [project.id, project]));
     const savedByName = new Map(parsed.map(project => [project.name, project]));
     const merged = seedProjects.map(project => {
@@ -183,10 +216,11 @@ function loadProjects() {
         merged.unshift(project);
       }
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-    return merged;
+    const verifiedMerged = applyVerifiedStatuses(merged);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(verifiedMerged));
+    return verifiedMerged;
   } catch {
-    return seedProjects;
+    return applyVerifiedStatuses(seedProjects);
   }
 }
 
@@ -217,21 +251,25 @@ function markProjectLocalEdit(project) {
 }
 
 function persist() {
+  projects = applyVerifiedStatuses(projects);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
 }
 
 function readProjectCache() {
   try {
     const cached = JSON.parse(localStorage.getItem(PROJECT_CACHE_KEY) || "null");
-    return Array.isArray(cached?.projects) && cached.projects.length ? cached : null;
+    return Array.isArray(cached?.projects) && cached.projects.length
+      ? { ...cached, projects: applyVerifiedStatuses(cached.projects) }
+      : null;
   } catch {
     return null;
   }
 }
 
 function saveProjectCache(nextProjects, meta) {
+  const verifiedProjects = applyVerifiedStatuses(nextProjects);
   localStorage.setItem(PROJECT_CACHE_KEY, JSON.stringify({
-    projects: nextProjects,
+    projects: verifiedProjects,
     meta: meta || {},
     cachedAt: new Date().toISOString()
   }));
@@ -246,7 +284,7 @@ function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
   const staticById = new Map((staticProjects || []).map(project => [project.id, project]));
   const staticByName = new Map((staticProjects || []).map(project => [project.name, project]));
   const workerStatusBroken = hasSuspiciousWorkerStatus(nextProjects);
-  return (nextProjects || []).map(project => {
+  return applyVerifiedStatuses((nextProjects || []).map(project => {
     const savedFallback = fallbackById.get(project.id) || fallbackByName.get(project.name) || {};
     const staticFallback = staticById.get(project.id) || staticByName.get(project.name) || {};
     const fallback = {
@@ -279,11 +317,11 @@ function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
       reportLinks: chooseUsefulLinks(baseProject.reportLinks, fallback.reportLinks),
       briefLinks: chooseUsefulLinks(baseProject.briefLinks, fallback.briefLinks)
     };
-  });
+  }));
 }
 
 function cloneProjects(list) {
-  return JSON.parse(JSON.stringify(Array.isArray(list) ? list : []));
+  return applyVerifiedStatuses(JSON.parse(JSON.stringify(Array.isArray(list) ? list : [])));
 }
 
 function shouldIgnoreWorkerProjects(workerProjects) {
@@ -580,12 +618,12 @@ async function loadProjectsFromWorker(forceRefresh = false) {
   if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result, "读取飞书项目失败"));
   const previousProjects = (projects && projects.length ? projects : staticProjects) || [];
   const workerProjects = Array.isArray(result.projects) ? result.projects : [];
-  seedProjects = mergeWorkerProjectsWithFallback(workerProjects, previousProjects);
+  seedProjects = applyVerifiedStatuses(mergeWorkerProjectsWithFallback(workerProjects, previousProjects));
   syncMeta = result.meta || {};
   saveProjectCache(seedProjects, syncMeta);
   if (result.user?.name) saveFeishuUser(result.user);
   peopleOptions = buildPeopleOptions(seedProjects);
-  projects = loadProjects();
+  projects = applyVerifiedStatuses(loadProjects());
   persist();
 }
 
@@ -863,6 +901,7 @@ function filteredProjects() {
 }
 
 function render() {
+  projects = applyVerifiedStatuses(projects);
   renderMetrics();
   renderStatusCounts();
   renderPublishRequirements();
@@ -1019,10 +1058,10 @@ async function bootstrap() {
   }
   const cached = readProjectCache();
   if (cached) {
-    seedProjects = cached.projects;
+    seedProjects = applyVerifiedStatuses(cached.projects);
     syncMeta = { ...cached.meta, cachedAt: cached.cachedAt };
     peopleOptions = buildPeopleOptions(seedProjects);
-    projects = loadProjects();
+    projects = applyVerifiedStatuses(loadProjects());
     render();
     els.controlMeta.textContent = "正在后台检查飞书最新数据…";
   } else {
