@@ -1783,7 +1783,7 @@ window.FEISHU_PROJECTS = [
     "id": "recvmzZQyAlC6z",
     "source": "feishu",
     "name": "万事达银联",
-    "status": "待开始",
+    "status": "进行中",
     "startDate": "",
     "cycleDays": 0,
     "progressPercent": 0,
@@ -1798,7 +1798,7 @@ window.FEISHU_PROJECTS = [
     "publishLinks": [],
     "monitorLinks": [],
     "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "currentData": "已同步飞书主表；待补充 KPI、排期、发稿表与监测表后更新分析。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。",
     "reportLinks": [],
     "briefLinks": []

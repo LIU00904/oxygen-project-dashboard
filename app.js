@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v8";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v9";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -253,20 +253,21 @@ function mergeWorkerProjectsWithFallback(nextProjects, fallbackProjects) {
       ...savedFallback,
       ...staticFallback
     };
-    const baseProject = workerStatusBroken && fallback.id ? {
+    const verifiedFallback = staticFallback.id || workerStatusBroken ? fallback : {};
+    const baseProject = verifiedFallback.id ? {
       ...project,
-      name: fallback.name || project.name,
-      status: fallback.status || project.status,
-      startDate: fallback.startDate || project.startDate,
-      cycleDays: fallback.cycleDays || project.cycleDays,
-      progressPercent: fallback.progressPercent ?? project.progressPercent,
-      kpi: fallback.kpi || project.kpi,
-      platform: fallback.platform || project.platform,
-      manager: fallback.manager || project.manager,
-      writer: fallback.writer || project.writer,
-      publisher: fallback.publisher || project.publisher,
-      monitor: fallback.monitor || project.monitor,
-      invoiceStatus: fallback.invoiceStatus || project.invoiceStatus
+      name: verifiedFallback.name || project.name,
+      status: verifiedFallback.status || project.status,
+      startDate: verifiedFallback.startDate || project.startDate,
+      cycleDays: verifiedFallback.cycleDays ?? project.cycleDays,
+      progressPercent: verifiedFallback.progressPercent ?? project.progressPercent,
+      kpi: verifiedFallback.kpi || project.kpi,
+      platform: verifiedFallback.platform || project.platform,
+      manager: verifiedFallback.manager || project.manager,
+      writer: verifiedFallback.writer || project.writer,
+      publisher: verifiedFallback.publisher || project.publisher,
+      monitor: verifiedFallback.monitor || project.monitor,
+      invoiceStatus: verifiedFallback.invoiceStatus || project.invoiceStatus
     } : project;
     return {
       ...baseProject,
@@ -446,8 +447,8 @@ async function syncProjectFieldsToFeishu(project, fieldsToSync) {
     });
     const result = await response.json().catch(() => null);
     if (!response.ok || !result?.ok) throw new Error(syncErrorMessage(result));
-    if (result.version !== "20260617-project-write-v1") {
-      throw new Error("Cloudflare Worker 需要更新到项目编辑版本");
+    if (result.version && result.version !== "20260617-project-write-v1") {
+      console.info("Cloudflare Worker 版本不同，继续以返回结果为准", result.version);
     }
     console.info("字段已同步飞书", project.name, Object.keys(fieldsToSync));
     return { ok: true, recordId: result.recordId || project.id, result };
