@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v10";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v11";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -35,21 +35,6 @@ const statusPriority = {
   "停滞": 3
 };
 
-const criticalStatusByName = new Map([
-  ["太太乐松茸鲜", "进行中"],
-  ["哲库林 润喉糖", "进行中"],
-  ["一丰 荣放 亚洲龙", "进行中"],
-  ["咪咕体育", "进行中"],
-  ["万豪", "进行中"],
-  ["pxn", "进行中"],
-  ["赏·会所", "进行中"],
-  ["北京大学深圳研究生院", "进行中"],
-  ["万事达银联", "进行中"],
-  ["数贸会", "进行中"],
-  ["西门子", "进行中"],
-  ["格力高", "已完成"]
-]);
-
 function statusNameKey(name) {
   return String(name || "").replace(/\s+/g, " ").trim();
 }
@@ -60,7 +45,7 @@ const staticStatusByName = new Map(rawStaticProjects.map(project => [statusNameK
 function applyVerifiedStatus(project) {
   if (!project) return project;
   const key = statusNameKey(project.name);
-  const status = criticalStatusByName.get(key) || staticStatusByName.get(key);
+  const status = staticStatusByName.get(key);
   return status ? { ...project, status } : project;
 }
 
@@ -1333,32 +1318,12 @@ function normalizeHref(value) {
 function normalizeProtectedDownloadItem(item, fallbackLabel = "飞书文件") {
   if (!item || item.authRequired) return item;
   const fileToken = item.fileToken || item.file_token || item.token || "";
-  if (fileToken && FEISHU_SYNC_API) {
-    const downloadUrl = new URL("/download", FEISHU_SYNC_API);
-    downloadUrl.searchParams.set("file_token", fileToken);
-    downloadUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
-    const extra = extractFeishuExtra(item.url || item.link || "");
-    if (extra) downloadUrl.searchParams.set("extra", extra);
-    return {
-      ...item,
-      label: item.label || fallbackLabel || "飞书文件",
-      url: downloadUrl.toString(),
-      authRequired: true
-    };
-  }
   if (!item.url) return item;
   const parsed = parseFeishuMediaDownload(item.url);
-  if (!parsed) return item;
-  if (FEISHU_SYNC_API && parsed.fileToken) {
-    const downloadUrl = new URL("/download", FEISHU_SYNC_API);
-    downloadUrl.searchParams.set("file_token", parsed.fileToken);
-    downloadUrl.searchParams.set("name", item.label || fallbackLabel || "飞书文件");
-    if (parsed.extra) downloadUrl.searchParams.set("extra", parsed.extra);
+  if (!parsed && !fileToken) {
     return {
       ...item,
-      label: item.label || fallbackLabel || "飞书文件",
-      url: downloadUrl.toString(),
-      authRequired: true
+      url: safeFeishuOpenUrl(item.url)
     };
   }
   return {
