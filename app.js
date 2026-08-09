@@ -3,7 +3,7 @@ const COMMENTER_KEY = "oxygen-project-dashboard-commenter";
 const FEISHU_USER_KEY = "oxygen-project-dashboard-feishu-user";
 const FEISHU_SESSION_KEY = "oxygen-project-dashboard-feishu-session";
 const FEISHU_LOGIN_DATE_KEY = "oxygen-project-dashboard-feishu-login-date";
-const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v11";
+const PROJECT_CACHE_KEY = "oxygen-project-dashboard-protected-cache-v12";
 const AUTH_ATTEMPT_KEY = "oxygen-project-dashboard-auth-attempted";
 const DIRTY_NOTES_KEY = "oxygen-project-dashboard-unsynced-notes";
 const FEISHU_TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -36,7 +36,10 @@ const statusPriority = {
 };
 
 function statusNameKey(name) {
-  return String(name || "").replace(/\s+/g, " ").trim();
+  const normalized = String(name || "").replace(/\s+/g, " ").trim();
+  if (normalized === "一丰") return "一丰 荣放 亚洲龙";
+  if (normalized === "咪咕") return "咪咕体育";
+  return normalized;
 }
 
 const rawStaticProjects = window.FEISHU_PROJECTS || [];
@@ -322,6 +325,9 @@ function shouldIgnoreWorkerProjects(workerProjects) {
   const workerHasAnalysis = workerProjects.some(project => hasUsefulCurrentData(project.currentData));
   const staticHasAnalysis = staticProjects.some(project => hasUsefulCurrentData(project.currentData));
   const staticHasMoreRecords = staticProjects.length > workerProjects.length;
+  const workerHasDuplicateYifeng = workerProjects
+    .filter(project => statusNameKey(project.name) === "一丰 荣放 亚洲龙")
+    .length > 1;
   const statusCollapsed = staticOngoing > 0
     && workerOngoing === 0
     && workerCompleted === 0
@@ -340,7 +346,7 @@ function shouldIgnoreWorkerProjects(workerProjects) {
       && hasUsefulCurrentData(fallback.currentData)
       && !hasUsefulCurrentData(project.currentData);
   });
-  return staticHasMoreRecords || statusCollapsed || statusClearlyOlder || analysisWouldBeLost || knownProjectWouldRegress;
+  return staticHasMoreRecords || workerHasDuplicateYifeng || statusCollapsed || statusClearlyOlder || analysisWouldBeLost || knownProjectWouldRegress;
 }
 
 function hasSuspiciousWorkerStatus(workerProjects) {
