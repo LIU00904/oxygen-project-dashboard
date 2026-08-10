@@ -48,6 +48,71 @@
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。"
   },
   {
+    "id": "recvoyztLg6gqr",
+    "recordId": "recvoyztLg6gqr",
+    "source": "feishu",
+    "name": "格力高 百奇",
+    "status": "进行中",
+    "startDate": "2026-07-28",
+    "cycleDays": 31,
+    "progressPercent": 42,
+    "kpi": "1. 3个核心关键词\n2. 30个长尾问题词首批3. 审核内容5篇\n4. 第二批GEO优化内容10篇\n5. 纠偏补充内容5篇(视效果决定)\n6. AI答案监测与月度优化小结1份",
+    "platform": "5个平台",
+    "notes": "",
+    "manager": "辛味珈",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "2c49629087f7029c8e1a6facfeeeeff4.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "SVhLbLrizoE8AOxKOqAc5AyJngR",
+        "fileType": "image/png",
+        "size": 1698017
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
+    "id": "recvrcnkAzfhRG",
+    "recordId": "recvrcnkAzfhRG",
+    "source": "feishu",
+    "name": "国泰海通",
+    "status": "进行中",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "22个关键词 每周246篇",
+    "platform": "",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
     "id": "recvkB4roXUK2R",
     "recordId": "recvkB4roXUK2R",
     "source": "feishu",
@@ -554,6 +619,32 @@
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
+    "id": "recvrcqgYDeQhR",
+    "recordId": "recvrcqgYDeQhR",
+    "source": "feishu",
+    "name": "TMA",
+    "status": "进行中",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
     "id": "recvhXpWChLgnp",
     "recordId": "recvhXpWChLgnp",
     "source": "feishu",
@@ -704,45 +795,6 @@
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
-    "id": "recvoyztLg6gqr",
-    "recordId": "recvoyztLg6gqr",
-    "source": "feishu",
-    "name": "格力高 百奇",
-    "status": "待开始",
-    "startDate": "2026-07-28",
-    "cycleDays": 31,
-    "progressPercent": 0,
-    "kpi": "1. 3个核心关键词\n2. 30个长尾问题词首批3. 审核内容5篇\n4. 第二批GEO优化内容10篇\n5. 纠偏补充内容5篇(视效果决定)\n6. AI答案监测与月度优化小结1份",
-    "platform": "5个平台",
-    "notes": "",
-    "manager": "辛味珈",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [
-      {
-        "label": "2c49629087f7029c8e1a6facfeeeeff4.png",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "SVhLbLrizoE8AOxKOqAc5AyJngR",
-        "fileType": "image/png",
-        "size": 1698017
-      }
-    ],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
     "id": "recveNplOc37li",
     "recordId": "recveNplOc37li",
     "source": "feishu",
@@ -829,32 +881,6 @@
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
-  },
-  {
-    "id": "recvrcnkAzfhRG",
-    "recordId": "recvrcnkAzfhRG",
-    "source": "feishu",
-    "name": "国泰海通",
-    "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "22个关键词 每周246篇",
-    "platform": "",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recvhXq5d4Oxv0",
@@ -1795,32 +1821,6 @@
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
-  },
-  {
-    "id": "recvrcqgYDeQhR",
-    "recordId": "recvrcqgYDeQhR",
-    "source": "feishu",
-    "name": "TMA",
-    "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recvqxnKl4emmz",
@@ -2773,12 +2773,12 @@
 ];
   window.FEISHU_PROJECTS = latestProjects;
   window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-08-09T17:00:05.802Z",
+  "syncedAt": "2026-08-10T02:29:21.245Z",
   "analysisUpdatedAt": "2026-07-24T00:00:00.000+08:00",
   "source": "feishu",
   "recordCount": 75,
   "note": "main-table-sync-20260810-current-status-files",
-  "hotfixUpdatedAt": "2026-08-09T17:00:05.802Z",
+  "hotfixUpdatedAt": "2026-08-10T02:29:21.245Z",
   "hotfixNote": "main-table-sync-20260810-current-status-files",
   "statusSource": "confirmed-ongoing-list-because-feishu-stage-field-not-returned-by-record-api"
 };
