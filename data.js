@@ -55,7 +55,7 @@
     "status": "进行中",
     "startDate": "2026-07-28",
     "cycleDays": 31,
-    "progressPercent": 94,
+    "progressPercent": 100,
     "kpi": "1. 3个核心关键词\n2. 30个长尾问题词首批3. 审核内容5篇\n4. 第二批GEO优化内容10篇\n5. 纠偏补充内容5篇(视效果决定)\n6. AI答案监测与月度优化小结1份",
     "platform": "5个平台",
     "notes": "周度 5篇，每天至少有媒体出去 医药信源",
@@ -94,7 +94,7 @@
     "status": "进行中",
     "startDate": "2026-08-03",
     "cycleDays": 92,
-    "progressPercent": 25,
+    "progressPercent": 27,
     "kpi": "1. 1个月到效果 维持两个月\n2. 23个关键词 做kpi考核标准 \n3.  【 每周246篇 -96篇（按8篇） 】\n",
     "platform": "",
     "notes": "",
@@ -126,49 +126,6 @@
     "kpiStatus": "推进中",
     "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
-    "id": "recvkB4roXUK2R",
-    "recordId": "recvkB4roXUK2R",
-    "source": "feishu",
-    "name": "咪咕体育",
-    "status": "进行中",
-    "startDate": "2026-06-12",
-    "cycleDays": 38,
-    "progressPercent": 100,
-    "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
-    "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
-    "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
-    "manager": "飞书用户6916HP",
-    "writer": "张扬",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/OeVowoj8dir6wpkX0HDcLDtunAd"
-      }
-    ],
-    "monitorLinks": [],
-    "briefLinks": [
-      {
-        "label": "咪咕世界杯关键词.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "S8G8bYVAGo8jXbxIFZGcxj8Knfg",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 12408
-      }
-    ],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 571/150 篇，已达标，超出 421 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "补齐 20 篇有效发布；同时关联监测表，按平台核验不少于 30 个关键词、准确率 95% 和月度达标率 80%。"
   },
   {
     "id": "recvld4x7F5xhp",
@@ -260,7 +217,7 @@
     "kpi": "10个关键词排名第一 需要发稿500篇（-27.4.14）",
     "platform": "全平台4及以上",
     "notes": "开票",
-    "manager": "赵博宇",
+    "manager": "韩笑",
     "writer": "梁伟安",
     "publisher": "刘依晨",
     "monitor": "宋芷桐",
@@ -369,68 +326,6 @@
     "optimizationSuggestion": "6.8 当前主要缺口：家常菜常备调料品牌 Top3 为 3/6，距离 4/6 还差 1 个平台；0添加提鲜调料品牌 Top1 仅 2/6、追求健康生活家庭选择的调味料品牌 Top1 3/6，建议加强对应关键词的发稿与信源覆盖。发稿数量目前 304/500，还差 196 篇，需继续补量并同步维护 6.9 后续监测。"
   },
   {
-    "id": "recvkB4MgLZqyP",
-    "recordId": "recvkB4MgLZqyP",
-    "source": "feishu",
-    "name": "万豪",
-    "status": "进行中",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "1. 万豪和喜来登的露出\n2. 品牌词的优化\n3. 核心关键词是三亚亲子酒店\n4. 时间节点：暑假 \n5. 需要审核所有稿件\n6. Top3提升10%\n7. 每月不低于20篇",
-    "platform": "",
-    "notes": "",
-    "manager": "飞书用户6916HP",
-    "writer": "刘鸿睿",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
-  },
-  {
-    "id": "recvmzZQyAlC6z",
-    "recordId": "recvmzZQyAlC6z",
-    "source": "feishu",
-    "name": "万事达银联",
-    "status": "进行中",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "监测",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "已同步飞书主表；待补充 KPI、排期、发稿表与监测表后更新分析。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
     "id": "recvpdwK5rNANo",
     "recordId": "recvpdwK5rNANo",
     "source": "feishu",
@@ -460,108 +355,6 @@
     "kpiStatus": "推进中",
     "currentData": "已同步飞书主表；待结合发稿表与监测表更新 KPI 分析。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
-    "id": "recvjheWColObr",
-    "recordId": "recvjheWColObr",
-    "source": "feishu",
-    "name": "一丰 荣放 亚洲龙",
-    "status": "进行中",
-    "startDate": "2026-05-10",
-    "cycleDays": 89,
-    "progressPercent": 43,
-    "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
-    "platform": "5个平台",
-    "notes": "行政\n8.10 \n新增关键词 -8.5\n最后一周不发稿",
-    "manager": "辛味珈",
-    "writer": "辛味珈",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "已开票",
-    "publishLinks": [
-      {
-        "url": "https://mv21kbvltn.feishu.cn/wiki/Sgumwr7Q3iIGMBkzLlPcL1LRnNf"
-      }
-    ],
-    "monitorLinks": [],
-    "briefLinks": [
-      {
-        "label": "一汽丰田荣放RAV4_GEO_Brief_氧气0429.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "IoUwbshfnojdyax3T9jcuUJNnth",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 28594
-      },
-      {
-        "label": "一汽丰田亚洲龙GEO_Brief_0429.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "TECnbIUIBopnW9xgzhEcmMrRn0d",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 30876
-      }
-    ],
-    "reportLinks": [
-      {
-        "label": "【基础词】一汽丰田-亚洲龙GEO诊断项目-周报0704至0710.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "VWZ0bWnshoZOcsx6IxicvDVmnTD",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 25664
-      },
-      {
-        "label": "亚洲龙-5月14号-GEO截图.pptx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "JDOnb6zPlo2tihxcfNncVjzwn5z",
-        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "size": 55134846
-      },
-      {
-        "label": "荣放-5月14号-GEO截图.pptx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "AiXWbDC8jopFdAxkj67cPYYwnUd",
-        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "size": 28867749
-      },
-      {
-        "label": "【亚洲龙】基础词数据&信源-截至6.7.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "W9OCbyuLAoYvR0xEzDBcT5ksnGb",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 1188592
-      },
-      {
-        "label": "一汽丰田-荣放GEO诊断项目-周报0501至0514（深演）.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "H926bMbqxoe1bHxNgD7cy0HFnFg",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 583034
-      },
-      {
-        "label": "周报点检-车型GEO优化进展（深演）.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "OH1XbAf1KoGBS4xXFHlcqMRInCd",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 16103
-      },
-      {
-        "label": "一汽丰田-亚洲龙GEO诊断项目-周报0511至0517（深演）.xlsx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "WQ1MbrKQWo9niuxwY1AcxNhfn2c",
-        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "size": 586388
-      },
-      {
-        "label": "一丰geo 5月阶段分析.pptx",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "NcdzbkqYTogt0xxS9yocvzHcnwh",
-        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "size": 151938
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n已按当前飞书发稿表筛选结果核对：状态为“已发稿”的有效发布链接共 139 篇。\n发稿 KPI：139/100 篇，已达标，超出 39 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
-    "optimizationSuggestion": "先打通跨租户发稿与监测表读取权限，再按已发稿/拒稿/审核中/空白状态实时重算；当前不使用历史手工数量。"
   },
   {
     "id": "recvhXpRFrA1MC",
@@ -601,63 +394,6 @@
     "kpiStatus": "推进中",
     "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n已关联 1 个监测表入口，待下一轮汇总近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
-  },
-  {
-    "id": "recvkB54wk2Wq0",
-    "recordId": "recvkB54wk2Wq0",
-    "source": "feishu",
-    "name": "pxn",
-    "status": "进行中",
-    "startDate": "2026-06-18",
-    "cycleDays": 29,
-    "progressPercent": 100,
-    "kpi": "审计报告",
-    "platform": "",
-    "notes": "审计报告制作",
-    "manager": "辛味珈",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
-  },
-  {
-    "id": "recvrcqgYDeQhR",
-    "recordId": "recvrcqgYDeQhR",
-    "source": "feishu",
-    "name": "TMA",
-    "status": "进行中",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recvhXpWChLgnp",
@@ -1352,6 +1088,32 @@
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
+    "id": "recveNplOc7fXw",
+    "recordId": "recveNplOc7fXw",
+    "source": "feishu",
+    "name": "施耐德",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
+  },
+  {
     "id": "recveNplOcIuxf",
     "recordId": "recveNplOcIuxf",
     "source": "feishu",
@@ -1463,6 +1225,68 @@
     "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
     "kpiStatus": "推进中",
     "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
+    "id": "recvkB4MgLZqyP",
+    "recordId": "recvkB4MgLZqyP",
+    "source": "feishu",
+    "name": "万豪",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "1. 万豪和喜来登的露出\n2. 品牌词的优化\n3. 核心关键词是三亚亲子酒店\n4. 时间节点：暑假 \n5. 需要审核所有稿件\n6. Top3提升10%\n7. 每月不低于20篇",
+    "platform": "",
+    "notes": "",
+    "manager": "飞书用户6916HP",
+    "writer": "刘鸿睿",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
+  },
+  {
+    "id": "recvmzZQyAlC6z",
+    "recordId": "recvmzZQyAlC6z",
+    "source": "feishu",
+    "name": "万事达银联",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "监测",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "已同步飞书主表；待补充 KPI、排期、发稿表与监测表后更新分析。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
@@ -1992,6 +1816,32 @@
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
+  },
+  {
+    "id": "recvrcqgYDeQhR",
+    "recordId": "recvrcqgYDeQhR",
+    "source": "feishu",
+    "name": "TMA",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recvqxnKl4emmz",
@@ -2649,6 +2499,49 @@
     "optimizationSuggestion": "补充项目 KPI 与平台信息；监测表已关联，后续可归档结案报告。"
   },
   {
+    "id": "recvkB4roXUK2R",
+    "recordId": "recvkB4roXUK2R",
+    "source": "feishu",
+    "name": "咪咕体育",
+    "status": "已完成",
+    "startDate": "2026-06-12",
+    "cycleDays": 38,
+    "progressPercent": 100,
+    "kpi": "每个平台/每月优化的关键词不少于30个；文章撰写不少于150篇、文章发布不少于150篇次；\n KPI目标：1）实现月度≧4个平台在约定关键词的搜索结果中，咪咕视频推荐顺位稳定保持第二，牢牢占据第一梯队；2）提升回答维度：纠偏事实性错误并增加信息深度，确保展现的咪咕核心优势信息准确率达到95%以上；3）每月围绕咪咕世界杯信息内容特点，每个平台优化不少于30个高频核心关键词，形成流量拦截网；4）月度关键词中实现80%达标。\n按时按需提供各项报告及总结报告等。",
+    "platform": "覆盖5-6个AI平台（必须含有：豆包、通义千问、DeepSeek、元宝四大主流平台）",
+    "notes": "优化到7.20，后面是维护\n一篇稿件覆盖5-6个关键词\n第一周发稿多发力\n7篇 除了球迷女朋友那篇（自媒体），每个稿件 6-7个信源\n大概写30-35篇，每篇5个左右媒体",
+    "manager": "飞书用户6916HP",
+    "writer": "张扬",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/OeVowoj8dir6wpkX0HDcLDtunAd"
+      }
+    ],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "咪咕世界杯关键词.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "S8G8bYVAGo8jXbxIFZGcxj8Knfg",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 12408
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n有效发稿 571/150 篇，已达标，超出 421 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "补齐 20 篇有效发布；同时关联监测表，按平台核验不少于 30 个关键词、准确率 95% 和月度达标率 80%。"
+  },
+  {
     "id": "recveNplOcfxZ1",
     "recordId": "recveNplOcfxZ1",
     "source": "feishu",
@@ -2713,6 +2606,108 @@
     "kpiStatus": "已达标",
     "currentData": "【发稿数据】\n有效发稿 56/36 篇，已达到数量要求，超出 20 篇。\n【监测数据】\n尚未关联监测表，暂无法判断大模型关键词正向提及率是否超过 90%。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
+  },
+  {
+    "id": "recvjheWColObr",
+    "recordId": "recvjheWColObr",
+    "source": "feishu",
+    "name": "一丰 荣放 亚洲龙",
+    "status": "已完成",
+    "startDate": "2026-05-10",
+    "cycleDays": 89,
+    "progressPercent": 100,
+    "kpi": "亚洲龙KPI的考核：\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥30%；TOP10推荐度：≥80%\n优化稿件：>= 100篇\n\n荣放KPI的考核\n提升目标：声量SOV ：≥15%；TOP3推荐度：≥20%；TOP10推荐度：≥80%",
+    "platform": "5个平台",
+    "notes": "行政\n8.10 \n新增关键词 -8.5\n最后一周不发稿",
+    "manager": "辛味珈",
+    "writer": "辛味珈",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "已开票",
+    "publishLinks": [
+      {
+        "url": "https://mv21kbvltn.feishu.cn/wiki/Sgumwr7Q3iIGMBkzLlPcL1LRnNf"
+      }
+    ],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "一汽丰田荣放RAV4_GEO_Brief_氧气0429.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "IoUwbshfnojdyax3T9jcuUJNnth",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 28594
+      },
+      {
+        "label": "一汽丰田亚洲龙GEO_Brief_0429.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "TECnbIUIBopnW9xgzhEcmMrRn0d",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 30876
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "【基础词】一汽丰田-亚洲龙GEO诊断项目-周报0704至0710.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "VWZ0bWnshoZOcsx6IxicvDVmnTD",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 25664
+      },
+      {
+        "label": "亚洲龙-5月14号-GEO截图.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "JDOnb6zPlo2tihxcfNncVjzwn5z",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 55134846
+      },
+      {
+        "label": "荣放-5月14号-GEO截图.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "AiXWbDC8jopFdAxkj67cPYYwnUd",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 28867749
+      },
+      {
+        "label": "【亚洲龙】基础词数据&信源-截至6.7.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "W9OCbyuLAoYvR0xEzDBcT5ksnGb",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 1188592
+      },
+      {
+        "label": "一汽丰田-荣放GEO诊断项目-周报0501至0514（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "H926bMbqxoe1bHxNgD7cy0HFnFg",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 583034
+      },
+      {
+        "label": "周报点检-车型GEO优化进展（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "OH1XbAf1KoGBS4xXFHlcqMRInCd",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 16103
+      },
+      {
+        "label": "一汽丰田-亚洲龙GEO诊断项目-周报0511至0517（深演）.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WQ1MbrKQWo9niuxwY1AcxNhfn2c",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 586388
+      },
+      {
+        "label": "一丰geo 5月阶段分析.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "NcdzbkqYTogt0xxS9yocvzHcnwh",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 151938
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n已按当前飞书发稿表筛选结果核对：状态为“已发稿”的有效发布链接共 139 篇。\n发稿 KPI：139/100 篇，已达标，超出 39 篇。\n【监测数据】\n尚未关联监测表，暂无法判断近一周/近一月趋势。",
+    "optimizationSuggestion": "先打通跨租户发稿与监测表读取权限，再按已发稿/拒稿/审核中/空白状态实时重算；当前不使用历史手工数量。"
   },
   {
     "id": "recveNplOcWAzC",
@@ -2833,18 +2828,18 @@
     "optimizationSuggestion": "确认项目是否恢复推进；优先补充停滞原因、发稿链接和最新监测表。"
   },
   {
-    "id": "recveNplOc7fXw",
-    "recordId": "recveNplOc7fXw",
+    "id": "recvkB54wk2Wq0",
+    "recordId": "recvkB54wk2Wq0",
     "source": "feishu",
-    "name": "施耐德",
-    "status": "停滞",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
+    "name": "pxn",
+    "status": "已完成",
+    "startDate": "2026-06-18",
+    "cycleDays": 29,
+    "progressPercent": 100,
+    "kpi": "审计报告",
     "platform": "",
-    "notes": "",
-    "manager": "",
+    "notes": "审计报告制作",
+    "manager": "辛味珈",
     "writer": "",
     "publisher": "",
     "monitor": "",
@@ -2852,7 +2847,12 @@
     "publishLinks": [],
     "monitorLinks": [],
     "briefLinks": [],
-    "reportLinks": [],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
     "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
     "kpiStatus": "待开始",
     "currentData": "当前完成度 0%",
@@ -2944,12 +2944,12 @@
 ];
   window.FEISHU_PROJECTS = latestProjects;
   window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-08-26T08:56:43.929Z",
+  "syncedAt": "2026-08-28T08:55:56.349Z",
   "analysisUpdatedAt": "2026-07-24T00:00:00.000+08:00",
   "source": "feishu",
   "recordCount": 81,
   "note": "main-table-sync-20260824-status-new-projects",
-  "hotfixUpdatedAt": "2026-08-26T08:56:43.929Z",
+  "hotfixUpdatedAt": "2026-08-28T08:55:56.349Z",
   "hotfixNote": "main-table-sync-20260824-status-new-projects",
   "statusSource": "confirmed-ongoing-list-because-feishu-stage-field-not-returned-by-record-api"
 };
