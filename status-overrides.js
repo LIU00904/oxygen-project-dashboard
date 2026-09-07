@@ -19,22 +19,26 @@
     "万事达银联",
     "西门子",
     "哲库林 润喉糖",
-    "TMA"
+    "TMA",
+    "pxn",
+    "华硕 新",
+    "伊利金领冠",
+    "头道汤"
   ]);
-  const stalled = new Set(["西昊", "西昊2", "mac", "海蓝之谜"]);
+  const stalled = new Set(["西昊", "西昊2", "mac", "海蓝之谜", "吉利"]);
   const additions = [
     {
       id: "recvsw9Tyi4rjD",
       recordId: "recvsw9Tyi4rjD",
       name: "伊利金领冠",
-      status: "待开始",
+      status: "进行中",
       kpi: "本月内容分发总量要求：文章发布 500 篇；AI 推荐与信源露出按飞书表执行。",
       platform: "豆包 PC 端 + 移动端，覆盖快速回答与深度回答等。",
       currentData: "项目已从飞书读取，待补充启动日期、发稿与监测分析。",
       optimizationSuggestion: "补齐启动日期、发稿链接和监测表后更新分析。"
     },
-    { id: "recv-gili-20260907", name: "吉利", status: "待开始" },
-    { id: "recv-toudaotang-20260907", name: "头道汤", status: "待开始" },
+    { id: "recv-gili-20260907", name: "吉利", status: "停滞" },
+    { id: "recv-toudaotang-20260907", name: "头道汤", status: "进行中" },
     { id: "recv-ifeng-20260907", name: "凤凰网", status: "待开始" },
     { id: "recv-tianma-20260907", name: "天马", status: "待开始" },
     { id: "recv-weiwo-20260907", name: "帷幄", status: "待开始" },
