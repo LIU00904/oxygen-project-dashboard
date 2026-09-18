@@ -23,7 +23,8 @@
     "pxn",
     "华硕 新",
     "伊利金领冠",
-    "头道汤"
+    "头道汤",
+    "可孚制氧机"
   ]);
   const stalled = new Set(["西昊", "西昊2", "mac", "海蓝之谜", "吉利"]);
   const additions = [
@@ -39,6 +40,7 @@
     },
     { id: "recv-gili-20260907", name: "吉利", status: "停滞" },
     { id: "recv-toudaotang-20260907", name: "头道汤", status: "进行中" },
+    { id: "recv-kefu-20260918", name: "可孚制氧机", status: "进行中" },
     { id: "recv-ifeng-20260907", name: "凤凰网", status: "待开始" },
     { id: "recv-tianma-20260907", name: "天马", status: "待开始" },
     { id: "recv-weiwo-20260907", name: "帷幄", status: "待开始" },
