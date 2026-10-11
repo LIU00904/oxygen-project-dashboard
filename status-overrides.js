@@ -7,9 +7,22 @@
     "咪咕体育",
     "一丰",
     "一丰 荣放 亚洲龙",
-    "赏·会所",
     "深演",
-    "骨科医生"
+    "骨科医生",
+    "可口可乐",
+    "茶马古窖",
+    "湄洲岛",
+    "李锦记",
+    "驾校一点通",
+    "华硕",
+    "全标",
+    "7 THLAT",
+    "公交",
+    "祖玛珑",
+    "mac",
+    "海蓝之谜",
+    "理想",
+    "珍致"
   ]);
   const ongoing = new Set([
     "国泰海通",
@@ -26,7 +39,54 @@
     "头道汤",
     "可孚制氧机"
   ]);
-  const stalled = new Set(["西昊", "西昊2", "mac", "海蓝之谜", "吉利"]);
+  const stalled = new Set([
+    "西昊",
+    "西昊2",
+    "欧莱雅",
+    "作业帮",
+    "babycare招标",
+    "招行信用卡",
+    "贵州天马",
+    "谷雨",
+    "嘉立创",
+    "康佳新飞",
+    "时空宇道",
+    "中商联数据委",
+    "wonderlab",
+    "爱菊学校",
+    "海尔（卡萨帝）",
+    "雀巢",
+    "半亩花田",
+    "长安汽车",
+    "自然堂",
+    "创维",
+    "伯恩光学",
+    "新飞冰箱",
+    "鱼油",
+    "EMC实验室",
+    "电竞酒店",
+    "抑郁胶囊",
+    "海泰",
+    "朗廷酒店",
+    "海尔净水器",
+    "吉利",
+    "新飞"
+  ]);
+  const pending = new Set([
+    "vivo",
+    "植发",
+    "广百",
+    "六龙街道",
+    "上汽大通",
+    "凤凰网",
+    "天马",
+    "恬护士",
+    "百雀羚",
+    "玛仕",
+    "先声药业",
+    "有礼进口泳帽",
+    "呼吸机"
+  ]);
   const additions = [
     {
       id: "recvsw9Tyi4rjD",
@@ -44,7 +104,13 @@
     { id: "recv-ifeng-20260907", name: "凤凰网", status: "待开始" },
     { id: "recv-tianma-20260907", name: "天马", status: "待开始" },
     { id: "recv-weiwo-20260907", name: "帷幄", status: "待开始" },
-    { id: "recv-tianhushi-20260907", name: "恬护士", status: "待开始" }
+    { id: "recv-tianhushi-20260907", name: "恬护士", status: "待开始" },
+    { id: "recv-xinfei-20261012", name: "新飞", status: "停滞" },
+    { id: "recv-huxiji-20261012", name: "呼吸机", status: "待开始" },
+    { id: "recv-baiqueling-20261012", name: "百雀羚", status: "待开始" },
+    { id: "recv-mashi-20261012", name: "玛仕", status: "待开始" },
+    { id: "recv-xiansheng-20261012", name: "先声药业", status: "待开始" },
+    { id: "recv-youli-20261012", name: "有礼进口泳帽", status: "待开始" }
   ];
 
   function normalizeName(name) {
@@ -84,6 +150,7 @@
     if (completed.has(key)) next.status = "已完成";
     else if (ongoing.has(key)) next.status = "进行中";
     else if (stalled.has(key)) next.status = "停滞";
+    else if (pending.has(key)) next.status = "待开始";
     if (!next.cycleDays && next.startDate && next.endDate) next.cycleDays = cycleDays(next.startDate, next.endDate);
     if (!next.endDate) next.endDate = endDate(next);
     next.progressPercent = progressFor(next);
@@ -132,7 +199,7 @@
     ...(window.FEISHU_SYNC_META || {}),
     syncedAt: new Date().toISOString(),
     hotfixUpdatedAt: new Date().toISOString(),
-    statusSource: "status-overrides-20260907",
+    statusSource: "feishu-project-status-20261012",
     recordCount: window.FEISHU_PROJECTS.length
   };
   localStorage.removeItem("oxygen-project-dashboard-protected-cache-v16-20260828");
