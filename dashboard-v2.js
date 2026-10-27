@@ -11,6 +11,8 @@
   const projects = (Array.isArray(window.FEISHU_PROJECTS) ? window.FEISHU_PROJECTS : [])
     .map(project => ({ ...project, id: project.id || project.recordId || project.name }))
     .sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status) || a.name.localeCompare(b.name, 'zh-CN'));
+  const workSummaries = window.OXYGEN_WORK_SUMMARIES || {};
+  const publicationSummaries = window.OXYGEN_PUBLICATION_SUMMARIES || {};
 
   function esc(value = '') {
     return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
@@ -175,6 +177,17 @@
   }
 
   function publicationStats(project) {
+    const published = publicationSummaries[project.name];
+    if (published) {
+      const periods = published.periods || [];
+      return {
+        total: published.total,
+        dated: periods.reduce((sum, [, count]) => sum + count, 0),
+        months: periods.length ? periods.map(([label, value]) => ({ label, value })) : [],
+        weeks: [],
+        source: published.source
+      };
+    }
     const items = links(project.publishLinks);
     const dated = items.map(item => ({ ...item, at: extractDate(item) })).filter(item => item.at && !Number.isNaN(item.at.getTime()));
     const now = new Date();
@@ -188,7 +201,7 @@
       const start = new Date(end); start.setDate(start.getDate() - 6); start.setHours(0, 0, 0, 0);
       return { label: `${start.getMonth() + 1}/${start.getDate()}`, value: dated.filter(item => item.at >= start && item.at <= end).length };
     });
-    return { total: items.length, dated: dated.length, months, weeks };
+    return { total: items.length, dated: dated.length, months, weeks, source: '' };
   }
 
   function bars(items, type) {
@@ -202,11 +215,19 @@
 
   function dataPane(project) {
     const stats = publicationStats(project);
+    const work = workSummaries[project.name];
     const description = project.currentData || '尚未补充当前数据。项目资料接入后会在这里汇总发稿、监测和关键进展。';
-    return `<section class="detail-pane"><div class="pane-heading"><div><h2>当前数据</h2><p>已关联 ${stats.total} 条发稿链接${stats.dated < stats.total ? `，其中 ${stats.total - stats.dated} 条待补录发布日期` : ''}</p></div><span>近况更新</span></div>
+    const publicationNote = stats.source ? `已核验 ${stats.total} 条有效发布链接 · ${stats.source}` : `已关联 ${stats.total} 条发稿链接${stats.dated < stats.total ? `，其中 ${stats.total - stats.dated} 条待补录发布日期` : ''}`;
+    return `<section class="detail-pane"><div class="pane-heading"><div><h2>当前数据</h2><p>${esc(publicationNote)}</p></div><span>近况更新</span></div>
       <div class="data-summary"><p>${esc(description)}</p></div>
-      <div class="chart-grid"><article class="chart-card"><h3>每月发稿量</h3><p>按发稿链接中的发布日期自动统计</p>${bars(stats.months, 'month')}</article><article class="chart-card"><h3>近 3 周发稿量</h3><p>滚动三周，按发布日期统计</p>${bars(stats.weeks, 'week')}</article></div>
-      ${stats.total && !stats.dated ? `<p class="data-hint">提示：链接标题或日期字段写成“2026-10-27”，图表即可自动归档到对应月份和周次。</p>` : ''}</section>`;
+      <div class="chart-grid"><article class="chart-card"><h3>${stats.months.length ? '发布分布' : '每月发稿量'}</h3><p>${stats.source || '按发稿链接中的发布日期自动统计'}</p>${stats.months.length ? bars(stats.months, 'month') : `<p class="chart-empty">待补录发布日期后生成趋势</p>`}</article><article class="chart-card"><h3>近 3 周发稿量</h3><p>滚动三周，按发布日期统计</p>${stats.weeks.length ? bars(stats.weeks, 'week') : `<p class="chart-empty">当前发布表未提供逐条发布日期</p>`}</article></div>
+      ${renderWorkDistribution(work)}${stats.total && !stats.dated ? `<p class="data-hint">提示：链接标题或日期字段写成“2026-10-27”，图表即可自动归档到对应月份和周次。</p>` : ''}</section>`;
+  }
+
+  function renderWorkDistribution(work) {
+    if (!work) return '';
+    const completion = work.total ? Math.round(work.completed / work.total * 100) : 0;
+    return `<section class="work-distribution"><div class="work-heading"><div><h3>任务分布</h3><p>来自完整工作记录的项目级聚合</p></div><strong>${completion}%<small>完成</small></strong></div><div class="work-numbers"><span><b>${work.total}</b>总任务</span><span><b>${work.working}</b>进行中</span><span><b>${work.stalled}</b>停滞</span><span><b>${work.unset}</b>待明确</span></div><div class="member-work">${work.members.map(([name, total, working]) => `<div><span>${esc(name)}</span><b>${total} 项${working ? ` · ${working} 进行中` : ''}</b></div>`).join('')}</div></section>`;
   }
 
   function fileItem(item, fallback) {
