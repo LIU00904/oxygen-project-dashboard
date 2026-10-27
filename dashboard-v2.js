@@ -83,25 +83,24 @@
     return `<span class="invoice ${className}">${esc(value)}</span>`;
   }
 
-  function projectCard(project) {
+  function projectRow(project) {
     const progress = projectProgress(project);
     const path = `/project/${encodeURIComponent(project.id)}`;
     return `
-      <article class="project-card" data-project-card="${esc(project.id)}" tabindex="0" role="link" aria-label="查看${esc(project.name)}项目详情">
-        <div class="card-main">
-          <div>
-            <p class="field-label">项目</p>
-            <h3>${esc(project.name)}</h3>
-            <p class="platform">${esc(project.platform || '未填写平台')}</p>
-          </div>
-          <a class="card-arrow" href="#${path}" aria-label="进入${esc(project.name)}">→</a>
-        </div>
-        <div class="card-progress">
-          <div class="progress-line"><span>${esc(dateRange(project))}</span><strong>${progress}%</strong></div>
-          <div class="progress-track"><i style="width:${progress}%"></i></div>
-        </div>
-        <div class="card-footer">${team(project, true)}${statusChip(project.status)}${invoice(project)}</div>
-      </article>`;
+      <tr data-project-row="${esc(project.id)}" tabindex="0" role="link" aria-label="查看${esc(project.name)}项目详情">
+        <td class="project-cell"><strong>${esc(project.name)}</strong><span>${esc(project.platform || '未填写平台')}</span></td>
+        <td class="date-cell">${esc(dateRange(project))}</td>
+        <td class="table-progress"><div><i style="width:${progress}%"></i></div><span>${progress}%</span></td>
+        <td>${statusChip(project.status)}</td>
+        <td>${invoice(project)}</td>
+        <td>${team(project, true)}</td>
+        <td><a class="row-link" href="#${path}" aria-label="进入${esc(project.name)}">→</a></td>
+      </tr>`;
+  }
+
+  function projectTable(items) {
+    if (!items.length) return `<div class="empty-state">没有匹配的项目</div>`;
+    return `<div class="table-shell"><table class="project-table"><thead><tr><th>项目 / 平台</th><th>周期</th><th>进度</th><th>状态</th><th>开票</th><th>项目成员</th><th></th></tr></thead><tbody>${items.map(projectRow).join('')}</tbody></table></div>`;
   }
 
   function sidebar(current) {
@@ -138,17 +137,17 @@
         ${metric('已完成', `${finished.length}`, '已进入归档阶段', 'green')}
         ${metric('待开票', `${awaitingInvoice}`, '需要确认开票信息', 'amber')}
       </section>
-      <section class="overview-section">
-        <div class="section-heading"><div><h2>项目状态</h2><p>按状态进入项目专属工作页</p></div></div>
+      <section class="overview-section project-status-band">
+        <div class="section-heading"><div><h2>项目状态</h2><p>按状态进入对应项目页</p></div></div>
         <div class="status-overview">${STATUS_ORDER.map(status => {
           const items = projects.filter(project => project.status === status);
           const meta = STATUS_META[status];
-          return `<a href="#/status/${encodeURIComponent(status)}" class="status-panel ${meta.color}"><div><span>${esc(status)}</span><strong>${items.length}</strong></div><p>${items.slice(0, 3).map(project => esc(project.name)).join(' · ') || '暂无项目'}</p><em>查看项目 →</em></a>`;
+          return `<a href="#/status/${encodeURIComponent(status)}" class="status-panel ${meta.color}"><span>${esc(status)}</span><strong>${items.length}</strong><em>查看 →</em></a>`;
         }).join('')}</div>
       </section>
       <section class="overview-section">
         <div class="section-heading"><div><h2>重点推进</h2><p>进行中的项目，点击进入专属页面</p></div><a href="#/status/${encodeURIComponent('进行中')}" class="text-link">查看全部</a></div>
-        <div class="project-grid">${(preview.length ? preview : projects.slice(0, 6)).map(projectCard).join('')}</div>
+        ${projectTable(preview.length ? preview : projects.slice(0, 6))}
       </section>`;
   }
 
@@ -156,7 +155,7 @@
     const filtered = projects.filter(project => project.status === status).filter(matchesSearch);
     return `${topbar(`${status}项目`, `${filtered.length} 个项目 · 仅保留关键进度信息，点击卡片进入详情。`)}
       <section class="list-toolbar"><div>${statusChip(status)}<span>${filtered.length} 个项目</span></div><span>项目、平台、进度、状态、开票与项目人员</span></section>
-      <section class="project-grid status-grid">${filtered.length ? filtered.map(projectCard).join('') : `<div class="empty-state">没有匹配的项目</div>`}</section>`;
+      ${projectTable(filtered)}`;
   }
 
   function matchesSearch(project) {
@@ -264,12 +263,12 @@
     if (current.name === 'status') render();
   });
   app.addEventListener('click', event => {
-    const card = event.target.closest('[data-project-card]');
-    if (card && !event.target.closest('a,button,input,select')) go(`/project/${encodeURIComponent(card.dataset.projectCard)}`);
+    const row = event.target.closest('[data-project-row]');
+    if (row && !event.target.closest('a,button,input,select')) go(`/project/${encodeURIComponent(row.dataset.projectRow)}`);
   });
   app.addEventListener('keydown', event => {
-    const card = event.target.closest('[data-project-card]');
-    if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); go(`/project/${encodeURIComponent(card.dataset.projectCard)}`); }
+    const row = event.target.closest('[data-project-row]');
+    if (row && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); go(`/project/${encodeURIComponent(row.dataset.projectRow)}`); }
   });
   window.addEventListener('hashchange', render);
   if (!location.hash) location.hash = '/overview';
