@@ -5,6 +5,7 @@
   const state = { q:'' };
   const projects = (window.FEISHU_PROJECTS || []).map(p => ({...p, id:p.id || p.recordId || p.name}));
   const activity = window.OXYGEN_PROJECT_ACTIVITY || {}, pubs = window.OXYGEN_PUBLICATION_SUMMARIES || {};
+  const publicationSnapshot = window.OXYGEN_PUBLICATION_SNAPSHOT || {projects:{}, aliases:{}, specialPeriods:{}};
   const work = window.OXYGEN_WORK_SUMMARIES || {};
   const avatars = window.OXYGEN_MEMBER_AVATARS || {};
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
@@ -63,6 +64,19 @@
     const proxy=fileToken ? `${SYNC_API}/download?file_token=${encodeURIComponent(fileToken)}&name=${encodeURIComponent(label)}${ticket?`&session=${encodeURIComponent(ticket)}`:''}` : '';
     return {label,url:proxy||v.url||v.link||'',fileToken,sourceUrl:v.url||v.link||'',fileType:v.fileType||v.mimeType||v.type||''};
   });
+  function publicationFor(p){
+    const sourceName=publicationSnapshot.aliases?.[p.name] || p.name;
+    const total=publicationSnapshot.projects?.[sourceName];
+    const legacy=pubs[p.name]||{};
+    return {
+      total:Number.isFinite(total) ? total : (legacy.total ?? fileLinks(p.publishLinks).length),
+      periods:legacy.periods||[], weeks:legacy.weeks||[],
+      source:Number.isFinite(total) ? `${publicationSnapshot.source} · ${publicationSnapshot.updatedAt}` : (legacy.source||'项目发稿链接'),
+      updatedAt:publicationSnapshot.updatedAt||'',
+      special:publicationSnapshot.specialPeriods?.[sourceName]||null,
+      isWeeklySnapshot:Number.isFinite(total)
+    };
+  }
 
   function sidebar(cur) {
     const branches = S.map(s=>`<a class="branch ${cur.page==='status'&&cur.key===s?'active':''}" href="#/status/${encodeURIComponent(s)}"><i class="${M[s][0]}"></i><span>${s}</span><b>${count(s)}</b></a>`).join('');
@@ -86,11 +100,13 @@
   }
   function overview() {
     const active=projects.filter(p=>p.status==='进行中'),done=projects.filter(p=>p.status==='已完成');
+    const syncedPublications=Object.values(publicationSnapshot.projects||{}).reduce((sum,value)=>sum+(Number(value)||0),0);
+    const snapshotProjectCount=Object.keys(publicationSnapshot.projects||{}).length;
     const focus=Object.entries(activity).map(([name,x])=>({name,value:x.main.value,detail:x.main.label})).sort((a,b)=>b.value-a.value).slice(0,5);
     const busy=people.filter(x=>x.working).sort((a,b)=>b.working-a.working).slice(0,7);
     const avg=active.length?Math.round(active.reduce((n,p)=>n+progress(p),0)/active.length):0;
     return shell(`${header('项目总览','用一张运营工作台看清交付重心、项目节奏和需要管理动作的地方。','<div class="period"><button class="active">本周</button><button>本月</button><button>本季度</button></div>')}
-      <section class="metrics">${metric('在管项目',projects.length,'全量项目池')}${metric('正在推进',active.length,`平均进度 ${avg}%`,'blue')}${metric('已完成',done.length,'进入归档或复盘','green')}${metric('任务表记录','4,416','完整飞书任务表','violet')}</section>
+      <section class="metrics">${metric('在管项目',projects.length,'全量项目池')}${metric('正在推进',active.length,`平均进度 ${avg}%`,'blue')}${metric('已完成',done.length,'进入归档或复盘','green')}${metric('订单发稿',syncedPublications.toLocaleString(),`${publicationSnapshot.updatedAt||'—'} 更新 · ${snapshotProjectCount} 项`,'violet')}</section>
       <section class="overview-grid"><article class="focus-panel"><div class="panel-title"><div><h2>本期工作重心</h2><p>近两周工作记录中，哪些项目与任务量最集中</p></div><button class="text-button">按项目 ${icon('chev',14)}</button></div>${bars(focus,'focus')}</article>
       <article class="status-panel"><div class="panel-title"><div><h2>项目分布</h2><p>按当前项目状态</p></div><button class="round-button">${icon('more')}</button></div><div class="donut-layout"><div class="donut" style="--a:${Math.round(count('进行中')/projects.length*360)}deg;--b:${Math.round((count('进行中')+count('已完成'))/projects.length*360)}deg;--c:${Math.round((count('进行中')+count('已完成')+count('待开始'))/projects.length*360)}deg"><strong>${projects.length}</strong><small>项目总数</small></div><div class="legend">${S.map(x=>`<a href="#/status/${encodeURIComponent(x)}"><i class="${M[x][0]}"></i><span>${x}</span><b>${count(x)}</b></a>`).join('')}</div></div></article></section>
       <section class="analytics-grid investment-grid"><article class="analytics-card"><div class="panel-title"><div><h2>本期项目投入</h2><p>近两周已记录的工作量。数字代表任务记录，不把它误当成“交付进度”。</p></div><a class="mini-link" href="#/calendar">查看待办 →</a></div><div class="investment-list">${focus.map((x,i)=>`<a href="#/project/${encodeURIComponent(projects.find(p=>p.name===x.name)?.id||x.name)}"><span><i style="--tone:${['#296cf3','#7b61e8','#20b982','#f09a37','#ef6672'][i]}"></i><b>${e(x.name)}</b><small>${e(x.detail)}</small></span><strong>${x.value}<em>条</em></strong><div><i style="width:${Math.max(8,Math.round(x.value/Math.max(...focus.map(y=>y.value))*100))}%"></i></div></a>`).join('')}</div></article><article class="analytics-card attention-card"><div class="panel-title"><div><h2>管理动作</h2><p>适合本周例会直接带走的三件事</p></div></div><ol><li><i>01</i><span><b>推进进行中项目</b><small>${active.length} 个项目正在交付，先从项目工作台看下一步。</small></span></li><li><i>02</i><span><b>区分发布与监测</b><small>链接总量不等于效果，监测数据按新鲜度单独复核。</small></span></li><li><i>03</i><span><b>处理高负荷成员</b><small>当前 ${busy[0] ? e(busy[0].name) : '—'} 的进行中任务最多。</small></span></li></ol></article></section>
@@ -141,15 +157,15 @@
     const monday=new Date(today);monday.setDate(today.getDate()-(today.getDay()+6)%7);
     const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
     const nextReport=nextWeekday(3);
-    const live=(window.OXYGEN_LIVE_PUBLICATION_DATA||{})[p.name];
-    const verified=Boolean(live&&Number.isFinite(live.validCount)&&live.updatedAt);
-    return {target:500,verified,achieved:verified?live.validCount:null,updatedAt:verified?live.updatedAt:null,week,weekRange:`${shortDate(monday)} — ${shortDate(sunday)}`,start,
+    const publication=publicationFor(p);
+    const special=publication.special;
+    return {target:500, verified:true, achieved:special?null:publication.total, total:publication.total, special, updatedAt:publication.updatedAt, source:publication.source, week,weekRange:`${shortDate(monday)} — ${shortDate(sunday)}`,start,
       milestones:[
         {kind:'周报',title:'上传周报',date:nextReport,owner:'刘依晨',note:'提交本周内容发布周报及数据明细'},
         {kind:'发稿',title:'上传稿件',date:weekdayAfter(nextReport,5),owner:'彭安迪',note:'提交当周直出稿件与发布链接'},
         {kind:'月报',title:'提交月报',date:nextMonthDay(10),owner:'徐奕旸',note:'提交月度复盘与下月计划'}
       ],
-      months:verified&&Array.isArray(live.months)?live.months:[],
+      months:publication.periods||[],
       members:[['刘依晨',84,'发布、写稿与数据'],['彭安迪',3,'手动与信源监测'],['徐奕旸',3,'周报与链接回填'],['徐怡飞',1,'信源监测']]
     };
   }
@@ -167,22 +183,21 @@
     return sources.length?`<section class="data-sources"><div><h2>项目数据入口</h2><p>登录飞书后，可直接打开项目对应的源表。</p></div><div>${sources.map(x=>`<a href="${e(url(x.url))}" target="_blank" rel="noopener"><span>${icon('grid',17)}</span><b>${e(x.label)}</b><small>${e(x.detail)}</small>${icon('arrow',15)}</a>`).join('')}</div></section>`:'';
   }
   function controlProjectPage(p,c){
-    if(!c.verified)return controlSyncPage(p,c);
-    const reports=fileLinks(p.reportLinks), brief=fileLinks(p.briefLinks), pct=Math.round(c.achieved/c.target*100), gap=c.target-c.achieved;
-    const max=Math.max(...c.months.map(x=>x[1]));
+    const reports=fileLinks(p.reportLinks), brief=fileLinks(p.briefLinks), hasKpiCount=Number.isFinite(c.achieved), pct=hasKpiCount?Math.round(c.achieved/c.target*100):null, gap=hasKpiCount?Math.max(0,c.target-c.achieved):null;
+    const max=Math.max(...c.months.map(x=>x[1]),1);
     const schedule=c.milestones.map((item,i)=>`<article class="cadence-event ${i===0?'next':''}"><span class="cadence-number">${i+1}</span><div><small>${dayLabel(item.date)}</small><b>${e(item.title)}</b><p>${e(item.note)}</p></div><em>${Math.ceil((item.date-new Date())/86400000)} 天后</em></article>`).join('');
     return shell(`${header(p.name,'项目看板 · 以 KPI、节奏和下一节点驱动交付。',`<a class="back-link" href="#/status/${encodeURIComponent(p.status)}">${icon('chev',15)} 返回列表</a>`)}
       <nav class="command-tabs"><button class="active" data-scroll="command-kpi">项目概览</button><button data-scroll="command-cadence">工作计划</button><button data-scroll="command-data">数据分析</button><button data-scroll="command-files">文件资料</button></nav>
-      <section class="kpi-command" id="command-kpi"><div class="week-readout"><span>当前周次</span><strong>第 ${c.week} 周</strong><small>${e(c.weekRange)}</small><b>本周还有 ${(new Date(c.milestones[0].date)-new Date())>0?Math.ceil((new Date(c.milestones[0].date)-new Date())/86400000):0} 天进入周报节点</b></div><div class="kpi-core"><div><span>实时有效发稿</span><strong>${c.achieved}<i>/ ${c.target} 篇</i></strong><progress max="${c.target}" value="${c.achieved}"></progress><small>已完成 ${pct}% · 同步于 ${dt(c.updatedAt)}</small></div><aside><span>距离 KPI</span><strong>还差 <b>${gap}</b> 篇</strong><small>口径：仅统计有发布链接的有效稿</small></aside></div><div class="kpi-next"><span>下一个关键节点</span><b>${dayLabel(c.milestones[0].date)} · ${e(c.milestones[0].title)}</b><small>${e(c.milestones[0].owner)}负责</small></div></section>
+      <section class="kpi-command" id="command-kpi"><div class="week-readout"><span>当前周次</span><strong>第 ${c.week} 周</strong><small>${e(c.weekRange)}</small><b>本周还有 ${(new Date(c.milestones[0].date)-new Date())>0?Math.ceil((new Date(c.milestones[0].date)-new Date())/86400000):0} 天进入周报节点</b></div><div class="kpi-core"><div><span>累计订单发稿</span><strong>${c.total}<i> 篇</i></strong><small>统计口径：媒体 + 自媒体 + 短视频 + 海外媒体订单数 · 更新于 ${dt(c.updatedAt)}</small></div><aside><span>${c.special?'4 月起 KPI':'项目目标'}</span><strong>${hasKpiCount?`${c.achieved} / ${c.target}`:`${c.target} 篇`}</strong>${hasKpiCount?`<progress max="${c.target}" value="${c.achieved}"></progress><small>已完成 ${pct}% · 还差 ${gap} 篇</small>`:`<small>此周表未提供 4 月前 / 4 月起的订单数拆分，暂不计算达成率。</small>`}</aside></div><div class="kpi-next"><span>下一个关键节点</span><b>${dayLabel(c.milestones[0].date)} · ${e(c.milestones[0].title)}</b><small>${e(c.milestones[0].owner)}负责</small></div></section>
       <section class="cadence-board" id="command-cadence"><div class="command-section-title"><div><h2>工作节奏</h2><p>按固定交付节点提醒，不再用模糊的通用阶段条。</p></div><a href="#/calendar?project=${encodeURIComponent(p.name)}">查看完整日历 ${icon('arrow',14)}</a></div><div class="cadence-line"><div class="today-mark"><b>今天</b><small>${dt(ymd(new Date()))}</small></div>${schedule}</div></section>
-      <section class="command-lower" id="command-data"><article class="publication-panel"><div class="command-section-title"><div><h2>发布完成情况</h2><p>实时有效链接计数 · 更新于 ${dt(c.updatedAt)}</p></div><b>${c.achieved} 篇</b></div><div class="month-bars">${c.months.map(([label,value])=>`<div><strong>${value}</strong><i style="height:${Math.max(14,Math.round(value/max*128))}px"></i><span>${e(label)}</span></div>`).join('')}</div><div class="kpi-footnote"><b>数据口径</b><span>仅统计有发布链接的有效稿；拒稿与待发布不计入。当前距目标 ${gap} 篇。</span></div></article><article class="owner-panel"><div class="command-section-title"><div><h2>团队分工</h2><p>本期工作记录中的主力参与者。</p></div><a href="#/workload">查看成员 ${icon('arrow',14)}</a></div><div class="command-owners">${c.members.map(([name,value,job])=>`<a href="#/workload?member=${encodeURIComponent(name)}">${av(name)}<span><b>${e(name)}</b><small>${e(job)}</small></span><strong>${value}</strong></a>`).join('')}</div></article></section>
+      <section class="command-lower" id="command-data"><article class="publication-panel"><div class="command-section-title"><div><h2>发布完成情况</h2><p>${e(c.source)} · 更新于 ${dt(c.updatedAt)}</p></div><b>${c.total} 篇</b></div>${c.special?`<div class="period-split">${c.special.periods.map(x=>`<div><small>${e(x.label)}</small><b>${Number.isFinite(x.count)?`${x.count} 篇`:'待同步'}</b></div>`).join('')}</div><div class="kpi-footnote"><b>数据说明</b><span>${e(c.special.note)}</span></div>`:`<div class="month-bars">${c.months.map(([label,value])=>`<div><strong>${value}</strong><i style="height:${Math.max(14,Math.round(value/max*128))}px"></i><span>${e(label)}</span></div>`).join('')}</div>`}</article><article class="owner-panel"><div class="command-section-title"><div><h2>团队分工</h2><p>本期工作记录中的主力参与者。</p></div><a href="#/workload">查看成员 ${icon('arrow',14)}</a></div><div class="command-owners">${c.members.map(([name,value,job])=>`<a href="#/workload?member=${encodeURIComponent(name)}">${av(name)}<span><b>${e(name)}</b><small>${e(job)}</small></span><strong>${value}</strong></a>`).join('')}</div></article></section>
       ${dataSources(p)}<section class="command-files" id="command-files"><div class="command-section-title"><div><h2>文件与报告</h2><p>周报、月报和监测资料在此统一查看；完成飞书授权后可直接阅读。</p></div><span>${reports.length+brief.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',brief,'folder')}</div></section>`);
   }
   function projectPage(id) {
     const p=one(id); if(!p)return shell(`${header('项目未找到','该项目可能已被移动或删除。')}<a class="back-link" href="#/overview">返回项目总览</a>`);
     const control=controlFor(p); if(control)return controlProjectPage(p,control);
     const a=activity[p.name]||{period:'当前项目周期',main:{label:'待补充工作记录',value:0,detail:'暂无标准化任务分布'},next:['补齐近期任务','更新项目数据'],types:[],people:[]};
-    const pub=pubs[p.name]||{total:fileLinks(p.publishLinks).length,periods:[],weeks:[],source:'项目发稿链接'};
+    const pub=publicationFor(p);
     const docs=[['项目资料',fileLinks(p.tableUrl?[{label:'飞书项目记录',url:p.tableUrl}]:[]),'folder'],['Brief',fileLinks(p.briefLinks),'pulse']];
     const reports=fileLinks(p.reportLinks);
     const taskBars=(a.types||[]).map(([label,value])=>({label,value}));
@@ -264,8 +279,9 @@
     if(/png|jpe?g|gif|webp|image/.test(value)) return 'image';
     return 'link';
   }
-  function readerMessage(mount, headline, copy, sourceUrl){
-    mount.innerHTML=`<div class="preview-message"><span>${icon('folder',24)}</span><strong>${e(headline)}</strong><p>${e(copy)}</p>${sourceUrl?`<a href="${e(url(sourceUrl))}" target="_blank" rel="noopener">在飞书中打开 ${icon('arrow',14)}</a>`:''}</div>`;
+  function readerMessage(mount, headline, copy, sourceUrl, relogin=false){
+    mount.innerHTML=`<div class="preview-message"><span>${icon('folder',24)}</span><strong>${e(headline)}</strong><p>${e(copy)}</p>${relogin?'<button type="button" class="reader-login" data-reader-login>重新登录飞书</button>':''}${sourceUrl?`<a href="${e(url(sourceUrl))}" target="_blank" rel="noopener">在飞书中打开 ${icon('arrow',14)}</a>`:''}</div>`;
+    mount.querySelector('[data-reader-login]')?.addEventListener('click',startFeishuLogin);
   }
   function loadingPreview(mount){mount.innerHTML='<div class="preview-loading"><i></i><span>正在安全读取文件…</span></div>';}
   function loadLibrary(name){
@@ -300,10 +316,10 @@
     if(!readerUrl){readerMessage(mount,'没有可预览的文件','此条资料没有附带可读取的文件。',sourceUrl);return;}
     if(kind==='link'){readerMessage(mount,'这是飞书源表入口','发稿汇总表和监测表需要保留在飞书中交互查看。',sourceUrl||readerUrl);return;}
     loadingPreview(mount);
-    try{const response=await fetch(readerUrl);if(!response.ok)throw new Error(`HTTP ${response.status}`);const blob=await response.blob();
+    try{const response=await fetch(readerUrl);if(!response.ok){const body=await response.json().catch(()=>null);const error=new Error(body?.hint||`HTTP ${response.status}`);error.relogin=Boolean(body?.relogin);throw error;}const blob=await response.blob();
       if(kind==='pdf'||kind==='image'){const objectUrl=URL.createObjectURL(blob);mount.innerHTML=`<iframe class="native-preview" src="${objectUrl}" title="${e(title)}"></iframe>`;return;}
       const buffer=await blob.arrayBuffer();if(kind==='sheet')await previewSheet(buffer,mount);else if(kind==='doc')await previewDoc(buffer,mount);else if(kind==='slides')await previewSlides(buffer,mount);else readerMessage(mount,'暂不支持此文件格式','请在飞书中打开原文件。',sourceUrl);
-    }catch(error){readerMessage(mount,'暂时无法读取该文件','请确认你已登录飞书且拥有文件访问权限，然后重试。',sourceUrl||readerUrl);}
+    }catch(error){readerMessage(mount,'文件权限需要重新验证',error?.message||'请确认你拥有该飞书文件的访问权限，然后重试。',sourceUrl||readerUrl,Boolean(error?.relogin));}
   }
   function openReader(readerUrl, title, sourceUrl, fileType){
     const reader=document.querySelector('#reader'), empty=document.querySelector('#reader-empty'), opener=document.querySelector('#reader-open');
