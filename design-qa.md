@@ -2,10 +2,10 @@
 
 ## Comparison target
 
-- Source visual truth: `/Users/xiaocheng/.codex/generated_images/01a0b324-4857-7111-aa8e-a0d4e60b8991/exec-2faa6598-35ae-46e8-a4c8-642768ec6b28.png`
+- Source visual truth: `/Users/xiaocheng/.codex/generated_images/01a0b324-4857-7111-aa8e-a0d4e60b8991/exec-09a8821d-462e-45a8-98f6-e6d7203bab1d.png`
 - Rendered implementation: `http://127.0.0.1:4178/index.html#/project/recveNpiTYQzHi`
 - Implementation evidence: browser-rendered local CUA tab 5 screenshot, project-detail state with the reader open. The computer-use bridge exposes the screenshot as a visual artifact rather than a filesystem path.
-- State: authenticated UI was simulated locally only to inspect layout; a report PDF was selected so the reader error state could be inspected without sending any credentials.
+- State: authenticated UI was simulated locally only to inspect layout. The 2026-11-01 order-publication snapshot was loaded for the project-detail state.
 - Viewport: desktop wide layout; the implementation responds by keeping the left navigation, operating surface, and right reader in view.
 
 ## Full-view comparison
@@ -20,11 +20,11 @@ Focused comparison was applied to the project header/KPI strip, cadence timeline
 - **Spacing and layout rhythm:** A fixed-width left rail, generous page gutters, a three-part KPI strip, and hairline separators create the reference's editorial rhythm. The reader becomes a side desk on desktop and an overlay on compact screens.
 - **Colors and visual tokens:** Cool white canvas, blue interaction color, pale blue KPI background, and subtle lavender/blue ambient gradients align with the chosen reference. Status colors remain semantic and contrast with the white ground.
 - **Image quality and asset fidelity:** The chosen source is a layout reference, not a supplied brand/photography asset. No replacement logo or illustrative asset was fabricated; existing member avatars remain sourced from synced data.
-- **Copy and content:** Real project names, actual source-table entries, real file labels, and the already-established verified-data language are retained. The old static `266 / 500` claim is not shown.
+- **Copy and content:** Real project names, actual source-table entries, real file labels, and the 2026-11-01 order-publication snapshot are retained. The old static `266 / 500` claim is not shown. 太太乐's 709 total is shown while the 4 月前 / 4 月起 split remains pending instead of being derived from monetary fields.
 
 ## Findings
 
-- [P3] The selected reference shows a fully rendered document page in the reader; the local QA state correctly shows the access-error state because it uses a disposable local session. The online authenticated check remains necessary for final document-content verification.
+- [P3] The selected reference shows a fully rendered document page in the reader; the online authenticated check remains necessary for final document-content verification.
   - Location: `#reader-preview`.
   - Fix: after GitHub deployment, open a PDF, XLSX, DOCX, and PPTX from the authenticated production site and confirm each file's local renderer receives the Worker response.
 
