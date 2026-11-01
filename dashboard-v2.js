@@ -29,7 +29,10 @@
   // 仅供本机视觉验收使用；线上站点仍必须持有飞书会话。
   const localPreview=location.hostname==='127.0.0.1';
   function signedIn(){return Boolean(session())||localPreview}
-  const normalizeProjects = list => (Array.isArray(list)?list:[]).map(p=>({...p,id:p.id || p.recordId || p.name}));
+  const normalizeProjects = list => (Array.isArray(list)?list:[]).map(p=>{
+    const patch = typeof window.OXYGEN_PATCH_PROJECT === 'function' ? window.OXYGEN_PATCH_PROJECT(p) : p;
+    return {...patch,id:patch.id || patch.recordId || patch.name};
+  });
   let refreshProjectsPromise = null;
   async function refreshProjectsFromFeishu(){
     if(!session() || refreshProjectsPromise) return refreshProjectsPromise;
@@ -70,7 +73,19 @@
   const r = () => {const [path,query='']=(location.hash.replace(/^#/,'')||'/overview').split('?'),a=path.split('/').filter(Boolean).map(decodeURIComponent);return{page:a[0]||'overview',key:a[1]||'',query:new URLSearchParams(query)}};
   const one = id => projects.find(p=>String(p.id)===String(id)) || projects.find(p=>p.name===id);
   const count = s => s==='全部'?projects.length:projects.filter(p=>p.status===s).length;
-  const progress = p => p.status==='已完成'?100:Math.max(0,Math.min(100,Number(p.progressPercent)||0));
+  function scheduleProgress(p){
+    if(p.status==='已完成') return 100;
+    const explicit=Number(p.progressPercent);
+    if(Number.isFinite(explicit) && explicit>0) return Math.max(0,Math.min(100,Math.round(explicit)));
+    if(p.status!=='进行中' || !p.startDate) return 0;
+    const start=new Date(`${p.startDate}T00:00:00`);
+    let end=p.endDate ? new Date(`${p.endDate}T00:00:00`) : null;
+    if(!end && Number(p.cycleDays)>0){end=new Date(start);end.setDate(end.getDate()+Number(p.cycleDays));}
+    if(Number.isNaN(start.getTime()) || !end || Number.isNaN(end.getTime()) || end<=start) return 0;
+    const now=new Date();now.setHours(0,0,0,0);
+    return Math.max(0,Math.min(100,Math.round((now-start)/(end-start)*100)));
+  }
+  const progress = p => scheduleProgress(p);
   const av = (name,c='') => url(avatars[name]) ? `<img class="avatar ${c}" src="${e(avatars[name])}" alt="${e(name)}" referrerpolicy="no-referrer">` : `<span class="avatar fallback ${c}">${e((name||'待').slice(0,1))}</span>`;
   const badge = s => {const [tone,label]=M[s]||M['进行中'];return `<span class="status ${tone}"><i></i>${e(label)}</span>`};
   const dt = x => x ? new Date(`${x}T00:00:00`).toLocaleDateString('zh-CN',{month:'short',day:'numeric'}) : '—';
@@ -88,8 +103,18 @@
     // 文件不再走 Worker 下载或网页预览。保留飞书原链接，确保权限与版本以飞书为准。
     return {label,url:v.url||v.link||'',sourceUrl:v.url||v.link||'',fileType:v.fileType||v.mimeType||v.type||''};
   });
+  const compactName = value => String(value||'').replace(/[\s·・_－-]+/g,'').toLowerCase();
+  function publicationSourceName(projectName){
+    const aliases=publicationSnapshot.aliases||{};
+    const direct=aliases[projectName] || projectName;
+    if(Object.prototype.hasOwnProperty.call(publicationSnapshot.projects||{},direct)) return direct;
+    const compact=compactName(projectName);
+    const aliasMatch=Object.entries(aliases).find(([name])=>compactName(name)===compact);
+    if(aliasMatch && Object.prototype.hasOwnProperty.call(publicationSnapshot.projects||{},aliasMatch[1])) return aliasMatch[1];
+    return Object.keys(publicationSnapshot.projects||{}).find(name=>compactName(name)===compact) || direct;
+  }
   function publicationFor(p){
-    const sourceName=publicationSnapshot.aliases?.[p.name] || p.name;
+    const sourceName=publicationSourceName(p.name);
     const total=publicationSnapshot.projects?.[sourceName];
     const legacy=pubs[p.name]||{};
     return {
