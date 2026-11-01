@@ -209,6 +209,7 @@ def main():
                 records[order_id] = candidate
 
     counts, provenance = Counter(), Counter()
+    monthly = {}
     before_april = after_april = 0
     for record in records.values():
         if not record["linked"]:
@@ -216,6 +217,12 @@ def main():
         project, how = project_for(record["customer"], record["title"], record["date"])
         counts[project] += 1
         provenance[(project, how)] += 1
+        # The source has a real publish date for every linked order. Keep the
+        # month-level detail so every project can be charted without invented
+        # values in the dashboard.
+        month = record["date"][:7] if re.match(r"^\d{4}-\d{2}", record["date"]) else ""
+        if month:
+            monthly.setdefault(project, Counter())[month] += 1
         if project == "太太乐松茸鲜":
             if record["date"][:10] < "2026-04-01":
                 before_april += 1
@@ -236,6 +243,10 @@ def main():
         "uniqueOrders": len(records),
         "effectivePublications": sum(counts.values()),
         "projects": ordered,
+        "monthly": {
+            project: [{"month": month, "count": count} for month, count in sorted(values.items())]
+            for project, values in sorted(monthly.items())
+        },
         "attribution": provenance_summary,
         "specialPeriods": {
             "太太乐松茸鲜": {

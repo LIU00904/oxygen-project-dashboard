@@ -82,8 +82,9 @@
     return end && !Number.isNaN(end.getTime()) && end >= start ? `${dt(p.startDate)} — ${dt(end.toISOString().slice(0, 10))}` : `${dt(p.startDate)} 起`;
   };
   const fileLinks = x => (Array.isArray(x)?x:x?[x]:[]).map((v,i)=>{
-    if(typeof v==='string') return {label:`链接 ${i+1}`,url:v,sourceUrl:v,fileType:''};
-    const label=v.label||v.name||`文件 ${i+1}`;
+    if(typeof v==='string') return {label:`飞书资料 ${i+1}`,url:v,sourceUrl:v,fileType:''};
+    const raw=v.label||v.name||v.fileName||'';
+    const label=raw && !/^(飞书文件|文件|链接)(\s*\d+)?$/.test(raw) ? raw : `飞书资料 ${i+1}`;
     // 文件不再走 Worker 下载或网页预览。保留飞书原链接，确保权限与版本以飞书为准。
     return {label,url:v.url||v.link||'',sourceUrl:v.url||v.link||'',fileType:v.fileType||v.mimeType||v.type||''};
   });
@@ -94,6 +95,7 @@
     return {
       total:Number.isFinite(total) ? total : (legacy.total ?? fileLinks(p.publishLinks).length),
       periods:legacy.periods||[], weeks:legacy.weeks||[],
+      months:(publicationSnapshot.monthly?.[sourceName]||[]).map(x=>({label:String(x.month||'').slice(5)+'月',month:x.month,value:Number(x.count)||0})),
       source:Number.isFinite(total) ? `${publicationSnapshot.source} · ${publicationSnapshot.updatedAt}` : (legacy.source||'项目发稿链接'),
       updatedAt:publicationSnapshot.updatedAt||'',
       special:publicationSnapshot.specialPeriods?.[sourceName]||null,
@@ -107,7 +109,6 @@
       <a class="nav ${cur.page==='overview'?'active':''}" href="#/overview">${icon('grid')}<span>Dashboard</span></a>
       <section class="project-tree"><button class="nav tree-toggle">${icon('folder')}<span>项目</span>${icon('chev',15)}</button><div class="tree"><a class="branch ${cur.page==='status'&&cur.key==='全部'?'active':''}" href="#/status/%E5%85%A8%E9%83%A8"><i class="violet"></i><span>全部项目</span><b>${projects.length}</b></a>${branches}</div></section>
       <a class="nav ${cur.page==='workload'?'active':''}" href="#/workload">${icon('users')}<span>成员任务</span></a>
-      <a class="nav ${cur.page==='calendar'?'active':''}" href="#/calendar">${icon('calendar')}<span>日历待办</span><em>Beta</em></a>
     </nav><div class="side-footer"><a href="https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro" target="_blank" rel="noopener">在飞书中打开 ${icon('arrow',14)}</a><small>已通过飞书企业登录</small></div></aside>`;
   }
   function shell(body) {return `<style>.metric.blue,.metric.green,.metric.violet,.status.blue,.status.green,.status.amber,.status.red{background:transparent!important}.member-zone{border-top:1px solid var(--line);padding-top:25px;margin-top:30px}.member-zone-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:17px}.member-zone-title h2{font-size:17px;margin:0}.member-zone-title p{font-size:11px;color:#8190a7;margin:0}.member-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.person-card{min-height:132px;border:1px solid var(--line);background:#ffffffa8;border-radius:14px;padding:14px;text-align:left;color:var(--ink);transition:.18s}.person-card:hover,.person-card.expanded{border-color:#a9c8ff;box-shadow:0 12px 30px #2a6ce414}.person-card-top{display:flex;align-items:center;gap:10px}.person-card .avatar{width:38px;height:38px}.person-card-top span{min-width:0;flex:1}.person-card-top b,.person-card-top small{display:block}.person-card-top b{font-size:13px}.person-card-top small{font-size:10px;color:#8391a6;margin-top:3px}.person-card-top em{width:22px;height:22px;display:grid;place-items:center;border-radius:50%;font-style:normal;background:#eef4ff;color:var(--blue);font-size:16px}.person-card-stats{display:flex;gap:17px;margin:13px 0 0 48px}.person-card-stats span{display:grid;gap:2px}.person-card-stats b{font-size:16px;color:var(--blue)}.person-card-stats small{font-size:9px;color:#8997aa}.person-focus{display:none;margin-top:15px;padding-top:12px;border-top:1px solid #e7eef8}.person-card.expanded .person-focus{display:block}.person-focus>span{display:block;font-size:10px;color:#74839b;margin-bottom:8px}.focus-projects{display:flex;flex-wrap:wrap;gap:5px}.focus-projects a{font-size:10px;text-decoration:none;color:#3169c9;background:#edf4ff;border-radius:5px;padding:5px 7px}.inactive-zone{opacity:.84}.inactive-zone .person-card{background:#fbfcfd;border-style:dashed}@media(max-width:1050px){.member-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.member-cards{grid-template-columns:1fr}.person-card{min-height:120px}}</style><div class="aurora"></div><div class="app-shell">${sidebar(r())}<main class="workspace">${body}</main></div>`;}
@@ -117,7 +118,7 @@
   function bars(rows,kind='') {const max=Math.max(...rows.map(x=>x.value),1);return `<div class="bars ${kind}">${rows.map(x=>`<button type="button"><span>${e(x.name||x.label)}</span><i><b style="width:${Math.max(2,Math.round(x.value/max*100))}%"></b></i><strong>${x.value}</strong><em>${e(x.detail||'')}</em></button>`).join('')}</div>`;}
   function projectTable(list) {
     return `<div class="data-table"><div class="table-header"><span>项目</span><span>项目时间</span><span>进度</span><span>负责人</span><span>状态</span></div>${list.map(p=>{
-      const names=[p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).map(x=>String(x).split(/[、,，/]/)[0]).filter((x,i,a)=>a.indexOf(x)===i).slice(0,2);
+      const names=[p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).map(x=>String(x).split(/[、,，\/]/)[0]).filter((x,i,a)=>a.indexOf(x)===i).slice(0,2);
       return `<a href="#/project/${encodeURIComponent(p.id)}" class="project-row"><span><b>${e(p.name)}</b><small>${e(p.platform||'项目资料待补充')}</small></span><span class="project-time">${e(projectTime(p))}</span><span class="progress"><i><b style="width:${progress(p)}%"></b></i><em>${progress(p)}%</em></span><span class="avatar-stack">${names.length?names.map(x=>av(x)).join(''):'<i>待</i>'}</span><span>${badge(p.status)}</span></a>`;
     }).join('')}</div>`;
   }
@@ -126,20 +127,15 @@
     const syncedPublications=Object.values(publicationSnapshot.projects||{}).reduce((sum,value)=>sum+(Number(value)||0),0);
     const mappedProjectCount=Object.keys(publicationSnapshot.projects||{}).filter(name=>name!=='待归属').length;
     const unassignedPublications=Number(publicationSnapshot.projects?.['待归属'])||0;
-    const inferredPublications=Number(publicationSnapshot.attribution?.inferredFromTitle)||0;
     const focus=Object.entries(activity).map(([name,x])=>({name,value:x.main.value,detail:x.main.label})).sort((a,b)=>b.value-a.value).slice(0,5);
-    const busy=people.filter(x=>x.working).sort((a,b)=>b.working-a.working).slice(0,7);
     const avg=active.length?Math.round(active.reduce((n,p)=>n+progress(p),0)/active.length):0;
     const upcoming=todos().filter(item=>item.status!=='done').sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);
     return shell(`${header('项目总览','用一张运营工作台看清交付重心、项目节奏和需要管理动作的地方。','<div class="period"><button class="active">本周</button><button>本月</button><button>本季度</button></div>')}
       <section class="metrics">${metric('在管项目',projects.length,'全量项目池')}${metric('正在推进',active.length,`平均进度 ${avg}%`,'blue')}${metric('已完成',done.length,'进入归档或复盘','green')}${metric('有效发稿',syncedPublications.toLocaleString(),`${publicationSnapshot.updatedAt||'—'} 更新 · ${mappedProjectCount} 个项目`,'violet')}</section>
-      <div class="publication-provenance"><span><i></i>数据更新于 ${e(publicationSnapshot.updatedAt||'—')}</span><b>完整订单 ${Number(publicationSnapshot.inputRows||0).toLocaleString()} 条 · 有效链接 ${syncedPublications.toLocaleString()} 条</b><small>${inferredPublications.toLocaleString()} 条由标题推断；${unassignedPublications.toLocaleString()} 条待归属订单不混入项目 KPI。</small></div>
-      <section class="spectrum-command-grid"><article class="project-health-panel"><div class="panel-title"><div><h2>项目健康度</h2><p>正在推进的项目，按项目时间、进度与负责人查看。</p></div><a class="mini-link" href="#/status/%E8%BF%9B%E8%A1%8C%E4%B8%AD">查看全部 →</a></div>${projectTable(active.slice(0,7))}</article><aside class="decision-panel"><div class="panel-title"><div><h2>本周需要关注</h2><p>来自项目节奏与待办</p></div></div><div class="decision-list">${upcoming.length?upcoming.map((item,i)=>`<a href="#/calendar?project=${encodeURIComponent(item.project||'')}"><i>${String(i+1).padStart(2,'0')}</i><span><b>${e(item.title)}</b><small>${e(item.project||'未关联项目')} · ${e(item.owner||'待分配')}</small></span><em>${e(item.date||'待定')}</em></a>`).join(''):'<p class="decision-empty">暂无待处理事项</p>'}</div><a class="decision-footer" href="#/calendar">进入日历待办 ${icon('arrow',14)}</a></aside></section>
+      <section class="spectrum-command-grid"><article class="project-health-panel"><div class="panel-title"><div><h2>项目健康度</h2><p>正在推进的项目，按项目时间、进度与负责人查看。</p></div><a class="mini-link" href="#/status/%E8%BF%9B%E8%A1%8C%E4%B8%AD">查看全部 →</a></div>${projectTable(active.slice(0,7))}</article><aside class="decision-panel"><div class="panel-title"><div><h2>本周待办</h2><p>来自各项目的 Checklist</p></div></div><div class="decision-list">${upcoming.length?upcoming.map((item,i)=>`<a href="#/project/${encodeURIComponent(projects.find(p=>p.name===item.project)?.id||item.project)}"><i>${String(i+1).padStart(2,'0')}</i><span><b>${e(item.title)}</b><small>${e(item.project||'未关联项目')} · ${e(item.owner||'待分配')}</small></span><em>${e(item.date||'待定')}</em></a>`).join(''):'<p class="decision-empty">暂无待处理事项</p>'}</div></aside></section>
       <section class="overview-grid"><article class="focus-panel"><div class="panel-title"><div><h2>本期工作重心</h2><p>近两周工作记录中，哪些项目与任务量最集中</p></div><button class="text-button">按项目 ${icon('chev',14)}</button></div>${bars(focus,'focus')}</article>
       <article class="status-panel"><div class="panel-title"><div><h2>项目分布</h2><p>按当前项目状态</p></div><button class="round-button">${icon('more')}</button></div><div class="donut-layout"><div class="donut" style="--a:${Math.round(count('进行中')/projects.length*360)}deg;--b:${Math.round((count('进行中')+count('已完成'))/projects.length*360)}deg;--c:${Math.round((count('进行中')+count('已完成')+count('待开始'))/projects.length*360)}deg"><strong>${projects.length}</strong><small>项目总数</small></div><div class="legend">${S.map(x=>`<a href="#/status/${encodeURIComponent(x)}"><i class="${M[x][0]}"></i><span>${x}</span><b>${count(x)}</b></a>`).join('')}</div></div></article></section>
-      <section class="analytics-grid investment-grid"><article class="analytics-card"><div class="panel-title"><div><h2>本期项目投入</h2><p>近两周已记录的工作量。数字代表任务记录，不把它误当成“交付进度”。</p></div><a class="mini-link" href="#/calendar">查看待办 →</a></div><div class="investment-list">${focus.map((x,i)=>`<a href="#/project/${encodeURIComponent(projects.find(p=>p.name===x.name)?.id||x.name)}"><span><i style="--tone:${['#296cf3','#7b61e8','#20b982','#f09a37','#ef6672'][i]}"></i><b>${e(x.name)}</b><small>${e(x.detail)}</small></span><strong>${x.value}<em>条</em></strong><div><i style="width:${Math.max(8,Math.round(x.value/Math.max(...focus.map(y=>y.value))*100))}%"></i></div></a>`).join('')}</div></article><article class="analytics-card attention-card"><div class="panel-title"><div><h2>管理动作</h2><p>适合本周例会直接带走的三件事</p></div></div><ol><li><i>01</i><span><b>推进进行中项目</b><small>${active.length} 个项目正在交付，先从项目工作台看下一步。</small></span></li><li><i>02</i><span><b>区分发布与监测</b><small>链接总量不等于效果，监测数据按新鲜度单独复核。</small></span></li><li><i>03</i><span><b>处理高负荷成员</b><small>当前 ${busy[0] ? e(busy[0].name) : '—'} 的进行中任务最多。</small></span></li></ol></article></section>
-      <section class="band"><div class="section-title"><div><h2>重点推进</h2><p>项目投入与管理动作结合看，避免只看任务数。</p></div><a href="#/status/%E8%BF%9B%E8%A1%8C%E4%B8%AD">查看全部 ${icon('arrow',15)}</a></div>${projectTable(active.slice(7,12))||'<p class="chart-empty">其余进行中项目将在状态页继续展示。</p>'}</section>
-      <section class="workforce"><div class="section-title"><div><h2>团队负荷</h2><p>完整任务表 · 先看有进行中事项的成员</p></div><a href="#/workload">查看成员任务 ${icon('arrow',15)}</a></div><div class="people-rail">${busy.map(x=>`<a href="#/workload?member=${encodeURIComponent(x.name)}" class="person-chip">${av(x.name)}<span><b>${e(x.name)}</b><small>${x.working} 项进行中</small></span><i style="--load:${Math.min(100,x.working/31*100)}%"></i></a>`).join('')}</div></section>`);
+      <section class="analytics-grid investment-grid"><article class="analytics-card"><div class="panel-title"><div><h2>本期工作重心</h2><p>近两周已记录的工作量。数字代表任务记录，不把它误当成“交付进度”。</p></div></div><div class="investment-list">${focus.map((x,i)=>`<a href="#/project/${encodeURIComponent(projects.find(p=>p.name===x.name)?.id||x.name)}"><span><i style="--tone:${['#296cf3','#7b61e8','#20b982','#f09a37','#ef6672'][i]}"></i><b>${e(x.name)}</b><small>${e(x.detail)}</small></span><strong>${x.value}<em>条</em></strong><div><i style="width:${Math.max(8,Math.round(x.value/Math.max(...focus.map(y=>y.value))*100))}%"></i></div></a>`).join('')}</div></article><article class="analytics-card attention-card"><div class="panel-title"><div><h2>管理动作</h2><p>适合本周例会直接带走的三件事</p></div></div><ol><li><i>01</i><span><b>推进进行中项目</b><small>${active.length} 个项目正在交付，优先补齐 KPI、成员和项目时间。</small></span></li><li><i>02</i><span><b>查看月度发布</b><small>每个项目均可进入月度发布图，查看更新日期与订单总量。</small></span></li></ol></article></section>`);
   }
   function statusPage(status) {
     const items=(status==='全部'?projects:projects.filter(p=>p.status===status)).filter(p=>!state.q||Object.values(p).join(' ').toLowerCase().includes(state.q.toLowerCase()));
@@ -163,11 +159,8 @@
     writeTodos(saved);
   }
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
-  function projectTodos(p,a,offset){return (a.next||[]).slice(0,2).map((title,i)=>({id:`seed-${p.id}-${i}`,title,project:p.name,owner:(a.people?.[0]?.[0]||p.manager||'待分配'),date:isoOffset(offset+i*2),status:i?'doing':'todo',seed:true}));}
-  function todos(){
-    const seeded=projects.filter(p=>p.status==='进行中'||p.status==='待开始').slice(0,8).flatMap((p,i)=>projectTodos(p,activity[p.name]||{next:['补齐项目任务']},i));
-    const local=readTodos(); const byId=new Map(seeded.map(x=>[x.id,x])); local.forEach(x=>byId.set(x.id,x)); return [...byId.values()];
-  }
+  // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
+  function todos(){return readTodos();}
   function todoStatusLabel(s){return ({todo:'待处理',doing:'进行中',done:'已完成'})[s]||'待处理'}
   function ymd(d){return d.toISOString().slice(0,10)}
   function nextWeekday(weekday){
@@ -179,7 +172,18 @@
   function dayLabel(d){return d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}).replace('周','周')}
   function shortDate(d){return `${d.getMonth()+1}月${d.getDate()}日`}
   function ownersFor(p){
-    return [...new Set([p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).flatMap(value=>String(value).split(/[、,，/]/).map(name=>name.trim()).filter(Boolean)))];
+    return [...new Set([p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).flatMap(value=>String(value).split(/[、,，\/]/).map(name=>name.trim()).filter(Boolean)))];
+  }
+  function memberOptions(p){
+    const names=[...people.map(x=>x.name),...projects.flatMap(ownersFor),...ownersFor(p)].filter(Boolean);
+    return [...new Set(names)].sort((a,b)=>a.localeCompare(b,'zh-CN'));
+  }
+  function memberRows(p){
+    const slots=[['项目负责人',p.manager],['写稿',p.writer],['发布',p.publisher],['监测',p.monitor]];
+    const seen=new Set();
+    return slots.flatMap(([role,value])=>String(value||'').split(/[、,，\/]/).map(name=>name.trim()).filter(Boolean).filter(name=>{
+      const key=`${name}-${role}`; if(seen.has(key)) return false; seen.add(key); return true;
+    }).map(name=>({name,role})));
   }
   function controlFor(p){
     if(p.name!=='太太乐松茸鲜') return null;
@@ -211,7 +215,7 @@
       <section class="cadence-board" id="command-cadence"><div class="command-section-title"><div><h2>工作节奏</h2><p>按固定交付节点提醒，不再用模糊的通用阶段条。</p></div><a href="#/calendar?project=${encodeURIComponent(p.name)}">查看完整日历 ${icon('arrow',14)}</a></div><div class="cadence-line"><div class="today-mark"><b>今天</b><small>${dt(ymd(new Date()))}</small></div>${schedule}</div></section>
       ${dataSources(p)}<section class="command-files" id="command-files"><div class="command-section-title"><div><h2>文件与报告</h2><p>点击后在飞书打开源文件，权限、版本与协作均以飞书为准。</p></div></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',fileLinks(p.reportLinks),'calendar')}${files('Brief 与项目资料',fileLinks(p.briefLinks),'folder')}</div></section>`);
   }
-  function files(title, list, type) {return `<section class="file-block"><div class="file-label">${icon(type)}<div><h3>${e(title)}</h3><p>${list.length?`${list.length} 个文件或链接`:'暂未归档'}</p></div></div>${list.length?'<div class="files">'+list.map((x,i)=>{const target=url(x.sourceUrl)||url(x.url);return target?`<a class="file-read" href="${e(target)}" target="_blank" rel="noopener"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b><small>在飞书打开</small>${icon('arrow',14)}</a>`:`<span class="file-read is-unavailable"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b><small>未提供链接</small></span>`;}).join('')+'</div>':'<p class="empty-copy">飞书项目表暂未补充该资料。</p>'}</section>`;}
+  function files(title, list, type) {return `<section class="file-block"><div class="file-label">${icon(type)}<div><h3>${e(title)}</h3><p>${list.length?`${list.length} 个文件或链接`:'暂未归档'}</p></div></div>${list.length?'<div class="files">'+list.map((x,i)=>{const target=url(x.sourceUrl)||url(x.url);return target?`<a class="file-read" href="${e(target)}" target="_blank" rel="noopener" title="在飞书中打开：${e(x.label||'文件 '+(i+1))}"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b>${icon('arrow',14)}</a>`:`<span class="file-read is-unavailable"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b></span>`;}).join('')+'</div>':'<p class="empty-copy">飞书项目表暂未补充该资料。</p>'}</section>`;}
   function dataSources(p){
     const sources=[...fileLinks(p.publishLinks).map(x=>({label:'发稿汇总表',detail:'查看全部发布链接与分月明细',url:x.sourceUrl||x.url})),...fileLinks(p.monitorLinks).map(x=>({label:'监测表',detail:'查看关键词与排名监测数据',url:x.sourceUrl||x.url}))];
     return sources.length?`<section class="data-sources"><div><h2>项目数据入口</h2><p>登录飞书后，可直接打开项目对应的源表。</p></div><div>${sources.map(x=>`<a href="${e(url(x.url))}" target="_blank" rel="noopener"><span>${icon('grid',17)}</span><b>${e(x.label)}</b><small>${e(x.detail)}</small>${icon('arrow',15)}</a>`).join('')}</div></section>`:'';
@@ -229,27 +233,37 @@
       <section class="team-and-data" id="command-data"><article class="live-team"><div class="command-section-title"><div><h2>当前负责人</h2><p>以下字段在登录后由飞书项目表实时刷新。</p></div><a href="#/workload">成员视图 ${icon('arrow',14)}</a></div><div class="owner-chip-list">${c.members.length?c.members.map(([name,,job])=>`<a href="#/workload?member=${encodeURIComponent(name)}">${av(name)}<span><b>${e(name)}</b><small>${e(job)}</small></span></a>`).join(''):'<p class="chart-empty">飞书尚未填写项目负责人</p>'}</div></article><article class="data-explainer"><span>${icon('pulse',22)}</span><div><h2>数据口径</h2><p>本项目 KPI 使用每周同步的完整订单；拒稿、待发布和无链接订单均不进入有效发稿。</p><small>${e(c.source)} · 更新于 ${e(c.updatedAt||'—')}</small></div></article></section>
       ${dataSources(p)}<section class="command-files" id="command-files"><div class="command-section-title"><div><h2>资料入口</h2><p>文件不在网页内复制或预览，统一在飞书打开，保证权限、版本和协作一致。</p></div><span>${reports.length+brief.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',brief,'folder')}</div></section>`);
   }
+  function kpiTarget(p){
+    const matched=[...String(p.kpi||'').matchAll(/(\d{1,5})\s*篇/g)].map(x=>Number(x[1]));
+    return matched.length ? Math.max(...matched) : null;
+  }
+  function monthlyChart(p,pub){
+    const chartId=`month-${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')}`;
+    const rows=pub.months||[];
+    if(!rows.length)return `<div class="monthly-empty"><span>${icon('pulse',22)}</span><b>暂无可按月归集的发布订单</b><p>订单中补充发布时间后，这里会自动生成月度发布量。</p></div>`;
+    const max=Math.max(...rows.map(x=>x.value),1), latest=rows[rows.length-1];
+    return `<div class="monthly-chart" data-month-chart="${chartId}"><div class="chart-controls"><div><button type="button" class="active" data-month-range="all" data-chart="${chartId}">全部</button><button type="button" data-month-range="6" data-chart="${chartId}">近 6 月</button><button type="button" data-month-range="3" data-chart="${chartId}">近 3 月</button></div><span>last update · ${e(pub.updatedAt||'—')}</span></div><div class="monthly-bars">${rows.map((item,index)=>`<button type="button" class="${index===rows.length-1?'is-selected':''}" data-month-bar data-chart="${chartId}" data-month="${e(item.month)}" data-label="${e(item.label)}" data-value="${item.value}" style="--bar:${Math.max(8,Math.round(item.value/max*100))}%"><i></i><b>${item.value}</b><small>${e(item.label)}</small></button>`).join('')}</div><div class="month-chart-detail" data-month-detail="${chartId}"><b>${e(latest.label)}</b><span>${latest.value} 篇有效发布</span></div></div>`;
+  }
+  function checklist(p){
+    const items=todos().filter(item=>item.project===p.name).sort((a,b)=>a.status==='done'?-1:String(a.date).localeCompare(String(b.date)));
+    return `<section class="project-checklist"><div class="section-head"><div><h2>项目 Checklist</h2><p>重点待办、负责人、DDL 与优先级都在项目内管理。</p></div><button type="button" class="add-todo" data-add-project-todo="${e(p.name)}">+ 新建待办</button></div><div class="checklist-head"><span>事项</span><span>优先级</span><span>DDL</span><span>负责人</span></div><div class="checklist-list">${items.length?items.map(item=>`<label class="check-row ${item.status==='done'?'is-done':''}"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''}><span><b>${e(item.title)}</b>${item.description?`<small>${e(item.description)}</small>`:''}</span><em class="priority ${e(item.priority||'P2').toLowerCase()}">${e(item.priority||'P2')}</em><time>${dt(item.date)}</time><span class="check-owner">${item.owner?av(item.owner):''}<b>${e(item.owner||'待选择')}</b></span></label>`).join(''):'<div class="checklist-empty"><span>◌</span><b>还没有重点待办</b><p>点击右上角新建，指定项目成员、DDL 和优先级。</p></div>'}</div></section>`;
+  }
+  function todoDialog(p){
+    return `<dialog class="todo-dialog" id="project-todo-dialog"><form method="dialog" id="project-todo-form"><header><div><h2>新建项目待办</h2><p>${e(p.name)}</p></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>待办事项<input required name="title" placeholder="例如：确认本周发稿链接"></label><label>补充说明<textarea name="description" placeholder="可选，写清交付要求"></textarea></label><div class="form-three"><label>优先级<select name="priority"><option value="P0">P0 · 紧急</option><option value="P1" selected>P1 · 重要</option><option value="P2">P2 · 常规</option></select></label><label>DDL<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<select name="owner"><option value="">请选择成员</option>${memberOptions(p).map(name=>`<option value="${e(name)}">${e(name)}</option>`).join('')}</select></label></div><input type="hidden" name="project" value="${e(p.name)}"><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`;
+  }
   function projectPage(id) {
     const p=one(id); if(!p)return shell(`${header('项目未找到','该项目可能已被移动或删除。')}<a class="back-link" href="#/overview">返回项目总览</a>`);
-    const control=controlFor(p); if(control)return controlProjectPage(p,control);
-    const a=activity[p.name]||{period:'当前项目周期',main:{label:'待补充工作记录',value:0,detail:'暂无标准化任务分布'},next:['补齐近期任务','更新项目数据'],types:[],people:[]};
-    const pub=publicationFor(p);
-    const docs=[['项目资料',fileLinks(p.tableUrl?[{label:'飞书项目记录',url:p.tableUrl}]:[]),'folder'],['Brief',fileLinks(p.briefLinks),'pulse']];
-    const reports=fileLinks(p.reportLinks);
-    const taskBars=(a.types||[]).map(([label,value])=>({label,value}));
-    const stage=stageFor(p);
-    const projectTodo=todos().filter(item=>item.project===p.name).slice(0,5);
-    const liveOwners=ownersFor(p).map((name,index)=>[name,0,['项目统筹','内容创作','发布执行','监测复核'][index]||'项目协作']);
-    const peopleForProject=liveOwners.length?liveOwners:(a.people||[]);
-    return shell(`${header(p.name,`${p.status} · ${p.platform||'项目平台待补充'}`,`<a class="back-link" href="#/status/${encodeURIComponent(p.status)}">${icon('chev',15)} 返回列表</a>`)}
-      <section class="project-hero"><div><div class="hero-status">${badge(p.status)}<span>${e(a.period)}</span></div><h2>${e(a.main.label)}</h2><p>${e(a.main.detail)}</p><div class="next"><b>未来两周主线</b>${a.next.map(x=>`<span>${e(x)}</span>`).join('')}</div></div><div class="hero-progress"><span>项目进度</span><strong>${progress(p)}%</strong><i><b style="width:${progress(p)}%"></b></i><small>${p.startDate?`启动于 ${dt(p.startDate)}`:'尚未设置启动时间'}</small></div></section>
-      <section class="project-stats">${tiny('有效发布链接',pub.total,pub.source||'尚未验证链接')}${tiny('本期工作量',a.main.value||0,`${a.main.label} · ${a.period}`)}${tiny('项目状态',p.status,p.invoiceStatus||'开票状态待确认')}${tiny('飞书资料',docs.reduce((n,[,x])=>n+x.length,0)+reports.length,'点击进入源文件')}</section>
-      <section class="project-workbench"><div class="workbench-top"><div><span>PROJECT WORKBENCH</span><h2>项目工作台</h2><p>把当前阶段、下一步和资料放在同一个工作面上。</p></div><a href="#/calendar?project=${encodeURIComponent(p.name)}">查看项目待办 ${icon('arrow',14)}</a></div><div class="workbench-grid"><article class="stage-board"><div class="stage-heading"><b>项目阶段</b><small>${e(stage.steps[stage.index])} · 当前节点</small></div><div class="stage-line">${stage.steps.map((step,i)=>`<div class="${i<stage.index?'done':i===stage.index?'current':''}"><i>${i<stage.index?'✓':i+1}</i><span>${e(step)}</span></div>`).join('')}</div><div class="stage-detail"><b>${e(stage.steps[stage.index])}</b><p>${p.status==='待开始'?'项目尚未启动，建议先明确负责人、项目时间和 Brief。':e(a.main.detail)}</p></div></article><aside class="next-board"><div><b>下一步计划</b><a href="#/calendar?project=${encodeURIComponent(p.name)}">添加待办 +</a></div>${projectTodo.length?projectTodo.map(item=>`<label class="todo-line"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''}><span><b>${e(item.title)}</b><small>${e(item.owner)} · ${dt(item.date)}</small></span></label>`).join(''):`<p>暂未安排明确待办，可从日历待办中补充。</p>`}</aside></div><nav class="workbench-tabs"><button type="button" data-scroll="project-data">数据</button><button type="button" data-scroll="project-people">协作成员</button><button type="button" data-scroll="project-files">文件资料</button><button type="button" data-scroll="project-reports">报告中心</button></nav></section>
-      <section class="detail-grid" id="project-data"><article class="chart-card"><div class="panel-title"><div><h2>当前数据</h2><p>有效发布链接与近三周工作量分开计数</p></div></div><div class="chart-tabs"><button class="active" data-tab="m">发布分布</button><button data-tab="w">近三周</button></div><div data-view="m">${column((pub.periods||[]).map(([label,value])=>({label,value})), '当前发稿表未提供可按日期统计的数据')}</div><div data-view="w" class="hidden">${column((pub.weeks||[]).map(([label,value])=>({label,value})), '发稿表未提供逐条发布日期，无法虚构近三周数据。')}</div></article>
-      <article class="chart-card" id="project-people"><div class="panel-title"><div><h2>人物与任务</h2><p>负责人由飞书项目表刷新；任务分类来自本期工作记录。</p></div></div>${taskBars.length?`<div class="task-keys">${taskBars.map(x=>`<span><i></i>${e(x.label)} <b>${x.value}</b></span>`).join('')}</div>`:''}<div class="people-list">${peopleForProject.length?peopleForProject.map(([n,num,work])=>`<a href="#/workload?member=${encodeURIComponent(n)}">${av(n)}<span><b>${e(n)}</b><small>${e(work)}</small></span>${num?`<strong>${num}</strong>`:'<strong>飞书</strong>'}</a>`).join(''):'<p class="chart-empty">等待同步可归属的项目负责人。</p>'}</div></article></section>
-      <section class="data-note">${icon('pulse')}<div><h3>数据说明</h3><p>${e(p.currentData||'暂无结构化当前数据。请从飞书项目表中的发稿链接、监测表与周报分别补充。')}</p></div></section>
-      <section class="report-center" id="project-reports"><div class="section-title"><div><h2>报告中心</h2><p>周报、月报与监测报告均在飞书打开，避免网页版本与源文件不一致。</p></div><span>${reports.length} 份报告</span></div>${files('报告文件',reports,'calendar')}</section>
-      <section class="materials" id="project-files"><div class="section-title"><div><h2>项目资料</h2><p>Brief 与项目源数据保留在飞书，点击即可进入原始文件。</p></div></div>${docs.map(x=>files(...x)).join('')}</section>`);
+    const pub=publicationFor(p), target=kpiTarget(p), achieved=pub.total, ratio=target?Math.round(achieved/target*100):null;
+    const members=memberRows(p), reports=fileLinks(p.reportLinks), briefs=fileLinks(p.briefLinks), materials=fileLinks(p.tableUrl?[{label:'飞书项目记录',url:p.tableUrl}]:[]);
+    const sourceFiles=[...reports,...briefs,...materials];
+    const kpiText=String(p.kpi||'飞书项目表暂未填写 KPI。').split(/\n+/).filter(Boolean);
+    return shell(`${header(p.name,`${p.status} · ${p.platform||'项目资料待补充'}`,`<a class="back-link" href="#/status/${encodeURIComponent(p.status)}">${icon('chev',15)} 返回列表</a>`)}
+      <nav class="command-tabs"><button class="active" data-scroll="project-summary">项目概览</button><button data-scroll="project-publication">发布数据</button><button data-scroll="project-checklist">Checklist</button><button data-scroll="project-files">文件资料</button></nav>
+      <section class="project-command project-command-unified" id="project-summary"><div class="project-orbit orbit-one"></div><div class="project-orbit orbit-two"></div><div class="command-eyebrow"><span>${badge(p.status)}</span><b>${e(projectTime(p))}</b></div><div class="project-command-main"><article class="publication-kpi"><small>累计有效发布</small><strong>${achieved.toLocaleString()}<em> 篇</em></strong><p>按完整订单中的有效发布链接统计</p></article><article class="target-kpi"><div><small>发布 KPI</small><strong>${target?`${achieved.toLocaleString()} / ${target.toLocaleString()}`:'以飞书项目表为准'}</strong></div>${target?`<div class="kpi-track"><i style="width:${Math.min(100,ratio)}%"></i></div><p>${ratio}% · ${achieved>=target?'已完成目标':`还差 ${(target-achieved).toLocaleString()} 篇`}</p>`:`<p>项目表未提供“篇数”型目标，完整 KPI 列在下方。</p>`}</article><article class="project-status-readout"><small>项目进度</small><strong>${progress(p)}%</strong><i><b style="width:${progress(p)}%"></b></i><span>${e(p.kpiStatus||p.status)}</span></article></div></section>
+      <section class="project-kpi-list"><div><h2>项目 KPI</h2><p>完整引用飞书项目表，不再只截取其中一条。</p></div><ol>${kpiText.map(item=>`<li>${e(item)}</li>`).join('')}</ol></section>
+      <section class="project-main-grid"><article class="publication-card" id="project-publication"><div class="section-head"><div><h2>月度发布情况</h2><p>每根柱代表当月有效发布订单。点击柱形查看数值。</p></div><strong>${achieved.toLocaleString()}<small> 篇</small></strong></div>${monthlyChart(p,pub)}</article>${checklist(p)}</section>
+      <section class="project-members" id="project-members"><div class="section-head"><div><h2>项目成员</h2><p>只读取飞书项目表当前填写的成员，不再从模板分配角色。</p></div></div><div class="member-rail">${members.length?members.map(member=>`<div>${av(member.name)}<span><b>${e(member.name)}</b><small>${e(member.role)}</small></span></div>`).join(''):'<p class="chart-empty">飞书项目表尚未填写项目成员。</p>'}</div></section>
+      ${dataSources(p)}<section class="command-files" id="project-files"><div class="command-section-title"><div><h2>文件资料</h2><p>文件名保留飞书原始名称，点击整行进入对应飞书文件或源表。</p></div><span>${sourceFiles.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',[...briefs,...materials],'folder')}</div></section>${todoDialog(p)}`);
   }
   function memberProjects(name){
     const current = Object.entries(activity).filter(([,x])=>(x.people||[]).some(([n])=>n===name)).map(([n])=>n);
@@ -295,12 +309,28 @@
     document.querySelector('[data-bell]')?.addEventListener('click',ev=>ev.currentTarget.classList.toggle('ring'));
     document.querySelectorAll('.period button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.period button').forEach(x=>x.classList.toggle('active',x===b))));
     document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',()=>{updateTodo(input.dataset.todoToggle,{status:input.checked?'done':'todo'});render();}));
+    document.querySelectorAll('[data-month-range]').forEach(button=>button.addEventListener('click',()=>{
+      const id=button.dataset.chart, limit=button.dataset.monthRange;
+      document.querySelectorAll(`[data-month-range][data-chart="${id}"]`).forEach(x=>x.classList.toggle('active',x===button));
+      const bars=[...document.querySelectorAll(`[data-month-bar][data-chart="${id}"]`)];
+      bars.forEach((bar,index)=>bar.classList.toggle('is-muted',limit!=='all' && index<bars.length-Number(limit)));
+    }));
+    document.querySelectorAll('[data-month-bar]').forEach(button=>button.addEventListener('click',()=>{
+      const id=button.dataset.chart;
+      document.querySelectorAll(`[data-month-bar][data-chart="${id}"]`).forEach(x=>x.classList.toggle('is-selected',x===button));
+      const detail=document.querySelector(`[data-month-detail="${id}"]`);
+      if(detail) detail.innerHTML=`<b>${e(button.dataset.label||'')}</b><span>${e(button.dataset.value||'0')} 篇有效发布</span>`;
+    }));
     document.querySelectorAll('[data-todo-menu]').forEach(button=>button.addEventListener('click',()=>{const current=todos().find(item=>item.id===button.dataset.todoMenu);const next=current?.status==='todo'?'doing':current?.status==='doing'?'done':'todo';updateTodo(button.dataset.todoMenu,{status:next});render();}));
     document.querySelector('[data-calendar-project]')?.addEventListener('change',event=>{const project=event.target.value;const mode=r().query.get('mode');location.hash=`#/calendar${mode==='kanban'?'?mode=kanban':''}${project?`${mode==='kanban'?'&':'?'}project=${encodeURIComponent(project)}`:''}`;});
     const todoDialog=document.querySelector('#todo-dialog');
     document.querySelector('[data-add-todo]')?.addEventListener('click',()=>todoDialog?.showModal());
     document.querySelectorAll('[data-todo-close]').forEach(button=>button.addEventListener('click',()=>todoDialog?.close()));
     document.querySelector('#todo-form')?.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={id:`local-${Date.now()}`,title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||'待分配'),project:String(data.get('project')||'未归属项目'),status:'todo'};writeTodos([...readTodos(),item]);todoDialog.close();render();});
+    const projectTodoDialog=document.querySelector('#project-todo-dialog');
+    document.querySelectorAll('[data-add-project-todo]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.showModal()));
+    document.querySelectorAll('#project-todo-dialog [data-todo-close]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.close()));
+    document.querySelector('#project-todo-form')?.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={id:`local-${Date.now()}`,title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:'todo'};writeTodos([...readTodos(),item]);projectTodoDialog?.close();render();});
     document.querySelectorAll('[data-member-card]').forEach(card=>card.addEventListener('click',event=>{
       if (event.target.closest('a')) return;
       const expanded=card.classList.toggle('expanded'); card.setAttribute('aria-expanded',String(expanded));
@@ -368,7 +398,8 @@
     acceptFeishuCallback();
     if(!signedIn()){app.innerHTML=authPage();bind();return;}
     const x=r();
-    app.innerHTML=x.page==='status'?statusPage(x.key||'全部'):x.page==='project'?projectPage(x.key):x.page==='workload'?workloadPage():x.page==='calendar'?calendarPage():overview();
+    if(x.page==='calendar'){location.hash='#/overview';return;}
+    app.innerHTML=x.page==='status'?statusPage(x.key||'全部'):x.page==='project'?projectPage(x.key):x.page==='workload'?workloadPage():overview();
     bind();
     // 每一次进入工作台后都向飞书拉取当前项目字段；失败时仅保留静态兜底。
     refreshProjectsFromFeishu();
