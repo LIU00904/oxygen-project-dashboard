@@ -58,6 +58,27 @@ window.OXYGEN_PROJECT_ACTIVITY = {
   "国泰海通": { period: "当前周期", main: { label: "监测与周报", value: 3, detail: "日度数据监测、周报及模拟数据看板" }, next: ["日度监测", "周报更新", "数据看板沟通"], types: [["监测",1],["周报",1],["数据",1]], people: [["辛味珈",3,"监测、周报与数据沟通"]] }
 };
 
+/* Full-table task counts. These are deliberately separate from the project
+   work summaries above: a person can be assigned to work outside a tracked
+   client project, so this is the only correct source for the team workload
+   view. Generated from all 4,416 records in the Feishu task table on 2026-10-27. */
+window.OXYGEN_MEMBER_WORKLOAD = {
+  totalTasks: 4416,
+  source: '飞书完整任务表（按任务执行人关系计数）',
+  people: [
+    ['刘依晨', 2089, 6, '2026-10-26'], ['辛味珈', 657, 25, '2026-10-27'],
+    ['郝奕菲', 421, 3, '2026-08-20'], ['赵博宇', 287, 31, '2026-06-25'],
+    ['马朔', 229, 4, '2026-05-20'], ['宋芷桐', 171, 6, '2026-06-11'],
+    ['袁琴星', 136, 1, '2026-09-24'], ['张扬', 92, 0, '2026-02-04'],
+    ['徐奕旸', 72, 1, '2026-10-27'], ['鄂泓旭', 69, 0, '2026-08-10'],
+    ['金雨婷', 62, 0, '2026-04-19'], ['梁伟安', 47, 0, '2026-06-16'],
+    ['邢瑜轩', 44, 3, '2026-05-13'], ['刘鸿睿', 29, 7, '2026-07-15'],
+    ['包小雨', 18, 0, '2026-06-08'], ['韩文静', 9, 0, '2026-09-24'],
+    ['林育妃', 7, 0, '2026-10-22'], ['彭安迪', 7, 0, '2026-10-22'],
+    ['潘嘉良', 6, 2, '2026-08-17'], ['徐怡飞', 5, 0, '2026-10-27'], ['李正浩', 4, 0, '2026-09-02']
+  ]
+};
+
 window.OXYGEN_MEMBER_AVATARS = {
   "韩文静":"https://s1-imfile.feishucdn.com/static-resource/v1/v3_0015i_c2cb1d7e-1197-4ae4-893e-4347e24eaeag~?image_size=72x72&cut_type=default-face&quality=&format=jpeg&sticker_format=.webp",
   "徐奕旸":"https://s1-imfile.feishucdn.com/static-resource/v1/v3_0015b_a62ab550-26cd-416e-be21-14b2da1e15ag~?image_size=72x72&cut_type=default-face&quality=&format=jpeg&sticker_format=.webp",

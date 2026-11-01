@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260628-status-links-cache-v1";
+const WORKER_VERSION = "20260907-status-fallbacks-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -39,6 +39,31 @@ const corsHeaders = {
 
 let memoryProjectsCache = null;
 const STALLED_PROJECTS = new Set(["西昊", "西昊2", "mac", "海蓝之谜"]);
+const CURRENT_ONGOING = new Set([
+  "太太乐松茸鲜",
+  "哲库林 润喉糖",
+  "万豪",
+  "万事达银联",
+  "数贸会",
+  "西门子",
+  "国泰海通",
+  "TMA",
+  "pxn",
+  "华硕 新",
+  "伊利金领冠",
+  "头道汤",
+  "可孚制氧机"
+]);
+const COMPLETED_PROJECTS = new Set([
+  "北京大学深圳研究生院",
+  "格力高",
+  "格力高 百奇",
+  "咪咕体育",
+  "一丰 荣放 亚洲龙",
+  "赏·会所",
+  "深演",
+  "骨科医生"
+]);
 
 export default {
   async scheduled(event, env, ctx) {
@@ -225,7 +250,7 @@ class HttpError extends Error {
 
 function startAuth(request, env) {
   const requestUrl = new URL(request.url);
-  const returnTo = requestUrl.searchParams.get("return_to") || "https://liu00904.github.io/oxygen-project-dashboard/";
+  const returnTo = safeReturnTo(requestUrl.searchParams.get("return_to"));
   const redirectUri = `${requestUrl.origin}/auth/callback`;
   const state = btoa(unescape(encodeURIComponent(JSON.stringify({
     returnTo,
@@ -244,21 +269,42 @@ async function finishAuth(request, env) {
   const state = requestUrl.searchParams.get("state") || "";
   if (!code) return html("飞书登录失败：没有收到授权 code。", 400);
   const decodedState = parseState(state);
-  const returnTo = decodedState?.returnTo || "https://liu00904.github.io/oxygen-project-dashboard/";
+  const returnTo = safeReturnTo(decodedState?.returnTo);
   const appToken = await appAccessToken(env);
   const userToken = await userAccessToken(appToken, code);
   const user = await userInfo(userToken);
   const session = await signSession(user, env);
   const target = new URL(returnTo);
-  target.hash = `feishu_user=${encodeURIComponent(toBase64(user))}&feishu_token=${encodeURIComponent(session)}`;
+  target.searchParams.set("feishu_user", toBase64(user));
+  target.searchParams.set("feishu_session", session);
   return Response.redirect(target.toString(), 302);
+}
+
+function safeReturnTo(value) {
+  const fallback = "https://liu00904.github.io/oxygen-project-dashboard/#/overview";
+  try {
+    const target = new URL(String(value || fallback));
+    if (target.protocol === "file:") {
+      return `http://127.0.0.1:4175/index.html${target.hash || "#/overview"}`;
+    }
+    const allowed = new Set([
+      "https://liu00904.github.io",
+      "http://127.0.0.1:4175",
+      "http://localhost:4175"
+    ]);
+    return allowed.has(target.origin) ? target.toString() : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 async function authorizeRequest(request, env) {
   const auth = request.headers.get("authorization") || "";
   const match = auth.match(/^Bearer\s+(.+)$/i);
-  if (!match) throw new HttpError("请先登录飞书", 401);
-  const user = await verifySession(match[1], env);
+  const querySession = new URL(request.url).searchParams.get("session") || "";
+  const token = match?.[1] || querySession;
+  if (!token) throw new HttpError("请先登录飞书", 401);
+  const user = await verifySession(token, env);
   const allowedTenant = String(env.FEISHU_ALLOWED_TENANT_KEY || "").trim();
   if (allowedTenant && user.tenantKey !== allowedTenant) throw new HttpError("当前飞书企业未授权访问", 403);
   const allowedOpenIds = String(env.FEISHU_ALLOWED_OPEN_IDS || "")
@@ -379,7 +425,7 @@ function recordToProject(record, origin) {
   const startDate = dateIso(fields[FIELD_MAP.startDate]);
   const endDate = dateIso(fields[FIELD_MAP.endDate]);
   const cycle = cycleDays(startDate, endDate);
-  const status = inferStatus(name, fields, startDate);
+  const status = inferStatus(name, fields, startDate, endDate);
   const publishLinks = [
     ...linkList(fields[FIELD_MAP.publishLinks]),
     ...FIELD_ALIASES.projectLinks.flatMap(fieldName => linkList(fields[fieldName]))
@@ -419,14 +465,32 @@ function recordToProject(record, origin) {
   };
 }
 
-function inferStatus(name, fields, startDate) {
+function inferStatus(name, fields, startDate, endDate) {
   const explicit = normalizeStatus(textValue(fields[FIELD_MAP.status]));
   if (explicit) return explicit;
+  if (COMPLETED_PROJECTS.has(name)) return "已完成";
   if (STALLED_PROJECTS.has(name)) return "停滞";
+  if (CURRENT_ONGOING.has(name)) return "进行中";
   const progress = Number(fields["项目进度"]);
   if (Number.isFinite(progress) && progress >= 1) return "已完成";
-  if (startDate || (Number.isFinite(progress) && progress > 0)) return "进行中";
+  if (isPastEndDate(endDate)) return "已完成";
+  if (startDate && isStarted(startDate)) return "待开始";
   return "待开始";
+}
+
+function isStarted(startDate) {
+  const start = new Date(`${startDate}T00:00:00+08:00`).getTime();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Number.isFinite(start) && start <= today.getTime();
+}
+
+function isPastEndDate(endDate) {
+  if (!endDate) return false;
+  const end = new Date(`${endDate}T00:00:00+08:00`).getTime();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Number.isFinite(end) && end < today.getTime();
 }
 
 function progressFromFields(fields, status, startDate, cycle) {

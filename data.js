@@ -1,92 +1,6 @@
 (() => {
   const latestProjects = [
   {
-    "id": "recvln50lusVeg",
-    "recordId": "recvln50lusVeg",
-    "source": "feishu",
-    "name": "北京大学深圳研究生院",
-    "status": "进行中",
-    "startDate": "2026-06-09",
-    "cycleDays": 89,
-    "progressPercent": 8,
-    "kpi": "kpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
-    "platform": "",
-    "notes": "企业，EMBA重点关注\n一篇3个媒体",
-    "manager": "辛味珈",
-    "writer": "辛味珈",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "已开票",
-    "publishLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/FuwzwceVxi8PZ3kTp8Ocixffn7e"
-      }
-    ],
-    "monitorLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/Q4HJwJhiiiOGaZk6dsScOi5UnVc"
-      }
-    ],
-    "briefLinks": [
-      {
-        "label": "6e2d8a6ba12dddacd1528e5169c1dd9f.png",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "BzG4b4pe7oVks3xvtoDcZvC1ngc",
-        "fileType": "image/png",
-        "size": 2687343
-      }
-    ],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 35 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.13】\n自动识别排名记录 30 条：Top1 16 条、Top3 22 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
-    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。"
-  },
-  {
-    "id": "recvoyztLg6gqr",
-    "recordId": "recvoyztLg6gqr",
-    "source": "feishu",
-    "name": "格力高 百奇",
-    "status": "进行中",
-    "startDate": "2026-07-28",
-    "cycleDays": 31,
-    "progressPercent": 100,
-    "kpi": "1. 3个核心关键词\n2. 30个长尾问题词首批3. 审核内容5篇\n4. 第二批GEO优化内容10篇\n5. 纠偏补充内容5篇(视效果决定)\n6. AI答案监测与月度优化小结1份",
-    "platform": "5个平台",
-    "notes": "周度 5篇，每天至少有媒体出去 医药信源",
-    "manager": "辛味珈",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [
-      {
-        "label": "2c49629087f7029c8e1a6facfeeeeff4.png",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-        "fileToken": "SVhLbLrizoE8AOxKOqAc5AyJngR",
-        "fileType": "image/png",
-        "size": 1698017
-      }
-    ],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
     "id": "recvrcnkAzfhRG",
     "recordId": "recvrcnkAzfhRG",
     "source": "feishu",
@@ -94,8 +8,8 @@
     "status": "进行中",
     "startDate": "2026-08-03",
     "cycleDays": 92,
-    "progressPercent": 27,
-    "kpi": "1. 1个月到效果 维持两个月\n2. 23个关键词 做kpi考核标准 \n3.  【 每周246篇 -96篇（按8篇） 】\n",
+    "progressPercent": 38,
+    "kpi": "1. 1个月到效果 维持两个月\n2. 23个关键词 做kpi考核标准 \n3.  【 每周246篇 -96篇（按8篇） 】",
     "platform": "",
     "notes": "",
     "manager": "韩笑",
@@ -103,8 +17,16 @@
     "publisher": "",
     "monitor": "",
     "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
+    "publishLinks": [
+      {
+        "url": "https://ecnzzsc6bapw.feishu.cn/wiki/HnakwejE8iviAKkYj6Ice5NOn4i"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/U0BlwjWKQiIi0ykAnqjcVayBnZd?sheet=n2DqC7"
+      }
+    ],
     "briefLinks": [
       {
         "label": "image.png",
@@ -126,45 +48,6 @@
     "kpiStatus": "推进中",
     "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
-    "id": "recvld4x7F5xhp",
-    "recordId": "recvld4x7F5xhp",
-    "source": "feishu",
-    "name": "赏·会所",
-    "status": "进行中",
-    "startDate": "2026-06-01",
-    "cycleDays": 91,
-    "progressPercent": 14,
-    "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
-    "platform": "六个平台中四个及以上，80%时间",
-    "notes": "",
-    "manager": "宋芷桐",
-    "writer": "宋芷桐",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "已开票",
-    "publishLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/RmRwwx6XKiyvxZkI1zBcE5OZnzf"
-      }
-    ],
-    "monitorLinks": [
-      {
-        "url": "https://jcnquengglen.feishu.cn/wiki/KOT6wuYUBinmJBk7qxdcJM9HnYb"
-      }
-    ],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "【发稿数据】\n有效发稿 19 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.12】\n自动识别排名记录 82 条：Top1 66 条、Top3 82 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
-    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
   },
   {
     "id": "recvmA0giUeNKC",
@@ -326,6 +209,87 @@
     "optimizationSuggestion": "6.8 当前主要缺口：家常菜常备调料品牌 Top3 为 3/6，距离 4/6 还差 1 个平台；0添加提鲜调料品牌 Top1 仅 2/6、追求健康生活家庭选择的调味料品牌 Top1 3/6，建议加强对应关键词的发稿与信源覆盖。发稿数量目前 304/500，还差 196 篇，需继续补量并同步维护 6.9 后续监测。"
   },
   {
+    "id": "recvkB4MgLZqyP",
+    "recordId": "recvkB4MgLZqyP",
+    "source": "feishu",
+    "name": "万豪",
+    "status": "进行中",
+    "startDate": "2026-07-27",
+    "cycleDays": 120,
+    "progressPercent": 35,
+    "kpi": "1. 万豪和喜来登的露出\n2. 品牌词的优化\n3. 核心关键词是三亚亲子酒店\n4. 时间节点：暑假 \n5. 需要审核所有稿件\n6. Top3提升10%\n7. 每月不低于20篇",
+    "platform": "覆盖5个主流大模型",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "刘鸿睿",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [
+      {
+        "url": "https://ecnzzsc6bapw.feishu.cn/wiki/K4dHwZL9XikMrskwdSYcsvQWnfh"
+      }
+    ],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "image.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "EehkbRCfRoqwOqx5uLtchrmRnQc",
+        "fileType": "image/png",
+        "size": 79797
+      },
+      {
+        "label": "8da580225b9515a42ea922bfdb9bf508.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "WIbWbhASroEW8FxbwbCciJx6nIf",
+        "fileType": "image/png",
+        "size": 79498
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "待开始",
+    "currentData": "当前完成度 0%",
+    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
+  },
+  {
+    "id": "recvmzZQyAlC6z",
+    "recordId": "recvmzZQyAlC6z",
+    "source": "feishu",
+    "name": "万事达银联",
+    "status": "进行中",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "监测",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "已同步飞书主表；待补充 KPI、排期、发稿表与监测表后更新分析。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
     "id": "recvpdwK5rNANo",
     "recordId": "recvpdwK5rNANo",
     "source": "feishu",
@@ -333,7 +297,7 @@
     "status": "进行中",
     "startDate": "2026-07-09",
     "cycleDays": 52,
-    "progressPercent": 8,
+    "progressPercent": 100,
     "kpi": "1. 每个词不少于20篇月度\n2. Top3提升度10%\n3. 信源要求",
     "platform": "",
     "notes": "",
@@ -364,7 +328,7 @@
     "status": "进行中",
     "startDate": "2026-05-08",
     "cycleDays": 153,
-    "progressPercent": 24,
+    "progressPercent": 80,
     "kpi": "- 优化目标：产品展示度，提升至不低于90%",
     "platform": "DeepSeek、豆包、Kimi、通义千\n问、元宝中的80%有效收录",
     "notes": "教师节 每周都要发",
@@ -394,6 +358,44 @@
     "kpiStatus": "推进中",
     "currentData": "【发稿数据】\n有效发稿 85 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据】\n已关联 1 个监测表入口，待下一轮汇总近一周/近一月趋势。",
     "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
+  },
+  {
+    "id": "recvrcqgYDeQhR",
+    "recordId": "recvrcqgYDeQhR",
+    "source": "feishu",
+    "name": "TMA",
+    "status": "进行中",
+    "startDate": "2026-07-15",
+    "cycleDays": 169,
+    "progressPercent": 32,
+    "kpi": "有文章需求推送10个高权重媒体，收费控100-200元/篇，按月结算",
+    "platform": "",
+    "notes": "",
+    "manager": "韩笑",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/CdJDw60NCi8qrxkFc6tcvxNZnGb"
+      }
+    ],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "image.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "UUeXbo3fuodSfPx6KLecrgoDn1g",
+        "fileType": "image/png",
+        "size": 511774
+      }
+    ],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recvhXpWChLgnp",
@@ -1202,6 +1204,40 @@
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
+    "id": "recvuuSykQrUJ4",
+    "recordId": "recvuuSykQrUJ4",
+    "source": "feishu",
+    "name": "恬护士",
+    "status": "待开始",
+    "startDate": "",
+    "cycleDays": 0,
+    "progressPercent": 0,
+    "kpi": "",
+    "platform": "",
+    "notes": "",
+    "manager": "",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "恬护士系列产品介绍PPT-渠道培训.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "KpbwbZ0zroxH7dx1gPUcJL6QnGc",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 35132143
+      }
+    ],
+    "reportLinks": [],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
+  },
+  {
     "id": "recvswarmQD1or",
     "recordId": "recvswarmQD1or",
     "source": "feishu",
@@ -1225,68 +1261,6 @@
     "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
     "kpiStatus": "推进中",
     "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
-    "id": "recvkB4MgLZqyP",
-    "recordId": "recvkB4MgLZqyP",
-    "source": "feishu",
-    "name": "万豪",
-    "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "1. 万豪和喜来登的露出\n2. 品牌词的优化\n3. 核心关键词是三亚亲子酒店\n4. 时间节点：暑假 \n5. 需要审核所有稿件\n6. Top3提升10%\n7. 每月不低于20篇",
-    "platform": "",
-    "notes": "",
-    "manager": "飞书用户6916HP",
-    "writer": "刘鸿睿",
-    "publisher": "刘依晨",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "待开始",
-    "currentData": "当前完成度 0%",
-    "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
-  },
-  {
-    "id": "recvmzZQyAlC6z",
-    "recordId": "recvmzZQyAlC6z",
-    "source": "feishu",
-    "name": "万事达银联",
-    "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "监测",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [
-      {
-        "label": "tblljwgLs0E3z3bE text",
-        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
-      }
-    ],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "已同步飞书主表；待补充 KPI、排期、发稿表与监测表后更新分析。",
     "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
@@ -1396,8 +1370,45 @@
     "invoiceStatus": "待确认",
     "publishLinks": [],
     "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [],
+    "briefLinks": [
+      {
+        "label": "伊利金领冠 GEO 一个月优化策略方案0824.pptx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "Bx0Tbp9hposciYxfbqwcgsHlnzh",
+        "fileType": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "size": 1757728
+      },
+      {
+        "label": "氧气优化词列表_0820.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "PyJDbVpZnoNyb7ximbbc7eKVnxe",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 77331
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "铂萃产品介绍.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "DESEbSstFoj8a4xvdLGcrZ4Anyh",
+        "fileType": "application/pdf",
+        "size": 5253685
+      },
+      {
+        "label": "金领冠主要竞品产品、成分、功能、适用人群与实证比较.pdf",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "QbgkbTybpo4UVdxpNThchRUqnPh",
+        "fileType": "application/pdf",
+        "size": 2129182
+      },
+      {
+        "label": "历史发稿参考.xlsx",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "FrFNbSVMEoSrFVxUwFIcClNontl",
+        "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 388401
+      }
+    ],
     "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
     "kpiStatus": "推进中",
     "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
@@ -1818,32 +1829,6 @@
     "optimizationSuggestion": "项目启动前补齐排期、发稿计划、监测表链接与负责人。"
   },
   {
-    "id": "recvrcqgYDeQhR",
-    "recordId": "recvrcqgYDeQhR",
-    "source": "feishu",
-    "name": "TMA",
-    "status": "待开始",
-    "startDate": "",
-    "cycleDays": 0,
-    "progressPercent": 0,
-    "kpi": "",
-    "platform": "",
-    "notes": "",
-    "manager": "韩笑",
-    "writer": "",
-    "publisher": "",
-    "monitor": "",
-    "invoiceStatus": "待确认",
-    "publishLinks": [],
-    "monitorLinks": [],
-    "briefLinks": [],
-    "reportLinks": [],
-    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
-    "kpiStatus": "推进中",
-    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
-    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
-  },
-  {
     "id": "recvqxnKl4emmz",
     "recordId": "recvqxnKl4emmz",
     "source": "feishu",
@@ -1939,6 +1924,53 @@
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
+    "id": "recvln50lusVeg",
+    "recordId": "recvln50lusVeg",
+    "source": "feishu",
+    "name": "北京大学深圳研究生院",
+    "status": "已完成",
+    "startDate": "2026-06-09",
+    "cycleDays": 89,
+    "progressPercent": 100,
+    "kpi": "kpi：收录即可\n周报：双周报（首个双周报6.26）\n优化关键词：*5\n总裁班（1.5个月出效果）\n企业高管培训、AI总裁研修班、深圳总裁班、EMBA总裁班（2周出效果）",
+    "platform": "",
+    "notes": "企业，EMBA重点关注\n一篇3个媒体",
+    "manager": "辛味珈",
+    "writer": "辛味珈",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "已开票",
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/FuwzwceVxi8PZ3kTp8Ocixffn7e"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/Q4HJwJhiiiOGaZk6dsScOi5UnVc"
+      }
+    ],
+    "briefLinks": [
+      {
+        "label": "6e2d8a6ba12dddacd1528e5169c1dd9f.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "BzG4b4pe7oVks3xvtoDcZvC1ngc",
+        "fileType": "image/png",
+        "size": 2687343
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n有效发稿 35 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.13】\n自动识别排名记录 30 条：Top1 16 条、Top3 22 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。"
+  },
+  {
     "id": "recveNouG3UhTD",
     "recordId": "recveNouG3UhTD",
     "source": "feishu",
@@ -2030,6 +2062,49 @@
     "kpiStatus": "推进中",
     "currentData": "【发稿数据】\n有效发稿 73 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.13】\n自动识别排名记录 16 条：Top1 2 条、Top3 3 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
     "optimizationSuggestion": "继续保持发稿表和监测表按周更新，并在月末归档报告。"
+  },
+  {
+    "id": "recvoyztLg6gqr",
+    "recordId": "recvoyztLg6gqr",
+    "source": "feishu",
+    "name": "格力高 百奇",
+    "status": "已完成",
+    "startDate": "2026-07-28",
+    "cycleDays": 31,
+    "progressPercent": 100,
+    "kpi": "1. 3个核心关键词\n2. 30个长尾问题词首批3. 审核内容5篇\n4. 第二批GEO优化内容10篇\n5. 纠偏补充内容5篇(视效果决定)\n6. AI答案监测与月度优化小结1份",
+    "platform": "5个平台",
+    "notes": "周度 5篇，每天至少有媒体出去 医药信源",
+    "manager": "辛味珈",
+    "writer": "",
+    "publisher": "",
+    "monitor": "",
+    "invoiceStatus": "待确认",
+    "publishLinks": [
+      {
+        "url": "https://ecnzzsc6bapw.feishu.cn/wiki/UIsxw29E9ioSHgk7c21csUVanQg"
+      }
+    ],
+    "monitorLinks": [],
+    "briefLinks": [
+      {
+        "label": "2c49629087f7029c8e1a6facfeeeeff4.png",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+        "fileToken": "SVhLbLrizoE8AOxKOqAc5AyJngR",
+        "fileType": "image/png",
+        "size": 1698017
+      }
+    ],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "项目待开始，需要补齐启动时间、KPI、人员与资料入口。",
+    "optimizationSuggestion": "补充发稿资料和监测数据后更新优化建议。"
   },
   {
     "id": "recveNplOcxETh",
@@ -2573,6 +2648,45 @@
     "optimizationSuggestion": "保持监测数据归档，补充结案资料与发稿链接。"
   },
   {
+    "id": "recvld4x7F5xhp",
+    "recordId": "recvld4x7F5xhp",
+    "source": "feishu",
+    "name": "赏·会所",
+    "status": "已完成",
+    "startDate": "2026-06-01",
+    "cycleDays": 91,
+    "progressPercent": 100,
+    "kpi": "优化 14 天起出效果，第一个月收录，第二个月进前 5，第三个月到前 3\n发稿要求：第一个月目标是收录，每篇发 2-3 个媒体，暂未要求稿件数据",
+    "platform": "六个平台中四个及以上，80%时间",
+    "notes": "",
+    "manager": "宋芷桐",
+    "writer": "宋芷桐",
+    "publisher": "刘依晨",
+    "monitor": "",
+    "invoiceStatus": "已开票",
+    "publishLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/RmRwwx6XKiyvxZkI1zBcE5OZnzf"
+      }
+    ],
+    "monitorLinks": [
+      {
+        "url": "https://jcnquengglen.feishu.cn/wiki/KOT6wuYUBinmJBk7qxdcJM9HnYb"
+      }
+    ],
+    "briefLinks": [],
+    "reportLinks": [
+      {
+        "label": "tblljwgLs0E3z3bE text",
+        "url": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro"
+      }
+    ],
+    "tableUrl": "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro",
+    "kpiStatus": "推进中",
+    "currentData": "【发稿数据】\n有效发稿 19 篇；KPI 未写明固定发稿数量，当前只记录发布量。\n【监测数据｜最新 7.12】\n自动识别排名记录 82 条：Top1 66 条、Top3 82 条。\n当前仅按表内 Top1 / Top3 / 排名值统计，不统计 Top10。",
+    "optimizationSuggestion": "继续更新本周监测数据；如发稿数量或排名未达预期，补充差距说明。"
+  },
+  {
     "id": "recvjW5VFLM2L1",
     "recordId": "recvjW5VFLM2L1",
     "source": "feishu",
@@ -2944,13 +3058,13 @@
 ];
   window.FEISHU_PROJECTS = latestProjects;
   window.FEISHU_SYNC_META = {
-  "syncedAt": "2026-08-28T08:55:56.349Z",
+  "syncedAt": "2026-09-07T02:36:34.025Z",
   "analysisUpdatedAt": "2026-07-24T00:00:00.000+08:00",
   "source": "feishu",
-  "recordCount": 81,
-  "note": "main-table-sync-20260824-status-new-projects",
-  "hotfixUpdatedAt": "2026-08-28T08:55:56.349Z",
-  "hotfixNote": "main-table-sync-20260824-status-new-projects",
-  "statusSource": "confirmed-ongoing-list-because-feishu-stage-field-not-returned-by-record-api"
+  "recordCount": 82,
+  "note": "main-table-sync-20260907-status-new-projects",
+  "hotfixUpdatedAt": "2026-09-07T02:36:34.025Z",
+  "hotfixNote": "main-table-sync-20260907-status-new-projects",
+  "statusSource": "feishu-project-status-field-with-confirmed-fallbacks"
 };
 })();
