@@ -9,35 +9,35 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "58": 68,
     "7 THLAT": 12,
     "CMO": 3,
-    "MAC": 62,
+    "MAC": 113,
     "TMA": 17,
-    "一丰荣放亚洲龙": 215,
-    "万豪": 229,
+    "一丰荣放亚洲龙": 219,
+    "万豪": 255,
     "伊利": 545,
     "公交": 19,
-    "北大": 44,
+    "北大": 45,
     "华硕": 240,
-    "华硕新": 411,
+    "华硕新": 427,
     "可口可乐": 17,
     "可孚": 225,
-    "咪咕体育": 41,
-    "哲库林润喉糖": 253,
+    "咪咕体育": 42,
+    "哲库林润喉糖": 261,
     "国泰海通": 216,
-    "太太乐松茸鲜": 685,
-    "头道汤": 77,
+    "太太乐松茸鲜": 705,
+    "头道汤": 96,
     "广百": 11,
-    "待归属": 261,
+    "待归属": 24,
     "指数": 3,
     "数贸会": 217,
     "李锦记": 109,
     "格力高": 40,
     "格力高百奇": 24,
     "氧气": 25,
-    "海蓝之谜": 45,
+    "海蓝之谜": 135,
     "深演": 29,
     "湄洲岛": 15,
     "理想": 7,
-    "祖玛珑": 97,
+    "祖玛珑": 98,
     "茶马古窖": 61,
     "西昊": 177,
     "西门子": 15,
@@ -79,11 +79,11 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-04",
-        "count": 36
+        "count": 64
       },
       {
         "month": "2026-05",
-        "count": 25
+        "count": 48
       }
     ],
     "TMA": [
@@ -111,7 +111,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-06",
-        "count": 54
+        "count": 58
       },
       {
         "month": "2026-07",
@@ -125,15 +125,15 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "万豪": [
       {
         "month": "2026-08",
-        "count": 15
+        "count": 17
       },
       {
         "month": "2026-09",
-        "count": 139
+        "count": 149
       },
       {
         "month": "2026-10",
-        "count": 75
+        "count": 89
       }
     ],
     "伊利": [
@@ -159,7 +159,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-07",
-        "count": 19
+        "count": 20
       }
     ],
     "华硕": [
@@ -187,7 +187,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-10",
-        "count": 337
+        "count": 353
       }
     ],
     "可口可乐": [
@@ -217,7 +217,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "咪咕体育": [
       {
         "month": "2026-06",
-        "count": 21
+        "count": 22
       },
       {
         "month": "2026-07",
@@ -227,7 +227,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "哲库林润喉糖": [
       {
         "month": "2026-05",
-        "count": 44
+        "count": 45
       },
       {
         "month": "2026-06",
@@ -239,7 +239,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-08",
-        "count": 39
+        "count": 46
       },
       {
         "month": "2026-09",
@@ -267,7 +267,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "太太乐松茸鲜": [
       {
         "month": "2026-02",
-        "count": 68
+        "count": 69
       },
       {
         "month": "2026-03",
@@ -291,7 +291,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-08",
-        "count": 60
+        "count": 65
       },
       {
         "month": "2026-09",
@@ -299,17 +299,17 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-10",
-        "count": 105
+        "count": 119
       }
     ],
     "头道汤": [
       {
         "month": "2026-09",
-        "count": 55
+        "count": 58
       },
       {
         "month": "2026-10",
-        "count": 22
+        "count": 38
       }
     ],
     "广百": [
@@ -320,36 +320,24 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     ],
     "待归属": [
       {
-        "month": "2026-02",
+        "month": "2026-04",
         "count": 1
       },
       {
-        "month": "2026-04",
-        "count": 83
-      },
-      {
         "month": "2026-05",
-        "count": 62
-      },
-      {
-        "month": "2026-06",
-        "count": 5
-      },
-      {
-        "month": "2026-07",
         "count": 1
       },
       {
         "month": "2026-08",
-        "count": 19
+        "count": 5
       },
       {
         "month": "2026-09",
-        "count": 17
+        "count": 4
       },
       {
         "month": "2026-10",
-        "count": 73
+        "count": 13
       }
     ],
     "指数": [
@@ -443,11 +431,11 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     "海蓝之谜": [
       {
         "month": "2026-04",
-        "count": 16
+        "count": 69
       },
       {
         "month": "2026-05",
-        "count": 29
+        "count": 66
       }
     ],
     "深演": [
@@ -479,7 +467,7 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
       },
       {
         "month": "2026-04",
-        "count": 56
+        "count": 57
       },
       {
         "month": "2026-05",
@@ -552,20 +540,20 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
     ]
   },
   "attribution": {
-    "explicit": 3491,
-    "inferredFromTitle": 821,
-    "unassigned": 261
+    "explicit": 3737,
+    "inferredFromTitle": 812,
+    "unassigned": 24
   },
   "specialPeriods": {
     "太太乐松茸鲜": {
       "periods": [
         {
           "label": "4 月前",
-          "count": 94
+          "count": 95
         },
         {
           "label": "4 月起",
-          "count": 591
+          "count": 610
         }
       ],
       "note": "按订单发布时间切分；统计口径与项目总量一致。"
@@ -574,7 +562,9 @@ window.OXYGEN_PUBLICATION_SNAPSHOT = {
   "aliases": {
     "伊利金领冠": "伊利",
     "华硕 新": "华硕新",
+    "可孚制氧机": "可孚",
     "哲库林 润喉糖": "哲库林润喉糖",
+    "北京大学深圳研究生院": "北大",
     "赏·会所": "赏会所",
     "一丰 荣放 亚洲龙": "一丰荣放亚洲龙",
     "格力高 百奇": "格力高百奇",
