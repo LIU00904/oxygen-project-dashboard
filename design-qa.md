@@ -1,48 +1,28 @@
-# Design QA — project dashboard direction 1
+# Design QA — selected direction 3
 
-## Comparison target
+Date: 2026-11-01
 
-- Source visual truth: `/Users/xiaocheng/.codex/generated_images/01a0b324-4857-7111-aa8e-a0d4e60b8991/exec-09a8821d-462e-45a8-98f6-e6d7203bab1d.png`
-- Rendered implementation: `http://127.0.0.1:4178/index.html#/project/recveNpiTYQzHi`
-- Implementation evidence: browser-rendered local CUA tab 5 screenshot, project-detail state with the reader open. The computer-use bridge exposes the screenshot as a visual artifact rather than a filesystem path.
-- State: authenticated UI was simulated locally only to inspect layout. The 2026-11-01 order-publication snapshot was loaded for the project-detail state.
-- Viewport: desktop wide layout; the implementation responds by keeping the left navigation, operating surface, and right reader in view.
+## Reference inspected
 
-## Full-view comparison
+- Selected visual direction: `exec-bb0d50c0-64ba-4ee1-8c0e-0b0534e6af6d.png` — light command-centre layout, graphite navigation rail, compact KPI strip, dense project table, decisions rail and delivery calendar.
+- Linear: hierarchy based on workspace navigation, status grouping, a dense operational table and a clear planning surface.
+- Aura Chronom and Prism URLs were requested and opened through the available reader; their content is client-rendered with no readable DOM returned. Aura Nexus and the Dribbble URL were unavailable to the reader. Their visual references are therefore not treated as a verified source of layout details.
 
-The selected reference establishes a light operations desk: narrow pale navigation, compact project header and tabs, clear blue KPI emphasis, a cadence/next-step work surface, a tabular document area, and a right-hand reading pane. The implementation matches that composition and does not reproduce the previous heavy outlined-card dashboard.
+## Implemented mapping
 
-Focused comparison was applied to the project header/KPI strip, cadence timeline, file rows, and open reader because these are the high-density elements that define the selected visual direction.
+- White canvas and graphite sidebar replace the prior glassy/presentation-like panel treatment.
+- Overview now begins with one compact KPI strip, followed by an operational project-health table and a right-hand weekly decision rail.
+- Status, progress and ownership are rendered as concise table signals rather than oversized decorative cards.
+- Blue, violet, coral and green are reserved for priority/status cues; borders and spacing create the primary hierarchy.
+- Data provenance is visible on the overview: update date, full order count, effective linked publications, and unassigned orders are explicit.
 
-## Required fidelity surfaces
+## Functional checks
 
-- **Fonts and typography:** Inter/PingFang fallback stack remains. The implementation uses a large compact project title, restrained section headings, and small metadata labels. Long filenames truncate in rows and retain the full filename in the reader title.
-- **Spacing and layout rhythm:** A fixed-width left rail, generous page gutters, a three-part KPI strip, and hairline separators create the reference's editorial rhythm. The reader becomes a side desk on desktop and an overlay on compact screens.
-- **Colors and visual tokens:** Cool white canvas, blue interaction color, pale blue KPI background, and subtle lavender/blue ambient gradients align with the chosen reference. Status colors remain semantic and contrast with the white ground.
-- **Image quality and asset fidelity:** The chosen source is a layout reference, not a supplied brand/photography asset. No replacement logo or illustrative asset was fabricated; existing member avatars remain sourced from synced data.
-- **Copy and content:** Real project names, actual source-table entries, real file labels, and the 2026-11-01 order-publication snapshot are retained. The old static `266 / 500` claim is not shown. 太太乐's 709 total is shown while the 4 月前 / 4 月起 split remains pending instead of being derived from monetary fields.
+- `python3 scripts/build_publication_snapshot.py /Users/xiaocheng/Desktop/订单` completed successfully and reported `4,573` effective linked publications.
+- Snapshot verifies `太太乐松茸鲜`: `4 月前 94`, `4 月起 591`; its project KPI uses the `4 月起` count against the 500 target.
+- `curl -I http://127.0.0.1:4179/index.html` returned `HTTP/1.0 200 OK`.
+- Local browser console reports no warning or error from the initial application load.
 
-## Findings
+## Visual-result status
 
-- [P3] The selected reference shows a fully rendered document page in the reader; the online authenticated check remains necessary for final document-content verification.
-  - Location: `#reader-preview`.
-  - Fix: after GitHub deployment, open a PDF, XLSX, DOCX, and PPTX from the authenticated production site and confirm each file's local renderer receives the Worker response.
-
-## Open questions
-
-- Feishu source tables themselves intentionally open in Feishu because their interactive worksheet UI is not a file download. Attached office files are rendered locally in the dashboard reader.
-
-## Implementation checklist
-
-- [x] Replace the heavy framed page treatment with the selected light operating-desk visual system.
-- [x] Rebuild the document reader as a right-side work surface.
-- [x] Add local PDF/image, XLSX, DOCX, and PPTX preview paths without forwarding file content to a document-conversion service.
-- [x] Verify project page interaction, reader opening, error state, and console output locally.
-- [ ] Push the committed revision to GitHub Pages after GitHub authentication is available.
-- [ ] Verify authenticated production files in all four renderer paths.
-
-## Follow-up polish
-
-- Add thumbnail extraction for PDF/PPT pages if faster scanning is desired after production file access is verified.
-
-final result: passed
+Blocked: the local server correctly presents the enterprise-login gate. The authenticated project overview could not be visually captured without starting a fresh Feishu OAuth login for the localhost origin. No authentication token was copied or bypassed. Re-run this QA after logging into the local preview, then capture `/overview`, `/status/进行中`, and the 太太乐 project page at desktop and mobile widths.
