@@ -19,6 +19,19 @@
       ]
     }
   };
+  // 仅收录已交付月报中可核验的结论；不以发稿订单或模板内容替代月报分析。
+  const reportInsights = {
+    '太太乐松茸鲜': {
+      label:'10 月月报洞察',
+      title:'整体推荐表现上行，比较型场景仍需补强',
+      text:'10 月整体 Top3 提及率为 93.1%，较 9 月提升 6.3 个百分点；松茸鲜与松茸调料 Top3 分别为 100% 和 98.9%。替代味精场景首推为 40.9%，后续需加强具体产品对应与比较型选择理由。'
+    },
+    '华硕 新': {
+      label:'首月月报 · 9/28–10/27',
+      title:'AI 推荐覆盖已形成基础，外设长尾是下一阶段重点',
+      text:'10 个关键词、80 个长尾词覆盖 5 个 AI 平台；整体提及率 88.3%，Top1 提及率 37.5%，Top3 提及率 65.4%。主板、外设套装与机箱排名靠前，键盘、耳机、鼠标仍需重点补强。'
+    }
+  };
   const work = window.OXYGEN_WORK_SUMMARIES || {};
   const avatars = window.OXYGEN_MEMBER_AVATARS || {};
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
@@ -292,23 +305,26 @@
   }
   function projectRecentDynamics(p,pub){
     const signal=activity[p.name];
+    const report=reportInsights[p.name];
     const latest=(pub.months||[]).slice(-1)[0];
     const previous=(pub.months||[]).slice(-2,-1)[0];
     let items=[];
     if(signal){
       const composition=(signal.types||[]).map(([type,value])=>`${type} ${value}`).join(' · ');
       items=[
+        ...(report?[report]:[]),
         {label:signal.period||'近期工作记录',title:`${signal.main?.label||'项目'}推进`,text:`${signal.main?.detail||'已同步近期项目工作记录。'}${composition?` 本期任务构成：${composition}。`:''}`},
         ...(signal.next?.length?[{label:'下一步',title:'待推进事项',text:signal.next.join('、')}]:[])
       ];
     }else if(latest){
       const compared=previous ? `，较 ${previous.label} ${previous.value} 篇` : '';
       items=[
+        ...(report?[report]:[]),
         {label:`${latest.label} 发布订单`,title:'月度发布已更新',text:`已归集 ${latest.value.toLocaleString()} 篇有效发布${compared}；当前累计 ${pub.total.toLocaleString()} 篇。`},
         {label:`数据更新 ${pub.updatedAt||'—'}`,title:'等待周报任务同步',text:'该项目暂未匹配到可核验的飞书周报工作记录；周报同步后将自动补充人员与具体任务。'}
       ];
     }else{
-      items=[{label:'近期工作记录',title:'等待飞书周报同步',text:'暂未匹配到该项目的有效发布订单或周报工作记录；不会以模板内容代替真实动态。'}];
+      items=[...(report?[report]:[]),{label:'近期工作记录',title:'等待飞书周报同步',text:'暂未匹配到该项目的有效发布订单或周报工作记录；不会以模板内容代替真实动态。'}];
     }
     return `<section class="project-dynamics" id="project-dynamics"><div class="section-head"><div><h2>近期动态</h2><p>优先展示飞书周报工作记录；没有周报时展示最近订单发布变化。</p></div><small>last update · ${e(pub.updatedAt||'—')}</small></div><div class="dynamics-rail">${items.map((item,index)=>`<article class="dynamic-item ${index===0?'is-current':''}"><i>${String(index+1).padStart(2,'0')}</i><div><small>${e(item.label)}</small><b>${e(item.title)}</b><p>${e(item.text)}</p></div></article>`).join('')}</div></section>`;
   }
