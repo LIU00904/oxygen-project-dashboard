@@ -290,6 +290,28 @@
   function todoDialog(p){
     return `<dialog class="todo-dialog" id="project-todo-dialog"><form method="dialog" id="project-todo-form"><header><div><h2>新建项目待办</h2><p>${e(p.name)}</p></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>待办事项<input required name="title" placeholder="例如：确认本周发稿链接"></label><label>补充说明<textarea name="description" placeholder="可选，写清交付要求"></textarea></label><div class="form-three"><label>优先级<select name="priority"><option value="P0">P0 · 紧急</option><option value="P1" selected>P1 · 重要</option><option value="P2">P2 · 常规</option></select></label><label>DDL<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<select name="owner"><option value="">请选择成员</option>${memberOptions(p).map(name=>`<option value="${e(name)}">${e(name)}</option>`).join('')}</select></label></div><input type="hidden" name="project" value="${e(p.name)}"><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`;
   }
+  function projectRecentDynamics(p,pub){
+    const signal=activity[p.name];
+    const latest=(pub.months||[]).slice(-1)[0];
+    const previous=(pub.months||[]).slice(-2,-1)[0];
+    let items=[];
+    if(signal){
+      const composition=(signal.types||[]).map(([type,value])=>`${type} ${value}`).join(' · ');
+      items=[
+        {label:signal.period||'近期工作记录',title:`${signal.main?.label||'项目'}推进`,text:`${signal.main?.detail||'已同步近期项目工作记录。'}${composition?` 本期任务构成：${composition}。`:''}`},
+        ...(signal.next?.length?[{label:'下一步',title:'待推进事项',text:signal.next.join('、')}]:[])
+      ];
+    }else if(latest){
+      const compared=previous ? `，较 ${previous.label} ${previous.value} 篇` : '';
+      items=[
+        {label:`${latest.label} 发布订单`,title:'月度发布已更新',text:`已归集 ${latest.value.toLocaleString()} 篇有效发布${compared}；当前累计 ${pub.total.toLocaleString()} 篇。`},
+        {label:`数据更新 ${pub.updatedAt||'—'}`,title:'等待周报任务同步',text:'该项目暂未匹配到可核验的飞书周报工作记录；周报同步后将自动补充人员与具体任务。'}
+      ];
+    }else{
+      items=[{label:'近期工作记录',title:'等待飞书周报同步',text:'暂未匹配到该项目的有效发布订单或周报工作记录；不会以模板内容代替真实动态。'}];
+    }
+    return `<section class="project-dynamics" id="project-dynamics"><div class="section-head"><div><h2>近期动态</h2><p>优先展示飞书周报工作记录；没有周报时展示最近订单发布变化。</p></div><small>last update · ${e(pub.updatedAt||'—')}</small></div><div class="dynamics-rail">${items.map((item,index)=>`<article class="dynamic-item ${index===0?'is-current':''}"><i>${String(index+1).padStart(2,'0')}</i><div><small>${e(item.label)}</small><b>${e(item.title)}</b><p>${e(item.text)}</p></div></article>`).join('')}</div></section>`;
+  }
   function projectPage(id) {
     const p=one(id); if(!p)return shell(`${header('项目未找到','该项目可能已被移动或删除。')}<a class="back-link" href="#/overview">返回项目总览</a>`);
     const pub=publicationFor(p), target=kpiTarget(p), achieved=pub.total, ratio=target?Math.round(achieved/target*100):null;
@@ -300,6 +322,7 @@
       <nav class="command-tabs"><button class="active" data-scroll="project-summary">项目概览</button><button data-scroll="project-publication">发布数据</button><button data-scroll="project-checklist">Checklist</button><button data-scroll="project-files">文件资料</button></nav>
       <section class="project-command project-command-unified" id="project-summary"><div class="project-orbit orbit-one"></div><div class="project-orbit orbit-two"></div><div class="command-eyebrow"><span>${badge(p.status)}</span><b>${e(projectTime(p))}</b></div><div class="project-command-main"><article class="publication-kpi"><small>累计有效发布</small><strong>${achieved.toLocaleString()}<em> 篇</em></strong><p>按完整订单中的有效发布链接统计</p></article><article class="target-kpi"><div><small>发布 KPI</small><strong>${target?`${achieved.toLocaleString()} / ${target.toLocaleString()}`:'以飞书项目表为准'}</strong></div>${target?`<div class="kpi-track"><i style="width:${Math.min(100,ratio)}%"></i></div><p>${ratio}% · ${achieved>=target?'已完成目标':`还差 ${(target-achieved).toLocaleString()} 篇`}</p>`:`<p>项目表未提供“篇数”型目标，完整 KPI 列在下方。</p>`}</article><article class="project-status-readout"><small>项目进度</small><strong>${progress(p)}%</strong><i><b style="width:${progress(p)}%"></b></i><span>${e(p.kpiStatus||p.status)}</span></article></div></section>
       <section class="project-kpi-list"><div><h2>项目 KPI</h2><p>完整引用飞书项目表，不再只截取其中一条。</p></div><ol>${kpiText.map(item=>`<li>${e(item)}</li>`).join('')}</ol></section>
+      ${projectRecentDynamics(p,pub)}
       <section class="project-main-grid"><article class="publication-card" id="project-publication"><div class="section-head"><div><h2>月度发布情况</h2><p>每根柱代表当月有效发布订单。点击柱形查看数值。</p></div><strong>${achieved.toLocaleString()}<small> 篇</small></strong></div>${monthlyChart(p,pub)}</article>${checklist(p)}</section>
       <section class="project-members" id="project-members"><div class="section-head"><div><h2>项目成员</h2><p>只读取飞书项目表当前填写的成员，不再从模板分配角色。</p></div></div><div class="member-rail">${members.length?members.map(member=>`<div>${av(member.name)}<span><b>${e(member.name)}</b><small>${e(member.role)}</small></span></div>`).join(''):'<p class="chart-empty">飞书项目表尚未填写项目成员。</p>'}</div></section>
       ${dataSources(p)}<section class="command-files" id="project-files"><div class="command-section-title"><div><h2>文件资料</h2><p>文件名保留飞书原始名称，点击整行进入对应飞书文件或源表。</p></div><span>${sourceFiles.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',[...briefs,...materials],'folder')}</div></section>${todoDialog(p)}`);
