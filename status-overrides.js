@@ -151,6 +151,12 @@
     else if (ongoing.has(key)) next.status = "进行中";
     else if (stalled.has(key)) next.status = "停滞";
     else if (pending.has(key)) next.status = "待开始";
+    // 飞书表内的结束年份被填成了启动年前，按截图所示的 9 月 15 日至次年 3 月 15 日修正。
+    if (key === "可孚制氧机") {
+      next.startDate = "2026-09-15";
+      next.endDate = "2027-03-15";
+      next.cycleDays = cycleDays(next.startDate, next.endDate);
+    }
     if (!next.cycleDays && next.startDate && next.endDate) next.cycleDays = cycleDays(next.startDate, next.endDate);
     if (!next.endDate) next.endDate = endDate(next);
     next.progressPercent = progressFor(next);
