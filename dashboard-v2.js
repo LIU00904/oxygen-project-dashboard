@@ -39,6 +39,9 @@
   const TODO_KEY = 'oxygen-dashboard-local-todos-v1';
   const AUTH_KEY = 'oxygen-dashboard-feishu-session-v1';
   const USER_KEY = 'oxygen-dashboard-feishu-user-v1';
+  let sharedTodos = null;
+  let todoSyncPromise = null;
+  let todoPoll = null;
   const e = x => String(x == null ? '' : x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const url = x => /^(https?:|mailto:)/i.test(String(x||'')) ? String(x) : '';
   function decodeUser(value){try{return JSON.parse(decodeURIComponent(escape(atob(value))))}catch{return null}}
@@ -203,16 +206,47 @@
   }
   function readTodos(){try{return JSON.parse(localStorage.getItem(TODO_KEY)||'[]')}catch{return []}}
   function writeTodos(items){localStorage.setItem(TODO_KEY,JSON.stringify(items));}
-  function updateTodo(id, changes){
-    const saved=readTodos(), all=todos(), base=all.find(item=>item.id===id);
-    const next={...(saved.find(item=>item.id===id)||base||{id}),...changes};
-    const index=saved.findIndex(item=>item.id===id);
-    if(index<0) saved.push(next); else saved[index]=next;
-    writeTodos(saved);
+  function todoFingerprint(items){return JSON.stringify((items||[]).map(item=>[item.id,item.status,item.updatedAt,item.revision]));}
+  async function cloudTodos(method='GET',id='',body){
+    const response=await fetch(`${SYNC_API}/todos${id?`/${encodeURIComponent(id)}`:''}`,{method,headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(payload.error||'待办同步失败');
+    return payload;
+  }
+  async function refreshTodosFromCloud({rerender=false}={}){
+    if(!session()||todoSyncPromise)return todoSyncPromise;
+    todoSyncPromise=(async()=>{
+      try{
+        const payload=await cloudTodos();
+        const changed=todoFingerprint(sharedTodos)!==todoFingerprint(payload.todos);
+        sharedTodos=Array.isArray(payload.todos)?payload.todos:[];
+        writeTodos(sharedTodos);
+        if(rerender&&changed)render();
+      }catch(error){console.warn('Unable to refresh shared todos',error);}
+      finally{todoSyncPromise=null;}
+    })();
+    return todoSyncPromise;
+  }
+  function startTodoPolling(){
+    if(todoPoll||!session())return;
+    todoPoll=setInterval(()=>refreshTodosFromCloud({rerender:true}),15000);
+    addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshTodosFromCloud({rerender:true});});
+  }
+  async function createTodo(item){
+    try{
+      const payload=await cloudTodos('POST','',item);
+      sharedTodos=[...(sharedTodos||[]),payload.todo];writeTodos(sharedTodos);return true;
+    }catch(error){alert(`待办未同步：${error.message}`);return false;}
+  }
+  async function updateTodo(id, changes){
+    try{
+      const payload=await cloudTodos('PATCH',id,changes);
+      sharedTodos=(sharedTodos||todos()).map(item=>item.id===id?payload.todo:item);writeTodos(sharedTodos);return true;
+    }catch(error){alert(`待办状态未同步：${error.message}`);return false;}
   }
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
   // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
-  function todos(){return readTodos();}
+  function todos(){return Array.isArray(sharedTodos)?sharedTodos:readTodos();}
   function todoStatusLabel(s){return ({todo:'待处理',doing:'进行中',done:'已完成'})[s]||'待处理'}
   function ymd(d){return d.toISOString().slice(0,10)}
   function nextWeekday(weekday){
@@ -372,9 +406,9 @@
     const week=`<section class="calendar-week"><div class="week-head">${days.map(day=>`<div class="${day.today?'today':''}"><small>${day.label}</small><b>${day.num}</b></div>`).join('')}</div><div class="week-grid">${days.map(day=>`<div class="day-column ${day.today?'today':''}">${items.filter(item=>item.date===day.date).map(taskCard).join('')||'<span class="empty-day">—</span>'}</div>`).join('')}</div></section>`;
     const kanban=`<section class="todo-kanban">${['todo','doing','done'].map(status=>`<div class="todo-column"><header><span>${status==='todo'?'○':status==='doing'?'◉':'✓'}</span><b>${todoStatusLabel(status)}</b><small>${items.filter(x=>x.status===status).length}</small></header><div>${items.filter(x=>x.status===status).map(taskCard).join('')||'<p>暂无待办</p>'}</div></div>`).join('')}</section>`;
     return shell(`${header('日历待办','按人物、日期和项目集中看本周的动作。',`<button class="primary-action" data-add-todo>+ 新建待办</button>`)}
-      <section class="calendar-toolbar"><div><h2>${project?e(project)+' · 待办':'本周待办'}</h2><p>勾选后会先保存在当前工作台；完成飞书授权后可同步回飞书。</p></div><div>${filters}${modes}</div></section>
+      <section class="calendar-toolbar"><div><h2>${project?e(project)+' · 待办':'本周待办'}</h2><p>已登录成员共用同一份待办；新增、编辑和勾选完成会自动同步。</p></div><div>${filters}${modes}</div></section>
       ${mode==='week'?week:kanban}
-      <section class="calendar-sync-note"><div>${icon('pulse',20)}<span><b>飞书同步准备就绪</b><small>网页内的待办可先创建和勾选；连接飞书后，日历与待办会由服务端安全同步。</small></span></div><a href="${SYNC_API}/auth/start?return_to=${encodeURIComponent(location.href)}" target="_blank" rel="noopener">连接飞书 ${icon('arrow',14)}</a></section>
+      <section class="calendar-sync-note"><div>${icon('pulse',20)}<span><b>全员 Checklist 已同步</b><small>待办保存在受飞书企业登录保护的共享库中，其他成员约 15 秒内即可看到新增或勾选状态。</small></span></div><a href="${SYNC_API}/auth/start?return_to=${encodeURIComponent(location.href)}" target="_blank" rel="noopener">重新登录 ${icon('arrow',14)}</a></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>PROJECT TODO</small><h2>新建待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：确认发稿排期"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">未归属项目</option>${projects.map(p=>`<option value="${e(p.name)}" ${p.name===project?'selected':''}>${e(p.name)}</option>`).join('')}</select></label><p class="upload-hint">附件上传将在存储服务接入后同步到飞书云文档；当前不会把文件留在浏览器里。</p><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
   function bind(){
@@ -386,7 +420,7 @@
     document.querySelectorAll('[data-overview-chart]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-overview-chart]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('[data-rhythm]').forEach(x=>x.classList.toggle('hidden',x.dataset.rhythm!==b.dataset.overviewChart));}));
     document.querySelector('[data-bell]')?.addEventListener('click',ev=>ev.currentTarget.classList.toggle('ring'));
     document.querySelectorAll('.period button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.period button').forEach(x=>x.classList.toggle('active',x===b))));
-    document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',()=>{updateTodo(input.dataset.todoToggle,{status:input.checked?'done':'todo'});render();}));
+    document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',async()=>{await updateTodo(input.dataset.todoToggle,{status:input.checked?'done':'todo'});render();}));
     document.querySelectorAll('[data-month-range]').forEach(button=>button.addEventListener('click',()=>{
       const id=button.dataset.chart, limit=button.dataset.monthRange;
       document.querySelectorAll(`[data-month-range][data-chart="${id}"]`).forEach(x=>x.classList.toggle('active',x===button));
@@ -399,16 +433,16 @@
       const detail=document.querySelector(`[data-month-detail="${id}"]`);
       if(detail) detail.innerHTML=`<b>${e(button.dataset.label||'')}</b><span>${e(button.dataset.value||'0')} 篇有效发布</span>`;
     }));
-    document.querySelectorAll('[data-todo-menu]').forEach(button=>button.addEventListener('click',()=>{const current=todos().find(item=>item.id===button.dataset.todoMenu);const next=current?.status==='todo'?'doing':current?.status==='doing'?'done':'todo';updateTodo(button.dataset.todoMenu,{status:next});render();}));
+    document.querySelectorAll('[data-todo-menu]').forEach(button=>button.addEventListener('click',async()=>{const current=todos().find(item=>item.id===button.dataset.todoMenu);const next=current?.status==='todo'?'doing':current?.status==='doing'?'done':'todo';await updateTodo(button.dataset.todoMenu,{status:next});render();}));
     document.querySelector('[data-calendar-project]')?.addEventListener('change',event=>{const project=event.target.value;const mode=r().query.get('mode');location.hash=`#/calendar${mode==='kanban'?'?mode=kanban':''}${project?`${mode==='kanban'?'&':'?'}project=${encodeURIComponent(project)}`:''}`;});
     const todoDialog=document.querySelector('#todo-dialog');
     document.querySelector('[data-add-todo]')?.addEventListener('click',()=>todoDialog?.showModal());
     document.querySelectorAll('[data-todo-close]').forEach(button=>button.addEventListener('click',()=>todoDialog?.close()));
-    document.querySelector('#todo-form')?.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={id:`local-${Date.now()}`,title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||'待分配'),project:String(data.get('project')||'未归属项目'),status:'todo'};writeTodos([...readTodos(),item]);todoDialog.close();render();});
+    document.querySelector('#todo-form')?.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||'待分配'),project:String(data.get('project')||'未归属项目'),priority:'P2',status:'todo'};if(await createTodo(item)){todoDialog.close();render();}});
     const projectTodoDialog=document.querySelector('#project-todo-dialog');
     document.querySelectorAll('[data-add-project-todo]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.showModal()));
     document.querySelectorAll('#project-todo-dialog [data-todo-close]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.close()));
-    document.querySelector('#project-todo-form')?.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={id:`local-${Date.now()}`,title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:'todo'};writeTodos([...readTodos(),item]);projectTodoDialog?.close();render();});
+    document.querySelector('#project-todo-form')?.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:'todo'};if(await createTodo(item)){projectTodoDialog?.close();render();}});
     document.querySelectorAll('[data-member-card]').forEach(card=>card.addEventListener('click',event=>{
       if (event.target.closest('a')) return;
       const expanded=card.classList.toggle('expanded'); card.setAttribute('aria-expanded',String(expanded));
@@ -481,6 +515,9 @@
     bind();
     // 每一次进入工作台后都向飞书拉取当前项目字段；失败时仅保留静态兜底。
     refreshProjectsFromFeishu();
+    // Checklist 以共享库为准：首次进入和回到前台都会拉取，随后每 15 秒轻量同步一次。
+    refreshTodosFromCloud({rerender:true});
+    startTodoPolling();
   }
   addEventListener('hashchange',render);render();
 })();
