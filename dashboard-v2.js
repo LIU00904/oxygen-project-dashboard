@@ -42,6 +42,7 @@
   let sharedTodos = null;
   let todoSyncPromise = null;
   let todoPoll = null;
+  let todoSyncState = 'connecting';
   const e = x => String(x == null ? '' : x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const url = x => /^(https?:|mailto:)/i.test(String(x||'')) ? String(x) : '';
   function decodeUser(value){try{return JSON.parse(decodeURIComponent(escape(atob(value))))}catch{return null}}
@@ -221,8 +222,9 @@
         const changed=todoFingerprint(sharedTodos)!==todoFingerprint(payload.todos);
         sharedTodos=Array.isArray(payload.todos)?payload.todos:[];
         writeTodos(sharedTodos);
-        if(rerender&&changed)render();
-      }catch(error){console.warn('Unable to refresh shared todos',error);}
+        const stateChanged=todoSyncState!=='ready';todoSyncState='ready';
+        if(rerender&&(changed||stateChanged))render();
+      }catch(error){const stateChanged=todoSyncState!=='unavailable';todoSyncState='unavailable';console.warn('Unable to refresh shared todos',error);if(rerender&&stateChanged)render();}
       finally{todoSyncPromise=null;}
     })();
     return todoSyncPromise;
@@ -247,6 +249,11 @@
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
   // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
   function todos(){return Array.isArray(sharedTodos)?sharedTodos:readTodos();}
+  function todoSyncNote(){
+    if(todoSyncState==='ready')return {title:'全员 Checklist 已同步',copy:'待办保存在受飞书企业登录保护的共享库中，其他成员约 15 秒内即可看到新增或勾选状态。',action:'重新登录'};
+    if(todoSyncState==='unavailable')return {title:'同步服务连接中',copy:'共享待办服务暂未就绪；当前页面不会把本机修改当作全员数据。请稍后刷新或重新登录飞书。',action:'重新登录'};
+    return {title:'正在连接全员 Checklist',copy:'正在读取受飞书企业登录保护的共享待办；读取完成后会自动显示所有成员的新增与勾选状态。',action:'重新登录'};
+  }
   function todoStatusLabel(s){return ({todo:'待处理',doing:'进行中',done:'已完成'})[s]||'待处理'}
   function ymd(d){return d.toISOString().slice(0,10)}
   function nextWeekday(weekday){
@@ -405,10 +412,11 @@
     const filters=`<select class="calendar-project-filter" data-calendar-project><option value="">全部项目</option>${projects.filter(p=>p.status!=='已完成').map(p=>`<option value="${e(p.name)}" ${p.name===project?'selected':''}>${e(p.name)}</option>`).join('')}</select>`;
     const week=`<section class="calendar-week"><div class="week-head">${days.map(day=>`<div class="${day.today?'today':''}"><small>${day.label}</small><b>${day.num}</b></div>`).join('')}</div><div class="week-grid">${days.map(day=>`<div class="day-column ${day.today?'today':''}">${items.filter(item=>item.date===day.date).map(taskCard).join('')||'<span class="empty-day">—</span>'}</div>`).join('')}</div></section>`;
     const kanban=`<section class="todo-kanban">${['todo','doing','done'].map(status=>`<div class="todo-column"><header><span>${status==='todo'?'○':status==='doing'?'◉':'✓'}</span><b>${todoStatusLabel(status)}</b><small>${items.filter(x=>x.status===status).length}</small></header><div>${items.filter(x=>x.status===status).map(taskCard).join('')||'<p>暂无待办</p>'}</div></div>`).join('')}</section>`;
+    const syncNote=todoSyncNote();
     return shell(`${header('日历待办','按人物、日期和项目集中看本周的动作。',`<button class="primary-action" data-add-todo>+ 新建待办</button>`)}
       <section class="calendar-toolbar"><div><h2>${project?e(project)+' · 待办':'本周待办'}</h2><p>已登录成员共用同一份待办；新增、编辑和勾选完成会自动同步。</p></div><div>${filters}${modes}</div></section>
       ${mode==='week'?week:kanban}
-      <section class="calendar-sync-note"><div>${icon('pulse',20)}<span><b>全员 Checklist 已同步</b><small>待办保存在受飞书企业登录保护的共享库中，其他成员约 15 秒内即可看到新增或勾选状态。</small></span></div><a href="${SYNC_API}/auth/start?return_to=${encodeURIComponent(location.href)}" target="_blank" rel="noopener">重新登录 ${icon('arrow',14)}</a></section>
+      <section class="calendar-sync-note"><div>${icon('pulse',20)}<span><b>${e(syncNote.title)}</b><small>${e(syncNote.copy)}</small></span></div><a href="${SYNC_API}/auth/start?return_to=${encodeURIComponent(location.href)}" target="_blank" rel="noopener">${e(syncNote.action)} ${icon('arrow',14)}</a></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>PROJECT TODO</small><h2>新建待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：确认发稿排期"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">未归属项目</option>${projects.map(p=>`<option value="${e(p.name)}" ${p.name===project?'selected':''}>${e(p.name)}</option>`).join('')}</select></label><p class="upload-hint">附件上传将在存储服务接入后同步到飞书云文档；当前不会把文件留在浏览器里。</p><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
   function bind(){
