@@ -74,6 +74,20 @@
     const patch = typeof window.OXYGEN_PATCH_PROJECT === 'function' ? window.OXYGEN_PATCH_PROJECT(p) : p;
     return {...patch,id:patch.id || patch.recordId || patch.name};
   });
+  // 实时项目表是负责人、日期等字段的唯一来源；但部分历史记录暂未把
+  // 发稿／监测链接回传到接口。刷新时只补回缺失的资料字段，不能让它们被
+  // 空值覆盖成“暂无链接”。
+  const SOURCE_FIELDS=['publishLinks','monitorLinks','reportLinks','briefLinks','projectLinks'];
+  const hasSourceValue=value=>Array.isArray(value) ? value.length>0 : Boolean(String(value||'').trim());
+  function mergeProjectSources(live, cached){
+    const previous=cached.find(item=>String(item.id)===String(live.id)) || cached.find(item=>item.name===live.name);
+    if(!previous) return live;
+    const merged={...previous,...live};
+    SOURCE_FIELDS.forEach(field=>{
+      if(!hasSourceValue(live[field]) && hasSourceValue(previous[field])) merged[field]=previous[field];
+    });
+    return merged;
+  }
   let refreshProjectsPromise = null;
   async function refreshProjectsFromFeishu(){
     if(!session() || refreshProjectsPromise) return refreshProjectsPromise;
@@ -82,7 +96,8 @@
         const response=await fetch(`${SYNC_API}/projects?refresh=1`,{headers:{Authorization:`Bearer ${session()}`}});
         if(!response.ok) return;
         const payload=await response.json();
-        const incoming=normalizeProjects(payload.projects);
+        const cachedProjects=projects;
+        const incoming=normalizeProjects(payload.projects).map(project=>mergeProjectSources(project,cachedProjects));
         if(!incoming.length) return;
         projects=incoming;
         window.FEISHU_PROJECTS=incoming;
