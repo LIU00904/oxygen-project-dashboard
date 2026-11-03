@@ -344,14 +344,19 @@
   function dataSources(p){
     const sourceList=(items,type)=>items.length?`<div class="source-link-list">${items.map((item,index)=>{
       const target=url(item.sourceUrl)||url(item.url);
-      const fallback=type==='publish'?`发稿汇总表 ${index+1}`:`监测表 ${index+1}`;
-      return target?`<a href="${e(target)}" target="_blank" rel="noopener" title="在飞书中打开：${e(item.label||fallback)}"><b>${e(item.label||fallback)}</b>${icon('arrow',14)}</a>`:`<span><b>${e(item.label||fallback)}</b></span>`;
+      const raw=String(item.label||'').trim();
+      const isGeneric=!raw || /^(飞书资料|飞书文件|文件|链接)(\s*\d+)?$/i.test(raw);
+      const kindName=type==='publish'?'发稿汇总表':'关键词监测表';
+      // 飞书字段只有 URL 时，仍给出可识别的业务名称；不要再显示“飞书资料 1”。
+      const fallback=`${p.name}${kindName}${items.length>1?` ${index+1}`:''}`;
+      const label=isGeneric?fallback:raw;
+      return target?`<a href="${e(target)}" target="_blank" rel="noopener" title="在飞书中打开：${e(label)}"><b>${e(label)}</b><small>飞书源表</small>${icon('arrow',14)}</a>`:`<span><b>${e(label)}</b></span>`;
     }).join('')}</div>`:`<p class="source-empty">飞书项目表暂未填写该链接。</p>`;
     const publish=fileLinks(p.publishLinks), monitor=fileLinks(p.monitorLinks);
     const sourceCard=(items,kind,title,description)=>{
       const first=items.find(item=>url(item.sourceUrl)||url(item.url));
       const target=first&&(url(first.sourceUrl)||url(first.url));
-      return `<article class="source-card ${kind}"><header><span>${icon(kind==='publish-source'?'arrow':'pulse',17)}</span><div><small>${kind==='publish-source'?'PUBLICATION':'MONITORING'}</small><h3>${title}</h3><p>${description}</p></div>${target?`<a class="source-open" href="${e(target)}" target="_blank" rel="noopener">在飞书打开 ${icon('arrow',14)}</a>`:'<em class="source-tag">暂无链接</em>'}</header>${sourceList(items,kind==='publish-source'?'publish':'monitor')}</article>`;
+      return `<article class="source-card ${kind}"><header><span>${icon(kind==='publish-source'?'arrow':'pulse',17)}</span><div><small>${kind==='publish-source'?'PUBLICATION':'MONITORING'}</small><h3>${title}</h3><p>${description}</p></div>${target?`<a class="source-open" href="${e(target)}" target="_blank" rel="noopener">打开源表 ${icon('arrow',14)}</a>`:'<em class="source-tag">暂无链接</em>'}</header>${sourceList(items,kind==='publish-source'?'publish':'monitor')}</article>`;
     };
     return `<section class="data-sources" id="project-sources"><div class="data-source-heading"><span>${icon('grid',18)}</span><div><h2>项目数据入口</h2><p>发稿与监测源表单独列出；文件资料不会混在这里。</p></div></div><div class="data-source-grid">${sourceCard(publish,'publish-source','发稿链接','发布明细、分月链接与汇总表')}${sourceCard(monitor,'monitor-source','监测链接','关键词、排名与效果监测表')}</div></section>`;
   }
