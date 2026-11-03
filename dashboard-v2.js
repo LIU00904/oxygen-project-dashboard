@@ -34,6 +34,17 @@
   };
   const work = window.OXYGEN_WORK_SUMMARIES || {};
   const avatars = window.OXYGEN_MEMBER_AVATARS || {};
+  // Checklist 是全员协作的执行面，只开放当前实际需要分配待办的六位成员。
+  // 历史项目成员仍在项目成员区展示，但不会出现在待办分配器中。
+  const CHECKLIST_MEMBERS = [
+    {name:'刘依晨', avatar:avatars['刘依晨']},
+    {name:'辛味加', avatar:avatars['辛味加'] || avatars['辛味珈']},
+    {name:'徐奕畅', avatar:avatars['徐奕畅'] || avatars['徐奕旸']},
+    {name:'韩文静', avatar:avatars['韩文静']},
+    {name:'李正浩', avatar:avatars['李正浩']},
+    {name:'彭安迪', avatar:avatars['彭安迪']}
+  ];
+  const CHECKLIST_MEMBER_MAP = Object.fromEntries(CHECKLIST_MEMBERS.map(member=>[member.name,member]));
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
   const TODO_KEY = 'oxygen-dashboard-local-todos-v1';
@@ -43,6 +54,7 @@
   let todoSyncPromise = null;
   let todoPoll = null;
   let todoSyncState = 'connecting';
+  let todoMutationInFlight = false;
   const e = x => String(x == null ? '' : x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const url = x => /^(https?:|mailto:)/i.test(String(x||'')) ? String(x) : '';
   function decodeUser(value){try{return JSON.parse(decodeURIComponent(escape(atob(value))))}catch{return null}}
@@ -75,7 +87,8 @@
         projects=incoming;
         window.FEISHU_PROJECTS=incoming;
         localStorage.setItem('oxygen-dashboard-project-cache-v2',JSON.stringify({updatedAt:Date.now(),projects:incoming}));
-        render();
+        // 不在填写 Checklist 时整页重绘；否则飞书字段刷新会把弹窗和草稿直接关掉。
+        if(!document.querySelector('dialog[open]')) render();
       }catch(error){
         // 网络或授权短暂失效时保留本地兜底，不把页面变成空白。
         console.warn('Unable to refresh project fields from Feishu',error);
@@ -116,6 +129,10 @@
   }
   const progress = p => scheduleProgress(p);
   const av = (name,c='') => url(avatars[name]) ? `<img class="avatar ${c}" src="${e(avatars[name])}" alt="${e(name)}" referrerpolicy="no-referrer">` : `<span class="avatar fallback ${c}">${e((name||'待').slice(0,1))}</span>`;
+  const checklistAvatar = (name,c='') => {
+    const member=CHECKLIST_MEMBER_MAP[name];
+    return url(member?.avatar) ? `<img class="avatar ${c}" src="${e(member.avatar)}" alt="${e(name)}" referrerpolicy="no-referrer">` : av(name,c);
+  };
   const badge = s => {const [tone,label]=M[s]||M['进行中'];return `<span class="status ${tone}"><i></i>${e(label)}</span>`};
   const dt = x => x ? new Date(`${x}T00:00:00`).toLocaleDateString('zh-CN',{month:'short',day:'numeric'}) : '—';
   const projectTime = p => {
@@ -223,8 +240,8 @@
         sharedTodos=Array.isArray(payload.todos)?payload.todos:[];
         writeTodos(sharedTodos);
         const stateChanged=todoSyncState!=='ready';todoSyncState='ready';
-        if(rerender&&(changed||stateChanged))render();
-      }catch(error){const stateChanged=todoSyncState!=='unavailable';todoSyncState='unavailable';console.warn('Unable to refresh shared todos',error);if(rerender&&stateChanged)render();}
+        if(rerender&&(changed||stateChanged)&&!document.querySelector('dialog[open]'))render();
+      }catch(error){const stateChanged=todoSyncState!=='unavailable';todoSyncState='unavailable';console.warn('Unable to refresh shared todos',error);if(rerender&&stateChanged&&!document.querySelector('dialog[open]'))render();}
       finally{todoSyncPromise=null;}
     })();
     return todoSyncPromise;
@@ -245,6 +262,12 @@
       const payload=await cloudTodos('PATCH',id,changes);
       sharedTodos=(sharedTodos||todos()).map(item=>item.id===id?payload.todo:item);writeTodos(sharedTodos);return true;
     }catch(error){alert(`待办状态未同步：${error.message}`);return false;}
+  }
+  async function deleteTodo(id){
+    try{
+      await cloudTodos('DELETE',id);
+      sharedTodos=(sharedTodos||todos()).filter(item=>item.id!==id);writeTodos(sharedTodos);return true;
+    }catch(error){alert(`待办未删除：${error.message}`);return false;}
   }
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
   // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
@@ -267,10 +290,7 @@
   function ownersFor(p){
     return [...new Set([p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).flatMap(value=>String(value).split(/[、,，\/]/).map(name=>name.trim()).filter(Boolean)))];
   }
-  function memberOptions(p){
-    const names=[...people.map(x=>x.name),...projects.flatMap(ownersFor),...ownersFor(p)].filter(Boolean);
-    return [...new Set(names)].sort((a,b)=>a.localeCompare(b,'zh-CN'));
-  }
+  function memberOptions(){return CHECKLIST_MEMBERS;}
   function memberRows(p){
     const slots=[['项目负责人',p.manager],['写稿',p.writer],['发布',p.publisher],['监测',p.monitor]];
     const seen=new Set();
@@ -310,8 +330,18 @@
   }
   function files(title, list, type) {return `<section class="file-block"><div class="file-label">${icon(type)}<div><h3>${e(title)}</h3><p>${list.length?`${list.length} 个文件或链接`:'暂未归档'}</p></div></div>${list.length?'<div class="files">'+list.map((x,i)=>{const target=url(x.sourceUrl)||url(x.url);return target?`<a class="file-read" href="${e(target)}" target="_blank" rel="noopener" title="在飞书中打开：${e(x.label||'文件 '+(i+1))}"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b>${icon('arrow',14)}</a>`:`<span class="file-read is-unavailable"><span>${icon('folder',16)}</span><b>${e(x.label||'文件 '+(i+1))}</b></span>`;}).join('')+'</div>':'<p class="empty-copy">飞书项目表暂未补充该资料。</p>'}</section>`;}
   function dataSources(p){
-    const sources=[...fileLinks(p.publishLinks).map(x=>({label:'发稿汇总表',detail:'查看全部发布链接与分月明细',url:x.sourceUrl||x.url})),...fileLinks(p.monitorLinks).map(x=>({label:'监测表',detail:'查看关键词与排名监测数据',url:x.sourceUrl||x.url}))];
-    return sources.length?`<section class="data-sources"><div><h2>项目数据入口</h2><p>登录飞书后，可直接打开项目对应的源表。</p></div><div>${sources.map(x=>`<a href="${e(url(x.url))}" target="_blank" rel="noopener"><span>${icon('grid',17)}</span><b>${e(x.label)}</b><small>${e(x.detail)}</small>${icon('arrow',15)}</a>`).join('')}</div></section>`:'';
+    const sourceList=(items,type)=>items.length?`<div class="source-link-list">${items.map((item,index)=>{
+      const target=url(item.sourceUrl)||url(item.url);
+      const fallback=type==='publish'?`发稿汇总表 ${index+1}`:`监测表 ${index+1}`;
+      return target?`<a href="${e(target)}" target="_blank" rel="noopener" title="在飞书中打开：${e(item.label||fallback)}"><b>${e(item.label||fallback)}</b>${icon('arrow',14)}</a>`:`<span><b>${e(item.label||fallback)}</b></span>`;
+    }).join('')}</div>`:`<p class="source-empty">飞书项目表暂未填写该链接。</p>`;
+    const publish=fileLinks(p.publishLinks), monitor=fileLinks(p.monitorLinks);
+    const sourceCard=(items,kind,title,description)=>{
+      const first=items.find(item=>url(item.sourceUrl)||url(item.url));
+      const target=first&&(url(first.sourceUrl)||url(first.url));
+      return `<article class="source-card ${kind}"><header><span>${icon(kind==='publish-source'?'arrow':'pulse',17)}</span><div><small>${kind==='publish-source'?'PUBLICATION':'MONITORING'}</small><h3>${title}</h3><p>${description}</p></div>${target?`<a class="source-open" href="${e(target)}" target="_blank" rel="noopener">在飞书打开 ${icon('arrow',14)}</a>`:'<em class="source-tag">待配置</em>'}</header>${sourceList(items,kind==='publish-source'?'publish':'monitor')}</article>`;
+    };
+    return `<section class="data-sources" id="project-sources"><div class="data-source-heading"><span>${icon('grid',18)}</span><div><h2>项目数据入口</h2><p>发稿与监测源表单独列出；文件资料不会混在这里。</p></div></div><div class="data-source-grid">${sourceCard(publish,'publish-source','发稿链接','发布明细、分月链接与汇总表')}${sourceCard(monitor,'monitor-source','监测链接','关键词、排名与效果监测表')}</div></section>`;
   }
   function controlProjectPage(p,c){
     const reports=fileLinks(p.reportLinks), brief=fileLinks(p.briefLinks);
@@ -338,11 +368,14 @@
     return `<div class="monthly-chart" data-month-chart="${chartId}"><div class="chart-controls"><div><button type="button" class="active" data-month-range="all" data-chart="${chartId}">全部</button><button type="button" data-month-range="6" data-chart="${chartId}">近 6 月</button><button type="button" data-month-range="3" data-chart="${chartId}">近 3 月</button></div><span>last update · ${e(pub.updatedAt||'—')}</span></div><div class="monthly-bars">${rows.map((item,index)=>`<button type="button" class="${index===rows.length-1?'is-selected':''}" data-month-bar data-chart="${chartId}" data-month="${e(item.month)}" data-label="${e(item.label)}" data-value="${item.value}" style="--bar:${Math.max(8,Math.round(item.value/max*100))}%"><i></i><b>${item.value}</b><small>${e(item.label)}</small></button>`).join('')}</div><div class="month-chart-detail" data-month-detail="${chartId}"><b>${e(latest.label)}</b><span>${latest.value} 篇有效发布</span></div></div>`;
   }
   function checklist(p){
-    const items=todos().filter(item=>item.project===p.name).sort((a,b)=>a.status==='done'?-1:String(a.date).localeCompare(String(b.date)));
-    return `<section class="project-checklist"><div class="section-head"><div><h2>项目 Checklist</h2><p>重点待办、负责人、DDL 与优先级都在项目内管理。</p></div><button type="button" class="add-todo" data-add-project-todo="${e(p.name)}">+ 新建待办</button></div><div class="checklist-head"><span>事项</span><span>优先级</span><span>DDL</span><span>负责人</span></div><div class="checklist-list">${items.length?items.map(item=>`<label class="check-row ${item.status==='done'?'is-done':''}"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''}><span><b>${e(item.title)}</b>${item.description?`<small>${e(item.description)}</small>`:''}</span><em class="priority ${e(item.priority||'P2').toLowerCase()}">${e(item.priority||'P2')}</em><time>${dt(item.date)}</time><span class="check-owner">${item.owner?av(item.owner):''}<b>${e(item.owner||'待选择')}</b></span></label>`).join(''):'<div class="checklist-empty"><span>◌</span><b>还没有重点待办</b><p>点击右上角新建，指定项目成员、DDL 和优先级。</p></div>'}</div></section>`;
+    const items=todos().filter(item=>item.project===p.name).sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')||String(a.date).localeCompare(String(b.date)));
+    return `<section class="project-checklist"><div class="section-head"><div><h2>项目 Checklist</h2><p>重点待办、负责人、DDL 与优先级统一同步给项目成员。</p></div><button type="button" class="add-todo" data-add-project-todo="${e(p.name)}">+ 新建待办</button></div><div class="checklist-head"><span>事项</span><span>优先级</span><span>DDL</span><span>负责人</span><span></span></div><div class="checklist-list">${items.length?items.map(item=>`<article class="check-row ${item.status==='done'?'is-done':''}"><label class="todo-check"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''} aria-label="完成 ${e(item.title)}"><span><b>${e(item.title)}</b>${item.description?`<small>${e(item.description)}</small>`:''}</span></label><em class="priority ${e(item.priority||'P2').toLowerCase()}">${e(item.priority||'P2')}</em><time>${dt(item.date)}</time><span class="check-owner">${item.owner?checklistAvatar(item.owner):''}<b>${e(item.owner||'待选择')}</b></span><button type="button" class="todo-edit" data-todo-edit="${e(item.id)}" aria-label="编辑 ${e(item.title)}">${icon('more',17)}</button></article>`).join(''):'<div class="checklist-empty"><span>◌</span><b>还没有重点待办</b><p>点击右上角新建，指定项目成员、DDL 和优先级。</p></div>'}</div></section>`;
+  }
+  function checklistMemberPicker(selected=''){
+    return `<div class="member-picker" role="group" aria-label="选择负责人"><input type="hidden" name="owner" value="${e(selected)}">${memberOptions().map(member=>`<button type="button" class="member-option ${member.name===selected?'selected':''}" data-owner-option="${e(member.name)}" aria-pressed="${member.name===selected?'true':'false'}">${checklistAvatar(member.name)}<span>${e(member.name)}</span></button>`).join('')}</div>`;
   }
   function todoDialog(p){
-    return `<dialog class="todo-dialog" id="project-todo-dialog"><form method="dialog" id="project-todo-form"><header><div><h2>新建项目待办</h2><p>${e(p.name)}</p></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>待办事项<input required name="title" placeholder="例如：确认本周发稿链接"></label><label>补充说明<textarea name="description" placeholder="可选，写清交付要求"></textarea></label><div class="form-three"><label>优先级<select name="priority"><option value="P0">P0 · 紧急</option><option value="P1" selected>P1 · 重要</option><option value="P2">P2 · 常规</option></select></label><label>DDL<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<select name="owner"><option value="">请选择成员</option>${memberOptions(p).map(name=>`<option value="${e(name)}">${e(name)}</option>`).join('')}</select></label></div><input type="hidden" name="project" value="${e(p.name)}"><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`;
+    return `<dialog class="todo-dialog" id="project-todo-dialog"><form id="project-todo-form"><header><div><span class="dialog-kicker">PROJECT CHECKLIST</span><h2 data-todo-dialog-title>新建项目待办</h2><p>${e(p.name)}</p></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>待办事项<input required name="title" placeholder="例如：确认本周发稿链接"></label><label>补充说明<textarea name="description" placeholder="可选，写清交付要求"></textarea></label><div class="form-two"><label>优先级<select name="priority"><option value="P0">P0 · 紧急</option><option value="P1" selected>P1 · 重要</option><option value="P2">P2 · 常规</option></select></label><label>DDL<input required type="date" name="date" value="${isoOffset(1)}"></label></div><div class="member-picker-field"><span>负责人</span>${checklistMemberPicker()}</div><input type="hidden" name="project" value="${e(p.name)}"><input type="hidden" name="todoId" value=""><footer><button type="button" data-todo-delete class="delete-action" hidden>删除待办</button><span></span><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action" data-todo-submit>创建待办</button></footer></form></dialog>`;
   }
   function projectRecentDynamics(p,pub){
     const signal=activity[p.name];
@@ -419,6 +452,36 @@
       <section class="calendar-sync-note"><div>${icon('pulse',20)}<span><b>${e(syncNote.title)}</b><small>${e(syncNote.copy)}</small></span></div><a href="${SYNC_API}/auth/start?return_to=${encodeURIComponent(location.href)}" target="_blank" rel="noopener">${e(syncNote.action)} ${icon('arrow',14)}</a></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>PROJECT TODO</small><h2>新建待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：确认发稿排期"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${isoOffset(1)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">未归属项目</option>${projects.map(p=>`<option value="${e(p.name)}" ${p.name===project?'selected':''}>${e(p.name)}</option>`).join('')}</select></label><p class="upload-hint">附件上传将在存储服务接入后同步到飞书云文档；当前不会把文件留在浏览器里。</p><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
+  function setTodoDialogBusy(dialog,busy){
+    dialog?.querySelectorAll('button,input,textarea,select').forEach(node=>node.disabled=busy);
+    const submit=dialog?.querySelector('[data-todo-submit]');
+    if(submit) submit.textContent=busy?'正在保存…':(dialog.querySelector('[name="todoId"]')?.value?'保存修改':'创建待办');
+  }
+  function selectTodoOwner(dialog,name){
+    const input=dialog?.querySelector('[name="owner"]'); if(!input)return;
+    input.value=name||'';
+    dialog.querySelectorAll('[data-owner-option]').forEach(button=>{
+      const selected=button.dataset.ownerOption===name;
+      button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));
+    });
+  }
+  function openProjectTodoDialog(dialog,item){
+    if(!dialog)return;
+    const form=dialog.querySelector('#project-todo-form'); if(!form)return;
+    form.reset();
+    const editing=Boolean(item);
+    form.elements.todoId.value=item?.id||'';
+    form.elements.title.value=item?.title||'';
+    form.elements.description.value=item?.description||'';
+    form.elements.priority.value=item?.priority||'P1';
+    form.elements.date.value=item?.date||isoOffset(1);
+    selectTodoOwner(dialog,item?.owner||'');
+    dialog.querySelector('[data-todo-dialog-title]').textContent=editing?'编辑项目待办':'新建项目待办';
+    dialog.querySelector('[data-todo-delete]').hidden=!editing;
+    dialog.querySelector('[data-todo-submit]').textContent=editing?'保存修改':'创建待办';
+    if(!dialog.open) dialog.showModal();
+    form.elements.title.focus();
+  }
   function bind(){
     document.querySelector('[data-feishu-login]')?.addEventListener('click',startFeishuLogin);
     document.querySelector('.tree-toggle')?.addEventListener('click',()=>document.querySelector('.project-tree')?.classList.toggle('closed'));
@@ -428,7 +491,12 @@
     document.querySelectorAll('[data-overview-chart]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-overview-chart]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('[data-rhythm]').forEach(x=>x.classList.toggle('hidden',x.dataset.rhythm!==b.dataset.overviewChart));}));
     document.querySelector('[data-bell]')?.addEventListener('click',ev=>ev.currentTarget.classList.toggle('ring'));
     document.querySelectorAll('.period button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.period button').forEach(x=>x.classList.toggle('active',x===b))));
-    document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',async()=>{await updateTodo(input.dataset.todoToggle,{status:input.checked?'done':'todo'});render();}));
+    document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',async()=>{
+      if(todoMutationInFlight)return;
+      todoMutationInFlight=true;input.disabled=true;
+      await updateTodo(input.dataset.todoToggle,{status:input.checked?'done':'todo'});
+      todoMutationInFlight=false;render();
+    }));
     document.querySelectorAll('[data-month-range]').forEach(button=>button.addEventListener('click',()=>{
       const id=button.dataset.chart, limit=button.dataset.monthRange;
       document.querySelectorAll(`[data-month-range][data-chart="${id}"]`).forEach(x=>x.classList.toggle('active',x===button));
@@ -441,16 +509,36 @@
       const detail=document.querySelector(`[data-month-detail="${id}"]`);
       if(detail) detail.innerHTML=`<b>${e(button.dataset.label||'')}</b><span>${e(button.dataset.value||'0')} 篇有效发布</span>`;
     }));
-    document.querySelectorAll('[data-todo-menu]').forEach(button=>button.addEventListener('click',async()=>{const current=todos().find(item=>item.id===button.dataset.todoMenu);const next=current?.status==='todo'?'doing':current?.status==='doing'?'done':'todo';await updateTodo(button.dataset.todoMenu,{status:next});render();}));
+    document.querySelectorAll('[data-todo-menu]').forEach(button=>button.addEventListener('click',()=>openProjectTodoDialog(document.querySelector('#project-todo-dialog'),todos().find(item=>item.id===button.dataset.todoMenu))));
     document.querySelector('[data-calendar-project]')?.addEventListener('change',event=>{const project=event.target.value;const mode=r().query.get('mode');location.hash=`#/calendar${mode==='kanban'?'?mode=kanban':''}${project?`${mode==='kanban'?'&':'?'}project=${encodeURIComponent(project)}`:''}`;});
     const todoDialog=document.querySelector('#todo-dialog');
     document.querySelector('[data-add-todo]')?.addEventListener('click',()=>todoDialog?.showModal());
-    document.querySelectorAll('[data-todo-close]').forEach(button=>button.addEventListener('click',()=>todoDialog?.close()));
+    document.querySelectorAll('#todo-dialog [data-todo-close]').forEach(button=>button.addEventListener('click',()=>todoDialog?.close()));
     document.querySelector('#todo-form')?.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||'待分配'),project:String(data.get('project')||'未归属项目'),priority:'P2',status:'todo'};if(await createTodo(item)){todoDialog.close();render();}});
     const projectTodoDialog=document.querySelector('#project-todo-dialog');
-    document.querySelectorAll('[data-add-project-todo]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.showModal()));
+    document.querySelectorAll('[data-add-project-todo]').forEach(button=>button.addEventListener('click',()=>openProjectTodoDialog(projectTodoDialog)));
+    document.querySelectorAll('[data-todo-edit]').forEach(button=>button.addEventListener('click',()=>openProjectTodoDialog(projectTodoDialog,todos().find(item=>item.id===button.dataset.todoEdit))));
     document.querySelectorAll('#project-todo-dialog [data-todo-close]').forEach(button=>button.addEventListener('click',()=>projectTodoDialog?.close()));
-    document.querySelector('#project-todo-form')?.addEventListener('submit',async event=>{event.preventDefault();const data=new FormData(event.currentTarget);const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:'todo'};if(await createTodo(item)){projectTodoDialog?.close();render();}});
+    document.querySelectorAll('#project-todo-dialog [data-owner-option]').forEach(button=>button.addEventListener('click',()=>selectTodoOwner(projectTodoDialog,button.dataset.ownerOption)));
+    document.querySelector('#project-todo-form')?.addEventListener('submit',async event=>{
+      event.preventDefault(); if(todoMutationInFlight)return;
+      const form=event.currentTarget,data=new FormData(form),id=String(data.get('todoId')||'');
+      const current=todos().find(item=>item.id===id);
+      const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:current?.status||'todo'};
+      todoMutationInFlight=true;setTodoDialogBusy(projectTodoDialog,true);
+      const saved=id?await updateTodo(id,item):await createTodo(item);
+      todoMutationInFlight=false;setTodoDialogBusy(projectTodoDialog,false);
+      if(saved){projectTodoDialog?.close();render();}
+    });
+    document.querySelector('#project-todo-dialog [data-todo-delete]')?.addEventListener('click',async()=>{
+      const id=projectTodoDialog?.querySelector('[name="todoId"]')?.value||'';
+      const title=projectTodoDialog?.querySelector('[name="title"]')?.value||'这条待办';
+      if(!id||!confirm(`确定删除“${title}”吗？此操作会同步给所有成员。`))return;
+      todoMutationInFlight=true;setTodoDialogBusy(projectTodoDialog,true);
+      const deleted=await deleteTodo(id);
+      todoMutationInFlight=false;setTodoDialogBusy(projectTodoDialog,false);
+      if(deleted){projectTodoDialog?.close();render();}
+    });
     document.querySelectorAll('[data-member-card]').forEach(card=>card.addEventListener('click',event=>{
       if (event.target.closest('a')) return;
       const expanded=card.classList.toggle('expanded'); card.setAttribute('aria-expanded',String(expanded));
