@@ -142,6 +142,18 @@
     if (!end && Number(p.cycleDays) > 0) { end = new Date(start); end.setDate(end.getDate() + Number(p.cycleDays)); }
     return end && !Number.isNaN(end.getTime()) && end >= start ? `${dt(p.startDate)} — ${dt(end.toISOString().slice(0, 10))}` : `${dt(p.startDate)} 起`;
   };
+  // 项目表中的字段优先作为项目说明。空字段不能被误写成“待补充”，否则会让
+  // 已在飞书维护的项目看起来像没有配置。
+  const compactProjectCopy = (value, limit=42) => {
+    const text=String(value||'').replace(/\s+/g,' ').trim();
+    return text.length>limit ? `${text.slice(0,limit)}…` : text;
+  };
+  function projectCaption(p){
+    const candidates=[p.platform,p.kpi,p.currentData,p.notes]
+      .map(value=>compactProjectCopy(value))
+      .filter(value=>value && !/(待补充|待配置|项目已从飞书读取)/.test(value));
+    return candidates[0] || '已同步飞书项目表';
+  }
   const fileLinks = x => (Array.isArray(x)?x:x?[x]:[]).map((v,i)=>{
     if(typeof v==='string') return {label:`飞书资料 ${i+1}`,url:v,sourceUrl:v,fileType:''};
     const raw=v.label||v.name||v.fileName||'';
@@ -192,7 +204,7 @@
   function projectTable(list) {
     return `<div class="data-table"><div class="table-header"><span>项目</span><span>项目时间</span><span>进度</span><span>负责人</span><span>状态</span></div>${list.map(p=>{
       const names=[p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).map(x=>String(x).split(/[、,，\/]/)[0]).filter((x,i,a)=>a.indexOf(x)===i).slice(0,2);
-      return `<a href="#/project/${encodeURIComponent(p.id)}" class="project-row"><span><b>${e(p.name)}</b><small>${e(p.platform||'项目资料待补充')}</small></span><span class="project-time">${e(projectTime(p))}</span><span class="progress"><i><b style="width:${progress(p)}%"></b></i><em>${progress(p)}%</em></span><span class="avatar-stack">${names.length?names.map(x=>av(x)).join(''):'<i>待</i>'}</span><span>${badge(p.status)}</span></a>`;
+      return `<a href="#/project/${encodeURIComponent(p.id)}" class="project-row"><span><b>${e(p.name)}</b><small>${e(projectCaption(p))}</small></span><span class="project-time">${e(projectTime(p))}</span><span class="progress"><i><b style="width:${progress(p)}%"></b></i><em>${progress(p)}%</em></span><span class="avatar-stack">${names.length?names.map(x=>av(x)).join(''):'<i>待</i>'}</span><span>${badge(p.status)}</span></a>`;
     }).join('')}</div>`;
   }
   function overview() {
@@ -339,7 +351,7 @@
     const sourceCard=(items,kind,title,description)=>{
       const first=items.find(item=>url(item.sourceUrl)||url(item.url));
       const target=first&&(url(first.sourceUrl)||url(first.url));
-      return `<article class="source-card ${kind}"><header><span>${icon(kind==='publish-source'?'arrow':'pulse',17)}</span><div><small>${kind==='publish-source'?'PUBLICATION':'MONITORING'}</small><h3>${title}</h3><p>${description}</p></div>${target?`<a class="source-open" href="${e(target)}" target="_blank" rel="noopener">在飞书打开 ${icon('arrow',14)}</a>`:'<em class="source-tag">待配置</em>'}</header>${sourceList(items,kind==='publish-source'?'publish':'monitor')}</article>`;
+      return `<article class="source-card ${kind}"><header><span>${icon(kind==='publish-source'?'arrow':'pulse',17)}</span><div><small>${kind==='publish-source'?'PUBLICATION':'MONITORING'}</small><h3>${title}</h3><p>${description}</p></div>${target?`<a class="source-open" href="${e(target)}" target="_blank" rel="noopener">在飞书打开 ${icon('arrow',14)}</a>`:'<em class="source-tag">暂无链接</em>'}</header>${sourceList(items,kind==='publish-source'?'publish':'monitor')}</article>`;
     };
     return `<section class="data-sources" id="project-sources"><div class="data-source-heading"><span>${icon('grid',18)}</span><div><h2>项目数据入口</h2><p>发稿与监测源表单独列出；文件资料不会混在这里。</p></div></div><div class="data-source-grid">${sourceCard(publish,'publish-source','发稿链接','发布明细、分月链接与汇总表')}${sourceCard(monitor,'monitor-source','监测链接','关键词、排名与效果监测表')}</div></section>`;
   }
@@ -408,7 +420,7 @@
     const members=memberRows(p), reports=fileLinks(p.reportLinks), briefs=fileLinks(p.briefLinks), materials=fileLinks(p.tableUrl?[{label:'飞书项目记录',url:p.tableUrl}]:[]);
     const sourceFiles=[...reports,...briefs,...materials];
     const kpiText=String(p.kpi||'飞书项目表暂未填写 KPI。').split(/\n+/).filter(Boolean);
-    return shell(`${header(p.name,`${p.status} · ${p.platform||'项目资料待补充'}`,`<a class="back-link" href="#/status/${encodeURIComponent(p.status)}">${icon('chev',15)} 返回列表</a>`)}
+    return shell(`${header(p.name,`${p.status} · ${projectCaption(p)}`,`<a class="back-link" href="#/status/${encodeURIComponent(p.status)}">${icon('chev',15)} 返回列表</a>`)}
       <nav class="command-tabs"><button class="active" data-scroll="project-summary">项目概览</button><button data-scroll="project-publication">发布数据</button><button data-scroll="project-checklist">Checklist</button><button data-scroll="project-files">文件资料</button></nav>
       <section class="project-command project-command-unified" id="project-summary"><div class="project-orbit orbit-one"></div><div class="project-orbit orbit-two"></div><div class="command-eyebrow"><span>${badge(p.status)}</span><b>${e(projectTime(p))}</b></div><div class="project-command-main"><article class="publication-kpi"><small>累计有效发布</small><strong>${achieved.toLocaleString()}<em> 篇</em></strong><p>按完整订单中的有效发布链接统计</p></article><article class="target-kpi"><div><small>发布 KPI</small><strong>${target?`${achieved.toLocaleString()} / ${target.toLocaleString()}`:'以飞书项目表为准'}</strong></div>${target?`<div class="kpi-track"><i style="width:${Math.min(100,ratio)}%"></i></div><p>${ratio}% · ${achieved>=target?'已完成目标':`还差 ${(target-achieved).toLocaleString()} 篇`}</p>`:`<p>项目表未提供“篇数”型目标，完整 KPI 列在下方。</p>`}</article><article class="project-status-readout"><small>项目进度</small><strong>${progress(p)}%</strong><i><b style="width:${progress(p)}%"></b></i><span>${e(p.kpiStatus||p.status)}</span></article></div></section>
       <section class="project-kpi-list"><div><h2>项目 KPI</h2><p>完整引用飞书项目表，不再只截取其中一条。</p></div><ol>${kpiText.map(item=>`<li>${e(item)}</li>`).join('')}</ol></section>
