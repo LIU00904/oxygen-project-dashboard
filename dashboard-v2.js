@@ -41,17 +41,59 @@
   };
   const work = window.OXYGEN_WORK_SUMMARIES || {};
   const avatars = window.OXYGEN_MEMBER_AVATARS || {};
+  // 小橙在 2026-11-09 确认的当前运营分工。对以下项目，这份清单优先于
+  // 飞书项目表中残留的历史负责人字段；其他项目仍继续读取飞书实时字段。
+  const CONFIRMED_TEAM_ASSIGNMENTS = [
+    {project:'太太乐松茸鲜', label:'太太乐', members:[
+      {name:'刘依晨', duties:['数据表','周报 / 月报 / 季报','引擎审计报告','写稿 10 篇 / 周','发稿 ≥20 篇 / 周']},
+      {name:'徐奕旸', duties:['数据表']},
+      {name:'彭安迪', duties:['监测 2 次 / 周']}
+    ]},
+    {project:'西门子', label:'西门子', members:[
+      {name:'徐奕旸', duties:['项目经理','写稿 10 篇 / 周','发稿 20 篇 / 周','周报','深演监测']}
+    ]},
+    {project:'赏·会所', label:'赏会所', members:[
+      {name:'徐奕旸', duties:['项目经理','写稿 4 篇 / 周','发稿 ≥6 篇 / 周','月报','视频 5 条 / 月']}
+    ]},
+    {project:'广百', label:'广百', members:[
+      {name:'徐奕旸', duties:['项目经理','写稿 ≥25 篇 / 周','发稿暂定','双周报','月报','监测 2 次 / 周']}
+    ]},
+    {project:'华硕', label:'华硕', members:[
+      {name:'向昱筱 Cheryl', duties:['项目经理','写稿']},
+      {name:'韩文静', duties:['写稿 50 篇 / 周','发稿 100 篇 / 周']},
+      {name:'刘依晨', duties:['核心稿件发布约 50 篇 / 周']}
+    ]},
+    {project:'哲库林 润喉糖', label:'哲库林', members:[
+      {name:'辛味珈', duties:['项目经理']},
+      {name:'彭安迪', duties:['写稿 10 篇 / 周']},
+      {name:'徐奕旸', duties:['发稿约 25 篇 / 周']},
+      {name:'系统', duties:['监测']}
+    ]},
+    {project:'咪咕体育', label:'咪咕 · 影之刃', members:[
+      {name:'辛味珈', duties:['项目经理']},
+      {name:'彭安迪', duties:['写稿 22 篇 / 周']},
+      {name:'刘依晨', duties:['发稿约 70 篇 / 周']}
+    ]},
+    {project:'头道汤', label:'头道汤', members:[
+      {name:'辛味珈', duties:['项目经理','项目已外包']}
+    ]}
+  ];
+  const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
+  const CURRENT_ASSIGNMENT_MEMBERS = ['刘依晨','徐奕旸','彭安迪','向昱筱 Cheryl','韩文静','辛味珈'];
   // Checklist 是全员协作的执行面，只开放当前实际需要分配待办的六位成员。
   // 历史项目成员仍在项目成员区展示，但不会出现在待办分配器中。
   const CHECKLIST_MEMBERS = [
     {name:'刘依晨', avatar:avatars['刘依晨']},
-    {name:'辛味加', avatar:avatars['辛味加'] || avatars['辛味珈']},
-    {name:'徐奕畅', avatar:avatars['徐奕畅'] || avatars['徐奕旸']},
+    {name:'辛味珈', avatar:avatars['辛味珈'] || avatars['辛味加']},
+    {name:'徐奕旸', avatar:avatars['徐奕旸'] || avatars['徐奕畅']},
     {name:'韩文静', avatar:avatars['韩文静']},
     {name:'李正浩', avatar:avatars['李正浩']},
     {name:'彭安迪', avatar:avatars['彭安迪']}
   ];
   const CHECKLIST_MEMBER_MAP = Object.fromEntries(CHECKLIST_MEMBERS.map(member=>[member.name,member]));
+  // 兼容已保存的旧待办姓名，展示时统一回当前的正式姓名。
+  CHECKLIST_MEMBER_MAP['辛味加']=CHECKLIST_MEMBER_MAP['辛味珈'];
+  CHECKLIST_MEMBER_MAP['徐奕畅']=CHECKLIST_MEMBER_MAP['徐奕旸'];
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
   const TODO_KEY = 'oxygen-dashboard-local-todos-v1';
@@ -330,11 +372,15 @@
   function dayLabel(d){return d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}).replace('周','周')}
   function shortDate(d){return `${d.getMonth()+1}月${d.getDate()}日`}
   function ownersFor(p){
+    const confirmed=confirmedAssignmentFor(p);
+    if(confirmed)return confirmed.members.filter(member=>member.name!=='系统').map(member=>member.name);
     if(p._memberSource!=='live') return [];
     return [...new Set([p.manager,p.writer,p.publisher,p.monitor].filter(Boolean).flatMap(value=>String(value).split(/[、,，\/]/).map(name=>name.trim()).filter(Boolean)))];
   }
   function memberOptions(){return CHECKLIST_MEMBERS;}
   function memberRows(p){
+    const confirmed=confirmedAssignmentFor(p);
+    if(confirmed)return confirmed.members.map(member=>({name:member.name,role:member.duties.join(' · ')}));
     if(p._memberSource!=='live') return [];
     const slots=[['项目负责人',p.manager],['写稿',p.writer],['发布',p.publisher],['监测',p.monitor]];
     const seen=new Set();
@@ -353,12 +399,14 @@
     const special=publication.special;
     const kpiPeriod=special?.periods?.find(x=>String(x.label).includes('4 月起'));
     const owners=ownersFor(p), lead=owners[0]||'待飞书更新负责人';
+    const confirmed=confirmedAssignmentFor(p);
+    const dutyOwner=keyword=>confirmed?.members.find(member=>member.duties.some(duty=>duty.includes(keyword)))?.name;
     const roles=['项目统筹','内容发布','数据回填','监测复核'];
     return {target:500, verified:true, achieved:Number.isFinite(kpiPeriod?.count)?kpiPeriod.count:publication.total, total:publication.total, special, updatedAt:publication.updatedAt, source:publication.source, week,weekRange:`${shortDate(monday)} — ${shortDate(sunday)}`,start,
       milestones:[
-        {kind:'周报',title:'上传周报',date:nextReport,owner:lead,note:'提交本周内容发布周报及数据明细'},
-        {kind:'发稿',title:'上传稿件',date:weekdayAfter(nextReport,5),owner:owners[1]||lead,note:'提交当周直出稿件与发布链接'},
-        {kind:'月报',title:'提交月报',date:nextMonthDay(10),owner:owners[2]||lead,note:'提交月度复盘与下月计划'}
+        {kind:'周报',title:'上传周报',date:nextReport,owner:dutyOwner('周报')||lead,note:'提交本周内容发布周报及数据明细'},
+        {kind:'发稿',title:'上传稿件',date:weekdayAfter(nextReport,5),owner:dutyOwner('发稿')||owners[1]||lead,note:'提交当周直出稿件与发布链接'},
+        {kind:'月报',title:'提交月报',date:nextMonthDay(10),owner:dutyOwner('月报')||owners[2]||lead,note:'提交月度复盘与下月计划'}
       ],
       months:publication.periods||[],
       members:owners.map((name,index)=>[name,0,roles[index]||'项目协作'])
@@ -463,26 +511,15 @@
       <section class="project-kpi-list"><div><h2>项目 KPI</h2><p>完整引用飞书项目表，不再只截取其中一条。</p></div><ol>${kpiText.map(item=>`<li>${e(item)}</li>`).join('')}</ol></section>
       ${projectRecentDynamics(p,pub)}
       <section class="project-main-grid"><article class="publication-card" id="project-publication"><div class="section-head"><div><h2>月度发布情况</h2><p>每根柱代表当月有效发布订单。点击柱形查看数值。</p></div><strong>${achieved.toLocaleString()}<small> 篇</small></strong></div>${monthlyChart(p,pub)}</article>${checklist(p)}</section>
-      <section class="project-members" id="project-members"><div class="section-head"><div><h2>项目成员</h2><p>仅展示飞书项目表当前成员；不会沿用本地历史角色。</p></div></div><div class="member-rail">${members.length?members.map(member=>`<div>${av(member.name)}<span><b>${e(member.name)}</b><small>${e(member.role)}</small></span></div>`).join(''):`<p class="chart-empty">${p._memberSource==='live'?'飞书项目表尚未填写项目成员。':'正在从飞书项目表核对当前成员…'}</p>`}</div></section>
+      <section class="project-members" id="project-members"><div class="section-head"><div><h2>项目成员</h2><p>${confirmedAssignmentFor(p)?'采用已确认的当前运营分工。':'成员信息由飞书项目表实时刷新。'}</p></div></div><div class="member-rail">${members.length?members.map(member=>`<div>${av(member.name)}<span><b>${e(member.name)}</b><small>${e(member.role)}</small></span></div>`).join(''):`<p class="chart-empty">${p._memberSource==='live'?'飞书项目表尚未填写项目成员。':'正在从飞书项目表核对当前成员…'}</p>`}</div></section>
       ${dataSources(p)}<section class="command-files" id="project-files"><div class="command-section-title"><div><h2>文件资料</h2><p>文件名保留飞书原始名称，点击整行进入对应飞书文件或源表。</p></div><span>${sourceFiles.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',[...briefs,...materials],'folder')}</div></section>${todoDialog(p)}`);
   }
-  function memberProjects(name){
-    const current = Object.entries(activity).filter(([,x])=>(x.people||[]).some(([n])=>n===name)).map(([n])=>n);
-    const historical = Object.entries(work).map(([project,summary])=>{
-      const record=(summary.members||[]).find(([member])=>member===name);
-      return record ? { project, total:record[1]||0 } : null;
-    }).filter(Boolean).sort((a,b)=>b.total-a.total).map(item=>item.project);
-    return [...new Set([...current,...historical])].slice(0,4);
-  }
   function workloadPage(){
-    const selected=r().query.get('member')||'', cutoff='2026-09-28';
-    const rows=[...people].sort((a,b)=>b.working-a.working||b.last.localeCompare(a.last)||b.total-a.total);
-    const active=rows.filter(person=>person.last>=cutoff), inactive=rows.filter(person=>person.last<cutoff), currentTotal=rows.reduce((n,x)=>n+x.working,0);
-    const card=person=>{const focus=memberProjects(person.name);return `<button type="button" class="person-card ${selected===person.name?'expanded':''}" data-member-card="${e(person.name)}" aria-expanded="${selected===person.name}"><div class="person-card-top">${av(person.name)}<span><b>${e(person.name)}</b><small>最近更新 ${dt(person.last)}</small></span><em>+</em></div><div class="person-card-stats"><span><b>${person.working}</b><small>进行中</small></span><span><b>${person.total.toLocaleString()}</b><small>累计记录</small></span></div><div class="person-focus"><span>主要关注项目</span><div class="focus-projects">${focus.length?focus.map(project=>{const target=projects.find(p=>p.name===project);return `<a href="#/project/${encodeURIComponent(target?.id||project)}">${e(project)}</a>`;}).join(''):'<small>项目归属待从飞书工作记录补齐</small>'}</div></div></button>`;};
-    return shell(`${header('成员任务','以近期活跃成员为主；点开名片查看其主要关注的项目。')}
-      <section class="team-metrics">${metric('完整任务记录','4,416','已核对飞书图表')}${metric('当前进行中',currentTotal,'按任务状态进行中','blue')}${metric('近一个月活跃',active.length,'有新增任务记录','green')}<article class="source-note">${icon('pulse')}<span>按最近任务更新日排序，不再用项目摘要推算个人数据</span></article></section>
-      <section class="member-zone"><div class="member-zone-title"><div><h2>近期活跃成员</h2><p>近一个月有任务更新 · 优先展示</p></div><b>${active.length} 人</b></div><div class="member-cards">${active.map(card).join('')}</div></section>
-      <section class="member-zone inactive-zone"><div class="member-zone-title"><div><h2>不活跃成员</h2><p>近一个月未新增任务记录，历史数据仍保留</p></div><b>${inactive.length} 人</b></div><div class="member-cards">${inactive.map(card).join('')}</div></section>`);
+    const roster=CURRENT_ASSIGNMENT_MEMBERS.map(name=>({name,assignments:CONFIRMED_TEAM_ASSIGNMENTS.flatMap(project=>project.members.filter(member=>member.name===name).map(member=>({project,member})))}));
+    const card=person=>`<article class="assignment-person-card"><header>${av(person.name)}<div><h2>${e(person.name)}</h2><p>${person.assignments.length} 个项目 · 当前运营分工</p></div></header><div class="assignment-projects">${person.assignments.map(({project,member})=>{const target=projects.find(item=>item.name===project.project);return `<a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b><span>${e(member.duties.join(' · '))}</span>${icon('arrow',14)}</a>`;}).join('')}</div></article>`;
+    return shell(`${header('成员任务','按已确认的当前运营分工展示：每位成员负责哪些项目、哪些固定交付。')}
+      <section class="assignment-summary"><div><span>当前运营成员</span><strong>${roster.length}</strong><small>仅展示已确认分工的成员</small></div><p>更新于 2026 年 11 月 9 日。项目详情中的“项目成员”将同步采用这份分工；未配置项目仍以飞书字段为准。</p></section>
+      <section class="assignment-roster"><div class="assignment-roster-head"><div><h2>成员与项目职责</h2><p>频次直接写在职责里，避免把历史任务量误当作当前分工。</p></div><span>${CONFIRMED_TEAM_ASSIGNMENTS.length} 个项目</span></div><div class="assignment-grid">${roster.map(card).join('')}</div></section>`);
   }
   function calendarPage(){
     const query=r().query, mode=query.get('mode')==='kanban'?'kanban':'week', project=query.get('project')||'';
