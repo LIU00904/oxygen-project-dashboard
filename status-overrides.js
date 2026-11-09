@@ -25,9 +25,7 @@
     "珍致",
     "数贸会",
     "万事达银联",
-    "伊利金领冠",
-    "pxn",
-    "TMA"
+    "伊利金领冠"
   ]);
   const ongoing = new Set([
     "国泰海通",
@@ -35,6 +33,8 @@
     "万豪",
     "西门子",
     "哲库林 润喉糖",
+    "TMA",
+    "pxn",
     "华硕 新",
     "头道汤",
     "可孚制氧机"
@@ -162,10 +162,6 @@
     next.progressPercent = progressFor(next);
     return next;
   }
-
-  // dashboard-v2 在企业登录后会重新读取飞书项目表；导出给它使用，
-  // 使状态、周期与进度规则在实时数据回来后依然一致。
-  window.OXYGEN_PATCH_PROJECT = patchProject;
 
   function defaultProject(project) {
     return {
