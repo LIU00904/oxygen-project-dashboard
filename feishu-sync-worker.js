@@ -17,11 +17,13 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20260907-status-fallbacks-v1";
+const WORKER_VERSION = "20261103-checklist-crud-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// Checklist is intentionally a short-lived operational surface, not an archive.
+const TODO_RETENTION_DAYS = 31;
 const FIELD_ALIASES = {
   reportLinks: ["项目报告文件", "报告文件", "报告"],
   briefLinks: ["Brief", "brief", "项目Brief", "项目简报"],
@@ -33,11 +35,12 @@ const FIELD_ALIASES = {
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
 
 let memoryProjectsCache = null;
+let todoSchemaReady = null;
 const STALLED_PROJECTS = new Set(["西昊", "西昊2", "mac", "海蓝之谜"]);
 const CURRENT_ONGOING = new Set([
   "太太乐松茸鲜",
@@ -68,6 +71,7 @@ const COMPLETED_PROJECTS = new Set([
 export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(refreshScheduledCache(env));
+    if (env.TODOS_DB) ctx.waitUntil(pruneExpiredTodos(env));
   },
   async fetch(request, env) {
     try {
@@ -100,9 +104,12 @@ export default {
         });
       }
       if (requestUrl.pathname === "/download") {
-        await authorizeRequest(request, env);
+        const user = await authorizeRequest(request, env);
         const token = await tenantToken(env);
-        return downloadFeishuFile(requestUrl, token);
+        return downloadFeishuFile(requestUrl, token, user, env);
+      }
+      if (requestUrl.pathname === "/todos" || requestUrl.pathname.startsWith("/todos/")) {
+        return handleTodos(request, env, requestUrl);
       }
       if (request.method === "GET") {
         await authorizeRequest(request, env);
@@ -157,6 +164,147 @@ export default {
     }
   }
 };
+
+async function handleTodos(request, env, requestUrl) {
+  const user = await authorizeRequest(request, env);
+  await ensureTodoSchema(env);
+  await pruneExpiredTodos(env);
+  const id = decodeURIComponent(requestUrl.pathname.replace(/^\/todos\/?/, ""));
+
+  if (request.method === "GET") {
+    if (id) return json({ error: "Method not allowed" }, 405);
+    const { results = [] } = await env.TODOS_DB.prepare(`
+      SELECT id, project, title, description, due_date, owner, priority, status,
+             created_by, created_at, updated_by, updated_at, revision
+      FROM project_todos
+      ORDER BY CASE WHEN status = 'done' THEN 1 ELSE 0 END,
+               CASE WHEN due_date = '' THEN 1 ELSE 0 END,
+               due_date ASC, updated_at DESC
+    `).all();
+    return json({ ok: true, todos: results.map(todoResponse), meta: { syncedAt: new Date().toISOString() } });
+  }
+
+  if (request.method === "POST") {
+    if (id) return json({ error: "Method not allowed" }, 405);
+    const input = normalizeTodo(await request.json());
+    const now = new Date().toISOString();
+    const actor = todoActor(user);
+    const todo = { id: crypto.randomUUID(), ...input, createdAt: now, createdBy: actor, updatedAt: now, updatedBy: actor, revision: 1 };
+    await env.TODOS_DB.prepare(`
+      INSERT INTO project_todos (id, project, title, description, due_date, owner, priority, status, created_by, created_at, updated_by, updated_at, revision)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(todo.id, todo.project, todo.title, todo.description, todo.date, todo.owner, todo.priority, todo.status, todo.createdBy, todo.createdAt, todo.updatedBy, todo.updatedAt, todo.revision).run();
+    return json({ ok: true, todo }, 201);
+  }
+
+  if (request.method === "PATCH") {
+    if (!id) return json({ error: "Missing todo id" }, 400);
+    const existing = await env.TODOS_DB.prepare(`
+      SELECT id, project, title, description, due_date, owner, priority, status,
+             created_by, created_at, updated_by, updated_at, revision
+      FROM project_todos WHERE id = ?
+    `).bind(id).first();
+    if (!existing) return json({ error: "Todo not found" }, 404);
+    const existingTodo = todoResponse(existing);
+    const input = normalizeTodo({ ...existingTodo, ...(await request.json()) });
+    const now = new Date().toISOString();
+    const actor = todoActor(user);
+    const revision = Number(existing.revision || 0) + 1;
+    const todo = { id, ...input, createdAt: existingTodo.createdAt, createdBy: existingTodo.createdBy, updatedAt: now, updatedBy: actor, revision };
+    await env.TODOS_DB.prepare(`
+      UPDATE project_todos
+      SET project = ?, title = ?, description = ?, due_date = ?, owner = ?, priority = ?, status = ?, updated_by = ?, updated_at = ?, revision = ?
+      WHERE id = ?
+    `).bind(todo.project, todo.title, todo.description, todo.date, todo.owner, todo.priority, todo.status, todo.updatedBy, todo.updatedAt, todo.revision, id).run();
+    return json({ ok: true, todo });
+  }
+
+  if (request.method === "DELETE") {
+    if (!id) return json({ error: "Missing todo id" }, 400);
+    const existing = await env.TODOS_DB.prepare("SELECT id FROM project_todos WHERE id = ?").bind(id).first();
+    if (!existing) return json({ error: "Todo not found" }, 404);
+    await env.TODOS_DB.prepare("DELETE FROM project_todos WHERE id = ?").bind(id).run();
+    return json({ ok: true, id });
+  }
+
+  return json({ error: "Method not allowed" }, 405);
+}
+
+async function ensureTodoSchema(env) {
+  if (!env.TODOS_DB) throw new HttpError("待办同步库尚未绑定", 503);
+  if (!todoSchemaReady) {
+    todoSchemaReady = env.TODOS_DB.batch([
+      env.TODOS_DB.prepare(`CREATE TABLE IF NOT EXISTS project_todos (
+        id TEXT PRIMARY KEY,
+        project TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        due_date TEXT NOT NULL DEFAULT '',
+        owner TEXT NOT NULL DEFAULT '',
+        priority TEXT NOT NULL DEFAULT 'P2',
+        status TEXT NOT NULL DEFAULT 'todo',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_by TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        revision INTEGER NOT NULL DEFAULT 1
+      )`),
+      env.TODOS_DB.prepare("CREATE INDEX IF NOT EXISTS idx_project_todos_project_date ON project_todos(project, due_date)")
+    ]).catch(error => {
+      todoSchemaReady = null;
+      throw error;
+    });
+  }
+  return todoSchemaReady;
+}
+
+async function pruneExpiredTodos(env) {
+  if (!env.TODOS_DB) return;
+  await ensureTodoSchema(env);
+  const cutoff = new Date(Date.now() - TODO_RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  await env.TODOS_DB.prepare("DELETE FROM project_todos WHERE created_at < ?").bind(cutoff).run();
+}
+
+function todoActor(user) {
+  return String(user?.name || user?.openId || "飞书成员").slice(0, 120);
+}
+
+function normalizeTodo(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const title = String(source.title || "").trim().slice(0, 200);
+  const project = String(source.project || "未归属项目").trim().slice(0, 160) || "未归属项目";
+  if (!title) throw new HttpError("待办事项不能为空", 400);
+  const priority = ["P0", "P1", "P2"].includes(String(source.priority || "P2").toUpperCase()) ? String(source.priority || "P2").toUpperCase() : "P2";
+  const status = ["todo", "doing", "done"].includes(String(source.status || "todo")) ? String(source.status || "todo") : "todo";
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(source.date || "")) ? String(source.date) : "";
+  return {
+    project,
+    title,
+    description: String(source.description || "").trim().slice(0, 2000),
+    date,
+    owner: String(source.owner || "").trim().slice(0, 120),
+    priority,
+    status
+  };
+}
+
+function todoResponse(row) {
+  return {
+    id: row.id,
+    project: row.project,
+    title: row.title,
+    description: row.description || "",
+    date: row.due_date || "",
+    owner: row.owner || "",
+    priority: row.priority || "P2",
+    status: row.status || "todo",
+    createdBy: row.created_by || "",
+    createdAt: row.created_at || "",
+    updatedBy: row.updated_by || "",
+    updatedAt: row.updated_at || "",
+    revision: Number(row.revision || 1)
+  };
+}
 
 async function readCachedProjects(env, token, origin, forceRefresh = false) {
   const cacheKey = `${env.FEISHU_APP_TOKEN}:${env.FEISHU_TABLE_ID}:${WORKER_VERSION}:${origin}`;
@@ -271,9 +419,9 @@ async function finishAuth(request, env) {
   const decodedState = parseState(state);
   const returnTo = safeReturnTo(decodedState?.returnTo);
   const appToken = await appAccessToken(env);
-  const userToken = await userAccessToken(appToken, code);
-  const user = await userInfo(userToken);
-  const session = await signSession(user, env);
+  const userAuth = await userAccessToken(appToken, code);
+  const user = await userInfo(userAuth.accessToken);
+  const session = await signSession(user, env, userAuth);
   const target = new URL(returnTo);
   target.searchParams.set("feishu_user", toBase64(user));
   target.searchParams.set("feishu_session", session);
@@ -317,13 +465,18 @@ async function authorizeRequest(request, env) {
   return user;
 }
 
-async function signSession(user, env) {
+async function signSession(user, env, userAuth = null) {
   const payload = {
     name: user.name,
     avatar: user.avatar,
     openId: user.openId,
     unionId: user.unionId,
     tenantKey: user.tenantKey,
+    // The file-read token is encrypted before it is placed in the signed
+    // dashboard session. It is only decrypted inside this Worker when a
+    // document is fetched, so the browser never receives a raw Feishu token.
+    fileAccess: userAuth?.accessToken ? await sealForSession(userAuth.accessToken, env) : "",
+    fileAccessExp: userAuth?.expiresAt || 0,
     exp: Date.now() + SESSION_MAX_AGE_MS
   };
   const body = base64UrlEncode(JSON.stringify(payload));
@@ -339,6 +492,33 @@ async function verifySession(token, env) {
   const payload = JSON.parse(base64UrlDecode(body));
   if (!payload.exp || Date.now() > payload.exp) throw new HttpError("登录已过期", 401);
   return payload;
+}
+
+async function sealForSession(value, env) {
+  const encoder = new TextEncoder();
+  const keyBytes = await crypto.subtle.digest("SHA-256", encoder.encode(sessionSecret(env)));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt"]);
+  const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(value));
+  return `${base64UrlEncodeBytes(iv)}.${base64UrlEncodeBytes(new Uint8Array(cipher))}`;
+}
+
+async function openSessionSeal(value, env) {
+  const [ivPart, cipherPart] = String(value || "").split(".");
+  if (!ivPart || !cipherPart) return "";
+  try {
+    const encoder = new TextEncoder();
+    const keyBytes = await crypto.subtle.digest("SHA-256", encoder.encode(sessionSecret(env)));
+    const key = await crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: base64UrlDecodeBytes(ivPart) },
+      key,
+      base64UrlDecodeBytes(cipherPart)
+    );
+    return new TextDecoder().decode(plain);
+  } catch {
+    return "";
+  }
 }
 
 function sessionSecret(env) {
@@ -654,19 +834,34 @@ function extractExtraParam(value) {
   }
 }
 
-async function downloadFeishuFile(requestUrl, token) {
+async function downloadFeishuFile(requestUrl, token, user, env) {
   const fileToken = requestUrl.searchParams.get("file_token");
   if (!fileToken) return json({ error: "Missing file_token" }, 400);
   const name = requestUrl.searchParams.get("name") || "feishu-file";
   const extra = requestUrl.searchParams.get("extra") || "";
   const downloadUrl = new URL(`https://open.feishu.cn/open-apis/drive/v1/medias/${encodeURIComponent(fileToken)}/download`);
   if (extra) downloadUrl.searchParams.set("extra", extra);
-  const response = await fetch(downloadUrl.toString(), {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    return json({ error: text || `下载文件失败：${response.status}` }, response.status);
+  const userToken = user?.fileAccess && (!user.fileAccessExp || Date.now() < user.fileAccessExp)
+    ? await openSessionSeal(user.fileAccess, env)
+    : "";
+  // Personal drive permissions are evaluated with the reader's OAuth token
+  // first. The application token remains a fallback for table-owned files.
+  let response = null;
+  let failure = "";
+  for (const accessToken of [userToken, token].filter(Boolean)) {
+    response = await fetch(downloadUrl.toString(), { headers: { Authorization: `Bearer ${accessToken}` } });
+    if (response.ok) break;
+    failure = await response.text().catch(() => "");
+  }
+  if (!response?.ok) {
+    const status = response?.status || 502;
+    const needsFreshLogin = !userToken || status === 401 || status === 403;
+    return json({
+      error: failure || `下载文件失败：${status}`,
+      code: "FILE_ACCESS_DENIED",
+      relogin: needsFreshLogin,
+      hint: needsFreshLogin ? "请重新登录飞书后再次打开文件。" : "请确认你拥有该飞书文件的访问权限。"
+    }, status);
   }
   const headers = new Headers(response.headers);
   headers.set("Access-Control-Allow-Origin", "*");
@@ -787,7 +982,12 @@ async function userAccessToken(appToken, code) {
   });
   const result = await response.json();
   if (!response.ok || result.code) throw new Error(JSON.stringify(result));
-  return result.data?.access_token;
+  const accessToken = result.data?.access_token;
+  if (!accessToken) throw new Error("飞书未返回用户授权令牌");
+  return {
+    accessToken,
+    expiresAt: Date.now() + Math.max(60, Number(result.data?.expires_in || 7200) - 60) * 1000
+  };
 }
 
 async function userInfo(userToken) {
@@ -853,6 +1053,13 @@ function base64UrlEncodeBytes(bytes) {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
+}
+
+function base64UrlDecodeBytes(value) {
+  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, char => char.charCodeAt(0));
 }
 
 function toBase64(value) {
