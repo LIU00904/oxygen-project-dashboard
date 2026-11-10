@@ -346,9 +346,13 @@ function canonicalProjectName(value) {
 }
 
 function chinaNow(value = new Date()) {
+  /** @type {Record<string, string>} */
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", weekday: "short", hourCycle: "h23"
-  }).formatToParts(value).reduce((out, part) => ({ ...out, [part.type]: part.value }), {});
+  }).formatToParts(value).reduce((out, part) => {
+    out[part.type] = part.value;
+    return out;
+  }, /** @type {Record<string, string>} */ ({}));
   const weekday = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[parts.weekday];
   return { date: `${parts.year}-${parts.month}-${parts.day}`, hour: Number(parts.hour), minute: Number(parts.minute), weekday };
 }
@@ -1044,7 +1048,7 @@ function cycleDays(startDate, endDate) {
   if (!startDate || !endDate) return "";
   const start = new Date(`${startDate}T00:00:00Z`);
   const end = new Date(`${endDate}T00:00:00Z`);
-  const diff = Math.round((end - start) / 86400000);
+  const diff = Math.round((end.getTime() - start.getTime()) / 86400000);
   return Number.isFinite(diff) && diff > 0 ? diff : "";
 }
 
@@ -1072,7 +1076,7 @@ function progressPercent(status, startDate, cycle) {
   const start = new Date(`${startDate}T00:00:00Z`);
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  const elapsed = Math.max(0, Math.round((today - start) / 86400000));
+  const elapsed = Math.max(0, Math.round((today.getTime() - start.getTime()) / 86400000));
   return Math.max(0, Math.min(100, Math.round((elapsed / Number(cycle)) * 100)));
 }
 
