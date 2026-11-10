@@ -45,28 +45,28 @@
   // 飞书项目表中残留的历史负责人字段；其他项目仍继续读取飞书实时字段。
   const CONFIRMED_TEAM_ASSIGNMENTS = [
     {project:'太太乐松茸鲜', label:'太太乐', members:[
-      {name:'刘依晨', duties:['数据表','周报 / 月报 / 季报','引擎审计报告','写稿 10 篇 / 周','发稿 ≥20 篇 / 周']},
+      {name:'刘依晨', duties:['数据表','周三周报','每月 10 日月报 / 季报','引擎审计报告','写稿 10 篇 / 周','发稿 ≥20 篇 / 周']},
       {name:'徐奕旸', duties:['数据表']},
       {name:'彭安迪', duties:['监测 2 次 / 周']}
     ]},
     {project:'西门子', label:'西门子', members:[
-      {name:'徐奕旸', duties:['项目经理','写稿 10 篇 / 周','发稿 20 篇 / 周','周报','深演监测']}
+      {name:'徐奕旸', duties:['项目经理','写稿 10 篇 / 周','发稿 20 篇 / 周','周报','深演监测','周五完成下周稿件']}
     ]},
     {project:'赏·会所', label:'赏会所', members:[
-      {name:'徐奕旸', duties:['项目经理','写稿 4 篇 / 周','发稿 ≥6 篇 / 周','月报','视频 5 条 / 月']}
+      {name:'徐奕旸', duties:['项目经理','周三写稿 4 篇','周四发稿 ≥6 篇','月报','视频 5 条 / 月']}
     ]},
     {project:'广百', label:'广百', members:[
       {name:'徐奕旸', duties:['项目经理','写稿 ≥25 篇 / 周','发稿暂定','双周报','月报','监测 2 次 / 周']}
     ]},
-    {project:'华硕', label:'华硕', members:[
+    {project:'华硕 新', label:'华硕新', members:[
       {name:'向昱筱 Cheryl', duties:['项目经理','写稿']},
       {name:'韩文静', duties:['写稿 50 篇 / 周','发稿 100 篇 / 周']},
       {name:'刘依晨', duties:['核心稿件发布约 50 篇 / 周']}
     ]},
     {project:'哲库林 润喉糖', label:'哲库林', members:[
       {name:'辛味珈', duties:['项目经理']},
-      {name:'彭安迪', duties:['写稿 10 篇 / 周']},
-      {name:'徐奕旸', duties:['发稿约 25 篇 / 周']},
+      {name:'彭安迪', duties:['周一交 10 篇稿件']},
+      {name:'徐奕旸', duties:['发稿约 25 篇 / 周','周一跟进发稿']},
       {name:'系统', duties:['监测']}
     ]},
     {project:'咪咕体育', label:'咪咕 · 影之刃', members:[
@@ -94,6 +94,45 @@
   // 兼容已保存的旧待办姓名，展示时统一回当前的正式姓名。
   CHECKLIST_MEMBER_MAP['辛味加']=CHECKLIST_MEMBER_MAP['辛味珈'];
   CHECKLIST_MEMBER_MAP['徐奕畅']=CHECKLIST_MEMBER_MAP['徐奕旸'];
+  // 固定交付节奏由小橙在 2026-11-09 逐项确认。它是 Checklist 的提醒依据，
+  // 不从历史任务记录中推断，避免把一次性的旧任务误做成每周提醒。
+  const REMINDER_POLICY = {
+    morning:'每天 10:00 提醒当天待办',
+    afternoon:'每天 15:00 对未完成待办再次提醒',
+    monthly:'月报节点提前 7 天开始提醒'
+  };
+  const PROJECT_DELIVERY_RULES = {
+    '太太乐松茸鲜': [
+      {type:'weekly',weekday:1,title:'本周数据表与发布目标',owner:'刘依晨、徐奕旸',detail:'更新数据表；本周写稿 10 篇、发稿至少 20 篇'},
+      {type:'weekly',weekday:1,title:'本周监测安排',owner:'彭安迪',detail:'本周完成 2 次监测并同步结果'},
+      {type:'weekly',weekday:3,title:'提交周报',owner:'刘依晨',detail:'每周三交周报；整理本周发布、数据与审计进度'},
+      {type:'monthly',day:10,title:'提交月报',owner:'刘依晨',detail:'每月 10 日提交月报；提前 7 天进入提醒'}
+    ],
+    '西门子': [
+      {type:'weekly',weekday:1,title:'本周交付目标',owner:'徐奕旸',detail:'本周写稿 10 篇、发稿 20 篇，完成周报与深演监测'},
+      {type:'weekly',weekday:5,title:'完成下周稿件',owner:'徐奕旸',detail:'每周五完成下一周稿件排期与写稿准备'}
+    ],
+    '赏·会所': [
+      {type:'weekly',weekday:3,title:'完成本周写稿',owner:'徐奕旸',detail:'每周三完成写稿（4 篇）'},
+      {type:'weekly',weekday:4,title:'完成本周发稿',owner:'徐奕旸',detail:'每周四完成发稿（至少 6 篇）'}
+    ],
+    '广百': [
+      {type:'weekly',weekday:1,title:'本周交付目标',owner:'徐奕旸',detail:'本周写稿至少 25 篇；安排 2 次监测，推进双周报与月报'}
+    ],
+    '华硕 新': [
+      {type:'weekly',weekday:1,title:'本周内容与发布目标',owner:'向昱筱 Cheryl、韩文静、刘依晨',detail:'写稿 50 篇、发稿 100 篇；核心稿件约 50 篇，项目经理汇总推进情况'}
+    ],
+    '哲库林 润喉糖': [
+      {type:'weekly',weekday:1,title:'提交 10 篇稿件',owner:'彭安迪',detail:'每周一交付 10 篇稿件'},
+      {type:'weekly',weekday:1,title:'跟进本周发稿',owner:'徐奕旸',detail:'发稿无固定篇数；每周一提醒跟进发布进度'}
+    ],
+    '咪咕体育': [
+      {type:'weekly',weekday:1,title:'本周交付目标',owner:'彭安迪、刘依晨',detail:'本周写稿 22 篇、发稿约 70 篇'}
+    ],
+    '头道汤': [
+      {type:'manual',title:'外包项目跟进',owner:'辛味珈',detail:'项目已外包；按外包方节点更新进度'}
+    ]
+  };
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
   const TODO_KEY = 'oxygen-dashboard-local-todos-v1';
@@ -104,6 +143,8 @@
   let todoPoll = null;
   let todoSyncState = 'connecting';
   let todoMutationInFlight = false;
+  let reminderPoll = null;
+  const REMINDER_SEEN_KEY = 'oxygen-dashboard-reminder-seen-v1';
   const e = x => String(x == null ? '' : x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const url = x => /^(https?:|mailto:)/i.test(String(x||'')) ? String(x) : '';
   function decodeUser(value){try{return JSON.parse(decodeURIComponent(escape(atob(value))))}catch{return null}}
@@ -363,6 +404,10 @@
   }
   function todoStatusLabel(s){return ({todo:'待处理',doing:'进行中',done:'已完成'})[s]||'待处理'}
   function ymd(d){return d.toISOString().slice(0,10)}
+  function localYmd(d=new Date()){
+    const value=new Date(d);
+    return `${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,'0')}-${String(value.getDate()).padStart(2,'0')}`;
+  }
   function nextWeekday(weekday){
     const today=new Date();today.setHours(0,0,0,0);const d=new Date(today);
     let delta=(weekday-d.getDay()+7)%7;if(delta===0) delta=7;d.setDate(d.getDate()+delta);return d;
@@ -371,6 +416,66 @@
   function nextMonthDay(day){const today=new Date();today.setHours(0,0,0,0);let d=new Date(today.getFullYear(),today.getMonth(),day);if(d<=today)d=new Date(today.getFullYear(),today.getMonth()+1,day);return d}
   function dayLabel(d){return d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}).replace('周','周')}
   function shortDate(d){return `${d.getMonth()+1}月${d.getDate()}日`}
+  function ruleDate(rule,{inclusive=true}={}){
+    const today=new Date();today.setHours(0,0,0,0);
+    if(rule.type==='weekly'){
+      const due=new Date(today);let delta=(rule.weekday-due.getDay()+7)%7;
+      if(!inclusive&&delta===0)delta=7;due.setDate(due.getDate()+delta);return due;
+    }
+    if(rule.type==='monthly'){
+      let due=new Date(today.getFullYear(),today.getMonth(),rule.day);
+      if(due<today||(!inclusive&&due<=today))due=new Date(today.getFullYear(),today.getMonth()+1,rule.day);
+      return due;
+    }
+    return null;
+  }
+  function deliveryRulesFor(p){
+    return (PROJECT_DELIVERY_RULES[p.name]||[]).map(rule=>({...rule,date:ruleDate(rule)}));
+  }
+  function ruleReminderItems(now=new Date()){
+    const today=new Date(now);today.setHours(0,0,0,0);
+    return projects.flatMap(project=>(PROJECT_DELIVERY_RULES[project.name]||[]).flatMap(rule=>{
+      if(rule.type==='weekly'&&today.getDay()===rule.weekday)return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'固定交付'}];
+      if(rule.type==='monthly'){
+        const due=ruleDate(rule,{inclusive:true});const days=Math.round((due-today)/86400000);
+        if(days===7||days===0)return [{project:project.name,title:rule.title,owner:rule.owner,detail:days?`距月报 ${days} 天：${rule.detail}`:rule.detail,kind:'月报提醒'}];
+      }
+      return [];
+    }));
+  }
+  function reminderToast(message){
+    document.querySelector('.reminder-toast')?.remove();
+    const toast=document.createElement('div');toast.className='reminder-toast';toast.innerHTML=`<b>今日待办提醒</b><span>${e(message)}</span><button type="button" aria-label="关闭">×</button>`;
+    toast.querySelector('button').addEventListener('click',()=>toast.remove());document.body.append(toast);
+    setTimeout(()=>toast.remove(),9000);
+  }
+  function reminderSeen(slot){
+    try{return localStorage.getItem(REMINDER_SEEN_KEY)===`${localYmd()}-${slot}`;}catch{return false;}
+  }
+  function markReminderSeen(slot){try{localStorage.setItem(REMINDER_SEEN_KEY,`${localYmd()}-${slot}`)}catch{}}
+  function runReminderCheck(){
+    const now=new Date(), hour=now.getHours(), slot=hour===10?'morning':hour===15?'afternoon':'';
+    if(!slot||reminderSeen(slot))return;
+    const today=localYmd(now);
+    const open=todos().filter(item=>item.date===today&&item.status!=='done');
+    const fixed=slot==='morning'?ruleReminderItems(now):[];
+    const items=[...fixed,...open.map(item=>({project:item.project,title:item.title,owner:item.owner,kind:'Checklist'}))];
+    if(!items.length){markReminderSeen(slot);return;}
+    markReminderSeen(slot);
+    const text=items.slice(0,3).map(item=>`${item.project} · ${item.title}`).join('；')+(items.length>3?` 等 ${items.length} 项`:'' );
+    reminderToast(slot==='morning'?`10:00 · ${text}`:`15:00 · 仍有 ${items.length} 项未完成：${text}`);
+    if('Notification' in window&&Notification.permission==='granted')new Notification(slot==='morning'?'氧气项目 · 今日待办':'氧气项目 · 未完成待办提醒',{body:text});
+  }
+  function startReminderPolling(){
+    runReminderCheck();
+    if(reminderPoll)return;
+    reminderPoll=setInterval(runReminderCheck,60000);
+  }
+  async function enableBrowserReminders(){
+    if(!('Notification' in window)){alert('当前浏览器不支持系统通知；项目内仍会在页面打开时显示提醒。');return;}
+    const permission=await Notification.requestPermission();
+    reminderToast(permission==='granted'?'浏览器提醒已开启：10:00 与 15:00 会按规则检查当天待办。':'未授予系统通知权限；项目内提醒仍会在页面打开时出现。');
+  }
   function ownersFor(p){
     const confirmed=confirmedAssignmentFor(p);
     if(confirmed)return confirmed.members.filter(member=>member.name!=='系统').map(member=>member.name);
@@ -466,7 +571,7 @@
   }
   function checklist(p){
     const items=todos().filter(item=>item.project===p.name).sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')||String(a.date).localeCompare(String(b.date)));
-    return `<section class="project-checklist"><div class="section-head"><div><h2>项目 Checklist</h2><p>重点待办、负责人、DDL 与优先级统一同步给项目成员。</p></div><button type="button" class="add-todo" data-add-project-todo="${e(p.name)}"><span>+</span> 新建待办</button></div><div class="checklist-head"><span>事项</span><span>优先级</span><span>DDL</span><span>负责人</span><span></span></div><div class="checklist-list">${items.length?items.map(item=>`<article class="check-row ${item.status==='done'?'is-done':''}"><label class="todo-check"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''} aria-label="完成 ${e(item.title)}"><span><b>${e(item.title)}</b>${item.description?`<small>${e(item.description)}</small>`:''}</span></label><em class="priority ${e(item.priority||'P2').toLowerCase()}">${e(item.priority||'P2')}</em><time>${dt(item.date)}</time><span class="check-owner">${item.owner?checklistAvatar(item.owner):''}<b>${e(item.owner||'待选择')}</b></span><button type="button" class="todo-edit" data-todo-edit="${e(item.id)}" aria-label="编辑 ${e(item.title)}">${icon('more',17)}</button></article>`).join(''):'<div class="checklist-empty"><span>◌</span><b>还没有重点待办</b><p>点击右上角新建，指定项目成员、DDL 和优先级。</p></div>'}</div></section>`;
+    return `<section class="project-checklist"><div class="section-head"><div><h2>项目 Checklist</h2><p>10:00 提醒当天待办；15:00 仅再次提醒未完成事项，并同步给项目成员。</p></div><div class="checklist-actions"><button type="button" class="quiet-reminder" data-enable-reminders>开启提醒</button><button type="button" class="add-todo" data-add-project-todo="${e(p.name)}"><span>+</span> 新建待办</button></div></div><div class="checklist-head"><span>事项</span><span>优先级</span><span>DDL</span><span>负责人</span><span></span></div><div class="checklist-list">${items.length?items.map(item=>`<article class="check-row ${item.status==='done'?'is-done':''}"><label class="todo-check"><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''} aria-label="完成 ${e(item.title)}"><span><b>${e(item.title)}</b>${item.description?`<small>${e(item.description)}</small>`:''}</span></label><em class="priority ${e(item.priority||'P2').toLowerCase()}">${e(item.priority||'P2')}</em><time>${dt(item.date)}</time><span class="check-owner">${item.owner?checklistAvatar(item.owner):''}<b>${e(item.owner||'待选择')}</b></span><button type="button" class="todo-edit" data-todo-edit="${e(item.id)}" aria-label="编辑 ${e(item.title)}">${icon('more',17)}</button></article>`).join(''):'<div class="checklist-empty"><span>◌</span><b>还没有重点待办</b><p>点击右上角新建，指定项目成员、DDL 和优先级。</p></div>'}</div></section>`;
   }
   function checklistMemberPicker(selected=''){
     return `<div class="member-picker" role="group" aria-label="选择负责人"><input type="hidden" name="owner" value="${e(selected)}">${memberOptions().map(member=>`<button type="button" class="member-option ${member.name===selected?'selected':''}" data-owner-option="${e(member.name)}" aria-pressed="${member.name===selected?'true':'false'}">${checklistAvatar(member.name)}<span>${e(member.name)}</span></button>`).join('')}</div>`;
@@ -499,6 +604,17 @@
     }
     return `<section class="project-dynamics" id="project-dynamics"><div class="section-head"><div><h2>近期动态</h2><p>优先展示飞书周报工作记录；没有周报时展示最近订单发布变化。</p></div><small>last update · ${e(pub.updatedAt||'—')}</small></div><div class="dynamics-rail">${items.map((item,index)=>`<article class="dynamic-item ${index===0?'is-current':''}"><i>${String(index+1).padStart(2,'0')}</i><div><small>${e(item.label)}</small><b>${e(item.title)}</b><p>${e(item.text)}</p></div></article>`).join('')}</div></section>`;
   }
+  function deliveryRhythm(p){
+    const rules=deliveryRulesFor(p);
+    if(!rules.length)return '';
+    const card=rule=>{
+      if(!rule.date)return `<article class="rhythm-item is-manual"><span class="rhythm-dot">·</span><div><small>排期待确认</small><b>${e(rule.title)}</b><p>${e(rule.detail)}</p></div><em>${e(rule.owner)}</em></article>`;
+      const days=Math.max(0,Math.ceil((rule.date-new Date())/86400000));
+      const reminder=rule.type==='monthly'?'提前 7 天提醒':'当天 10:00 提醒';
+      return `<article class="rhythm-item"><span class="rhythm-dot">${rule.type==='monthly'?'月':'周'}</span><div><small>${e(dayLabel(rule.date))} · ${days===0?'今天':`${days} 天后`}</small><b>${e(rule.title)}</b><p>${e(rule.detail)}</p></div><em>${e(rule.owner)}<i>${reminder}</i></em></article>`;
+    };
+    return `<section class="delivery-rhythm" id="project-rhythm"><div class="section-head"><div><h2>固定交付节奏</h2><p>项目节点按日期提醒：${REMINDER_POLICY.morning}；${REMINDER_POLICY.afternoon}。</p></div><button type="button" class="quiet-reminder" data-enable-reminders>开启浏览器提醒</button></div><div class="rhythm-list">${rules.map(card).join('')}</div></section>`;
+  }
   function projectPage(id) {
     const p=one(id); if(!p)return shell(`${header('项目未找到','该项目可能已被移动或删除。')}<a class="back-link" href="#/overview">返回项目总览</a>`);
     const pub=publicationFor(p), target=kpiTarget(p), achieved=pub.total, ratio=target?Math.round(achieved/target*100):null;
@@ -509,6 +625,7 @@
       <nav class="command-tabs"><button class="active" data-scroll="project-summary">项目概览</button><button data-scroll="project-publication">发布数据</button><button data-scroll="project-checklist">Checklist</button><button data-scroll="project-files">文件资料</button></nav>
       <section class="project-command project-command-unified" id="project-summary"><div class="project-orbit orbit-one"></div><div class="project-orbit orbit-two"></div><div class="command-eyebrow"><span>${badge(p.status)}</span><b>${e(projectTime(p))}</b></div><div class="project-command-main"><article class="publication-kpi"><small>累计有效发布</small><strong>${achieved.toLocaleString()}<em> 篇</em></strong><p>按完整订单中的有效发布链接统计</p></article><article class="target-kpi"><div><small>发布 KPI</small><strong>${target?`${achieved.toLocaleString()} / ${target.toLocaleString()}`:'以飞书项目表为准'}</strong></div>${target?`<div class="kpi-track"><i style="width:${Math.min(100,ratio)}%"></i></div><p>${ratio}% · ${achieved>=target?'已完成目标':`还差 ${(target-achieved).toLocaleString()} 篇`}</p>`:`<p>项目表未提供“篇数”型目标，完整 KPI 列在下方。</p>`}</article><article class="project-status-readout"><small>项目进度</small><strong>${progress(p)}%</strong><i><b style="width:${progress(p)}%"></b></i><span>${e(p.kpiStatus||p.status)}</span></article></div></section>
       <section class="project-kpi-list"><div><h2>项目 KPI</h2><p>完整引用飞书项目表，不再只截取其中一条。</p></div><ol>${kpiText.map(item=>`<li>${e(item)}</li>`).join('')}</ol></section>
+      ${deliveryRhythm(p)}
       ${projectRecentDynamics(p,pub)}
       <section class="project-main-grid"><article class="publication-card" id="project-publication"><div class="section-head"><div><h2>月度发布情况</h2><p>每根柱代表当月有效发布订单。点击柱形查看数值。</p></div><strong>${achieved.toLocaleString()}<small> 篇</small></strong></div>${monthlyChart(p,pub)}</article>${checklist(p)}</section>
       <section class="project-members" id="project-members"><div class="section-head"><div><h2>项目成员</h2><p>${confirmedAssignmentFor(p)?'采用已确认的当前运营分工。':'成员信息由飞书项目表实时刷新。'}</p></div></div><div class="member-rail">${members.length?members.map(member=>`<div>${av(member.name)}<span><b>${e(member.name)}</b><small>${e(member.role)}</small></span></div>`).join(''):`<p class="chart-empty">${p._memberSource==='live'?'飞书项目表尚未填写项目成员。':'正在从飞书项目表核对当前成员…'}</p>`}</div></section>
@@ -576,6 +693,7 @@
     document.querySelectorAll('[data-scroll]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'})));
     document.querySelectorAll('[data-overview-chart]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-overview-chart]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('[data-rhythm]').forEach(x=>x.classList.toggle('hidden',x.dataset.rhythm!==b.dataset.overviewChart));}));
     document.querySelector('[data-bell]')?.addEventListener('click',ev=>ev.currentTarget.classList.toggle('ring'));
+    document.querySelectorAll('[data-enable-reminders]').forEach(button=>button.addEventListener('click',enableBrowserReminders));
     document.querySelectorAll('.period button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.period button').forEach(x=>x.classList.toggle('active',x===b))));
     document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',async()=>{
       if(todoMutationInFlight)return;
@@ -700,6 +818,7 @@
     // Checklist 以共享库为准：首次进入和回到前台都会拉取，随后每 15 秒轻量同步一次。
     refreshTodosFromCloud({rerender:true});
     startTodoPolling();
+    startReminderPolling();
   }
   addEventListener('hashchange',render);render();
 })();
