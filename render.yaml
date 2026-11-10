@@ -2,6 +2,7 @@ services:
   - type: web
     name: oxygen-feishu-event-proxy
     runtime: node
+    plan: free
     rootDir: render-bot-proxy
     buildCommand: "true"
     startCommand: "npm start"
