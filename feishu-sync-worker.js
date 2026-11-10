@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261109-project-group-reminders-v1";
+const WORKER_VERSION = "20261110-total-group-test-v2";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -310,7 +310,8 @@ async function ensureReminderSchema(env) {
   if (!env.TODOS_DB) throw new HttpError("待办同步库尚未绑定", 503);
   await ensureTodoSchema(env);
   if (!reminderSchemaReady) {
-    reminderSchemaReady = env.TODOS_DB.batch([
+    reminderSchemaReady = (async () => {
+      await env.TODOS_DB.batch([
       env.TODOS_DB.prepare(`CREATE TABLE IF NOT EXISTS project_chat_bindings (
         project TEXT PRIMARY KEY,
         chat_id TEXT NOT NULL UNIQUE,
@@ -318,6 +319,16 @@ async function ensureReminderSchema(env) {
         bound_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )`),
+      // v2 deliberately does not make chat_id unique: a temporary total project
+      // group can receive reminders from many projects during the rollout phase.
+      env.TODOS_DB.prepare(`CREATE TABLE IF NOT EXISTS project_chat_bindings_v2 (
+        project TEXT PRIMARY KEY,
+        chat_id TEXT NOT NULL,
+        bound_by TEXT NOT NULL DEFAULT '',
+        bound_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`),
+      env.TODOS_DB.prepare("CREATE INDEX IF NOT EXISTS idx_project_chat_bindings_v2_chat ON project_chat_bindings_v2(chat_id)"),
       env.TODOS_DB.prepare(`CREATE TABLE IF NOT EXISTS reminder_dispatches (
         dispatch_key TEXT PRIMARY KEY,
         project TEXT NOT NULL,
@@ -325,7 +336,11 @@ async function ensureReminderSchema(env) {
         dispatched_at TEXT NOT NULL
       )`),
       env.TODOS_DB.prepare("CREATE INDEX IF NOT EXISTS idx_reminder_dispatches_created ON reminder_dispatches(dispatched_at)")
-    ]).catch(error => {
+      ]);
+      // Preserve any legacy one-project-per-chat bindings when upgrading.
+      await env.TODOS_DB.prepare(`INSERT OR IGNORE INTO project_chat_bindings_v2 (project, chat_id, bound_by, bound_at, updated_at)
+        SELECT project, chat_id, bound_by, bound_at, updated_at FROM project_chat_bindings`).run();
+    })().catch(error => {
       reminderSchemaReady = null;
       throw error;
     });
@@ -467,8 +482,23 @@ async function reserveDispatch(env, dispatchKey, project, slot) {
 
 async function activeBindings(env) {
   await ensureReminderSchema(env);
-  const { results = [] } = await env.TODOS_DB.prepare("SELECT project, chat_id FROM project_chat_bindings").all();
+  const { results = [] } = await env.TODOS_DB.prepare("SELECT project, chat_id FROM project_chat_bindings_v2").all();
   return new Map(results.map(row => [row.project, row.chat_id]));
+}
+
+async function bindProjectToChat(env, project, chatId, boundBy) {
+  await ensureReminderSchema(env);
+  const now = new Date().toISOString();
+  await env.TODOS_DB.prepare(`INSERT INTO project_chat_bindings_v2 (project, chat_id, bound_by, bound_at, updated_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(project) DO UPDATE SET chat_id = excluded.chat_id, bound_by = excluded.bound_by, updated_at = excluded.updated_at`
+  ).bind(project, chatId, boundBy || "飞书成员", now, now).run();
+}
+
+async function bindAllProjectsToChat(env, chatId, boundBy) {
+  const projects = Object.keys(PROJECT_REMINDER_RULES);
+  for (const project of projects) await bindProjectToChat(env, project, chatId, boundBy);
+  return projects;
 }
 
 async function openChecklistDueToday(env, ymd) {
@@ -540,7 +570,7 @@ async function handleReminderGroups(request, env, requestUrl) {
   await ensureReminderSchema(env);
   const rawProject = decodeURIComponent(requestUrl.pathname.replace(/^\/reminder-groups\/?/, ""));
   if (request.method === "GET") {
-    const { results = [] } = await env.TODOS_DB.prepare("SELECT project, chat_id, bound_by, bound_at, updated_at FROM project_chat_bindings ORDER BY project").all();
+    const { results = [] } = await env.TODOS_DB.prepare("SELECT project, chat_id, bound_by, bound_at, updated_at FROM project_chat_bindings_v2 ORDER BY project").all();
     return json({ ok: true, bindings: results.map(item => ({ ...item, chatId: item.chat_id })) });
   }
   if (request.method === "POST") {
@@ -549,19 +579,13 @@ async function handleReminderGroups(request, env, requestUrl) {
     const chatId = String(body.chatId || "").trim();
     if (!project || !chatId) return json({ error: "项目和 chatId 均为必填" }, 400);
     if (!PROJECT_REMINDER_RULES[project]) return json({ error: "该项目尚未配置提醒规则" }, 400);
-    const now = new Date().toISOString();
-    // 一个项目群只对应一个项目；重新绑定时先释放这个群此前的绑定，避免 chat_id 唯一约束报错。
-    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings WHERE chat_id = ? AND project != ?").bind(chatId, project).run();
-    await env.TODOS_DB.prepare(`INSERT INTO project_chat_bindings (project, chat_id, bound_by, bound_at, updated_at)
-      VALUES (?, ?, ?, ?, ?)
-      ON CONFLICT(project) DO UPDATE SET chat_id = excluded.chat_id, bound_by = excluded.bound_by, updated_at = excluded.updated_at`
-    ).bind(project, chatId, todoActor(user), now, now).run();
+    await bindProjectToChat(env, project, chatId, todoActor(user));
     return json({ ok: true, project, chatId });
   }
   if (request.method === "DELETE") {
     const project = canonicalProjectName(rawProject);
     if (!project) return json({ error: "缺少项目名" }, 400);
-    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings WHERE project = ?").bind(project).run();
+    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings_v2 WHERE project = ?").bind(project).run();
     return json({ ok: true, project });
   }
   return json({ error: "Method not allowed" }, 405);
@@ -590,26 +614,54 @@ async function handleBotEvent(request, env) {
     .replace(/@_user_\d+/gi, "")
     .replace(/@[\w-]+/g, "")
     .trim();
+  const bindAllMatch = /^(?:绑定)(?:全部|所有)项目$/.test(command);
+  const unbindAllMatch = /^(?:解除)(?:全部|所有)项目$/.test(command);
+  const testAllMatch = /^(?:测试)(?:全部|所有)项目(?:提醒)?$/.test(command);
   const bindMatch = command.match(/(?:^|\s)绑定项目\s+(.+?)\s*$/);
   const unbindMatch = command.match(/(?:^|\s)解除项目\s+(.+?)\s*$/);
-  if (!bindMatch && !unbindMatch) return json({ ok: true });
-  const project = canonicalProjectName((bindMatch || unbindMatch)[1]);
+  if (!bindAllMatch && !unbindAllMatch && !testAllMatch && !bindMatch && !unbindMatch) return json({ ok: true });
   const token = await tenantToken(env);
+  await ensureReminderSchema(env);
+
+  if (bindAllMatch) {
+    const projects = await bindAllProjectsToChat(env, chatId, sender);
+    await sendProjectGroupMessage(token, chatId, `已将当前群设为「总项目测试群」，共绑定 ${projects.length} 个项目：${projects.join("、")}。\n每天 10:00 会发送当天固定节点与 Checklist；15:00 会提醒当天尚未完成的 Checklist。\n现在发送「测试所有项目提醒」，即可立即核验全部项目配置。`);
+    return json({ ok: true, projects });
+  }
+
+  if (unbindAllMatch) {
+    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings_v2 WHERE chat_id = ?").bind(chatId).run();
+    await sendProjectGroupMessage(token, chatId, "已解除当前群的全部项目提醒绑定。");
+    return json({ ok: true });
+  }
+
+  if (testAllMatch) {
+    const directory = await readPeopleDirectory(env, token);
+    const bindings = await activeBindings(env);
+    const projects = Object.entries(PROJECT_REMINDER_RULES).filter(([project]) => bindings.get(project) === chatId);
+    if (!projects.length) {
+      await sendProjectGroupMessage(token, chatId, "当前群尚未绑定项目。请先发送：绑定所有项目");
+      return json({ ok: true });
+    }
+    for (const [project, config] of projects) {
+      const rows = (config.rules || []).map(rule => `• ${rule.title}｜${mention(rule.owner, directory)}\n  ${rule.detail || ""}`).join("\n");
+      const kpi = project === "头道汤" ? "外包项目，不自动催 KPI" : `每周一由 ${mention(config.manager, directory)} 汇报 KPI 完成、差距、风险与下一步`;
+      await sendProjectGroupMessage(token, chatId, `【提醒配置测试】${project}\n项目经理：${mention(config.manager, directory)}\n${rows || "• 暂无固定周期节点"}\n• KPI 快报｜${kpi}`);
+    }
+    await sendProjectGroupMessage(token, chatId, `【测试完成】已发送 ${projects.length} 个项目的提醒配置。后续为单独项目建群后，在新群发送「绑定项目 项目名」，该项目会自动迁移到新群。`);
+    return json({ ok: true, tested: projects.map(([project]) => project) });
+  }
+
+  const project = canonicalProjectName((bindMatch || unbindMatch)[1]);
   if (!PROJECT_REMINDER_RULES[project]) {
     await sendProjectGroupMessage(token, chatId, `未找到「${project}」的提醒配置。请使用项目全名，例如：绑定项目 太太乐松茸鲜`);
     return json({ ok: true });
   }
-  await ensureReminderSchema(env);
   if (bindMatch) {
-    const now = new Date().toISOString();
-    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings WHERE chat_id = ? AND project != ?").bind(chatId, project).run();
-    await env.TODOS_DB.prepare(`INSERT INTO project_chat_bindings (project, chat_id, bound_by, bound_at, updated_at)
-      VALUES (?, ?, ?, ?, ?)
-      ON CONFLICT(project) DO UPDATE SET chat_id = excluded.chat_id, bound_by = excluded.bound_by, updated_at = excluded.updated_at`
-    ).bind(project, chatId, sender, now, now).run();
+    await bindProjectToChat(env, project, chatId, sender);
     await sendProjectGroupMessage(token, chatId, `已绑定「${project}」。固定节点会在当天 10:00 @ 负责人；当天未完成 Checklist 会在 15:00 再提醒一次。`);
   } else {
-    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings WHERE project = ? AND chat_id = ?").bind(project, chatId).run();
+    await env.TODOS_DB.prepare("DELETE FROM project_chat_bindings_v2 WHERE project = ? AND chat_id = ?").bind(project, chatId).run();
     await sendProjectGroupMessage(token, chatId, `已解除「${project}」的项目群绑定。`);
   }
   return json({ ok: true });
