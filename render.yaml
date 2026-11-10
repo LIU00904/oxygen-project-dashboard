@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: oxygen-feishu-event-proxy
+    runtime: node
+    rootDir: render-bot-proxy
+    buildCommand: "true"
+    startCommand: "npm start"
+    healthCheckPath: /health
+    envVars:
+      - key: WORKER_BOT_URL
+        sync: false
