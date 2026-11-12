@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261110-total-group-test-v2";
+const WORKER_VERSION = "20261111-shared-checks-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -31,18 +31,18 @@ const PROJECT_REMINDER_RULES = {
   "太太乐松茸鲜": {
     manager: "刘依晨",
     rules: [
-      { type: "weekly", weekday: 1, title: "本周数据表与发布目标", owner: "刘依晨、徐奕旸", detail: "更新数据表；本周写稿 10 篇、发稿至少 20 篇" },
+      { type: "weekly", weekday: 1, title: "本周发布目标", owner: "刘依晨", detail: "本周写稿 10 篇、发稿至少 20 篇" },
       { type: "weekly", weekday: 1, title: "本周监测安排", owner: "彭安迪", detail: "本周完成 2 次监测并同步结果" },
       { type: "weekly", weekday: 3, title: "提交周报", owner: "刘依晨", detail: "整理本周发布、数据与审计进度" },
       { type: "monthly", day: 10, title: "提交月报", owner: "刘依晨", detail: "提交月度复盘与下月计划", leadDays: 7 }
     ]
   },
-  "西门子": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 1, title: "本周交付目标", owner: "徐奕旸", detail: "本周写稿 10 篇、发稿 20 篇，完成周报与深演监测" }, { type: "weekly", weekday: 5, title: "完成下周稿件", owner: "徐奕旸", detail: "完成下一周稿件排期与写稿准备" }] },
-  "赏·会所": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 3, title: "完成本周写稿", owner: "徐奕旸", detail: "完成写稿 4 篇" }, { type: "weekly", weekday: 4, title: "完成本周发稿", owner: "徐奕旸", detail: "完成发稿至少 6 篇" }] },
-  "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "提交 10 篇稿件", owner: "彭安迪", detail: "每周一交付 10 篇稿件" }, { type: "weekly", weekday: 1, title: "跟进本周发稿", owner: "徐奕旸", detail: "发稿无固定篇数，跟进本周发布进度" }] },
-  "广百": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 1, title: "本周交付目标", owner: "徐奕旸", detail: "本周写稿至少 25 篇；安排 2 次监测，推进双周报与月报" }] },
-  "华硕 新": { manager: "向昱筱 Cheryl", rules: [{ type: "weekly", weekday: 1, title: "本周内容与发布目标", owner: "向昱筱 Cheryl、韩文静、刘依晨", detail: "写稿 50 篇、发稿 100 篇；核心稿件约 50 篇，项目经理汇总推进情况" }] },
-  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "本周交付目标", owner: "彭安迪、刘依晨", detail: "本周写稿 22 篇、发稿约 70 篇" }] },
+  "西门子": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 5, title: "西门子稿件交付与互审", owner: "徐奕旸、韩文静", detail: "各写 5 篇，周五 16:00 前提交，18:00 前互审；徐奕旸负责发稿 10 篇/周" }] },
+  "赏·会所": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 3, title: "赏会所稿件交付", owner: "徐奕旸", detail: "17:00 前提交 5 篇，负责发稿 5 篇/周" }, { type: "weekly", weekday: 3, title: "赏会所审稿", owner: "韩文静", detail: "18:00 前审核 5 篇" }] },
+  "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪、韩文静", detail: "各写 5 篇，16:00 前提交；各审稿 5 篇" }, { type: "weekly", weekday: 1, title: "哲库林发稿", owner: "徐奕旸", detail: "负责发稿 10 篇/周" }] },
+  "广百": { manager: "徐奕旸", inactive: true, rules: [] },
+  "华硕 新": { manager: "向昱筱 Cheryl", rules: [{ type: "weekly", weekday: 1, title: "华硕本周写稿与发稿", owner: "徐奕旸、韩文静、彭安迪、刘依晨", detail: "徐奕旸写 10 篇、韩文静写 20 篇、彭安迪写 10 篇；韩文静和刘依晨各发约 50 篇/周" }] },
+  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "影之刃稿件交付", owner: "彭安迪、徐奕旸、韩文静", detail: "16:00 前分别提交 15、10、5 篇；18:00 前完成交叉审稿，刘依晨发稿约 70 篇/周" }] },
   "头道汤": { manager: "辛味珈", rules: [] }
 };
 const PROJECT_NAME_ALIASES = {
@@ -50,7 +50,7 @@ const PROJECT_NAME_ALIASES = {
   "赏会所": "赏·会所", "赏 会所": "赏·会所", "赏·会所": "赏·会所",
   "华硕": "华硕 新", "华硕新": "华硕 新", "华硕 新": "华硕 新",
   "哲库林": "哲库林 润喉糖", "哲库林润喉糖": "哲库林 润喉糖",
-  "咪咕影之刃": "咪咕体育", "咪咕 影之刃": "咪咕体育", "咪咕体育": "咪咕体育"
+  "咪咕影之刃": "咪咕体育", "咪咕 影之刃": "咪咕体育", "影之刃": "咪咕体育", "咪咕体育": "咪咕体育"
 };
 const FIELD_ALIASES = {
   reportLinks: ["项目报告文件", "报告文件", "报告"],
@@ -145,6 +145,9 @@ export default {
       if (requestUrl.pathname === "/todos" || requestUrl.pathname.startsWith("/todos/")) {
         return handleTodos(request, env, requestUrl);
       }
+      if (requestUrl.pathname === "/fixed-checks") {
+        return await handleFixedChecks(request, env);
+      }
       if (requestUrl.pathname === "/reminder-groups" || requestUrl.pathname.startsWith("/reminder-groups/")) {
         return handleReminderGroups(request, env, requestUrl);
       }
@@ -205,6 +208,23 @@ export default {
     }
   }
 };
+
+async function handleFixedChecks(request, env) {
+  const user = await authorizeRequest(request, env);
+  await ensureFixedChecksSchema(env);
+  if (request.method === "GET") {
+    const { results = [] } = await env.TODOS_DB.prepare("SELECT task_id, done FROM fixed_task_checks").all();
+    return json({ ok: true, checks: Object.fromEntries(results.map(row => [row.task_id, !!row.done])) });
+  }
+  if (request.method === "POST") {
+    const body = await request.json();
+    const id = String(body.id || "");
+    if (!/^\d{4}-\d{2}-\d{2}-.{1,160}$/.test(id) || typeof body.done !== "boolean") return json({ error: "无效的任务状态" }, 400);
+    await env.TODOS_DB.prepare("INSERT INTO fixed_task_checks (task_id, done, updated_at, updated_by) VALUES (?, ?, ?, ?) ON CONFLICT(task_id) DO UPDATE SET done = excluded.done, updated_at = excluded.updated_at, updated_by = excluded.updated_by").bind(id, body.done ? 1 : 0, new Date().toISOString(), todoActor(user)).run();
+    return json({ ok: true, id, done: body.done });
+  }
+  return json({ error: "Method not allowed" }, 405);
+}
 
 async function handleTodos(request, env, requestUrl) {
   const user = await authorizeRequest(request, env);
@@ -400,6 +420,7 @@ function reminderCandidates(now = new Date()) {
   const local = chinaNow(now);
   const results = [];
   for (const [project, config] of Object.entries(PROJECT_REMINDER_RULES)) {
+    if (config.inactive) continue;
     for (const rule of config.rules || []) {
       if (rule.type === "weekly" && rule.weekday === local.weekday) {
         results.push({ key: `${project}|${local.date}|${rule.title}`, project, manager: config.manager, rule, dueDate: local.date, phase: "due" });
@@ -412,16 +433,36 @@ function reminderCandidates(now = new Date()) {
         }
       }
     }
-    // 周一例行 KPI 快报由当前项目经理在项目群汇报；头道汤为外包项目，不自动催 KPI。
-    if (local.weekday === 1 && project !== "头道汤") {
-      results.push({ key: `${project}|${local.date}|kpi-brief`, project, manager: config.manager, rule: { title: "本周 KPI 快报", owner: config.manager, detail: "请同步 KPI 完成情况、当前差距、风险与本周下一步" }, dueDate: local.date, phase: "kpi" });
-    }
   }
   return results;
 }
 
 function reminderTodoId(candidate) {
   return `auto-${candidate.key}`.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g, "-").slice(0, 180);
+}
+
+// IDs match the dated owner/task slots rendered in the weekly calendar.
+function fixedTasksForDay(date) {
+  const weekday = new Date(`${date}T00:00:00+08:00`).getUTCDay();
+  const templates = [
+    {day:0,owner:"徐奕旸",index:0,project:"咪咕体育",title:"提交写稿 10 篇并完成交叉审稿",kind:"稿件"},
+    {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 5 篇并完成审稿",kind:"稿件"},
+    {day:0,owner:"彭安迪",index:1,project:"咪咕体育",title:"提交写稿 15 篇并完成交叉审稿",kind:"稿件"},
+    {day:0,owner:"韩文静",index:0,project:"哲库林 润喉糖",title:"提交写稿 5 篇并完成审稿",kind:"稿件"},
+    {day:0,owner:"韩文静",index:1,project:"咪咕体育",title:"提交写稿 5 篇并完成交叉审稿",kind:"稿件"},
+    {day:2,owner:"刘依晨",index:0,project:"太太乐松茸鲜",title:"提交周报",kind:"周报"},
+    {day:2,owner:"徐奕旸",index:0,project:"赏·会所",title:"提交写稿 5 篇",kind:"写稿"},
+    {day:2,owner:"韩文静",index:0,project:"赏·会所",title:"审核稿件 5 篇",kind:"审稿"},
+    {day:4,owner:"徐奕旸",index:0,project:"西门子",title:"提交写稿 5 篇并完成互审",kind:"稿件"},
+    {day:4,owner:"韩文静",index:0,project:"西门子",title:"提交写稿 5 篇并完成互审",kind:"稿件"}
+  ];
+  const localWeekday = (weekday + 1) % 7;
+  return templates.filter(item=>item.day === (localWeekday+6)%7).map(item=>({...item,id:`${date}-${item.owner}-${item.index}`}));
+}
+
+async function ensureFixedChecksSchema(env) {
+  if (!env.TODOS_DB) throw new HttpError("待办同步库尚未绑定", 503);
+  await env.TODOS_DB.prepare("CREATE TABLE IF NOT EXISTS fixed_task_checks (task_id TEXT PRIMARY KEY, done INTEGER NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL)").run();
 }
 
 async function ensureAutomatedTodo(env, candidate) {
@@ -440,7 +481,7 @@ function escapeAtText(value) {
 }
 
 function normalizePersonName(name) {
-  const raw = String(name || "").trim()
+  const raw = String(name || "").trim().replace(/[（(][^）)]*[）)]$/, "").trim()
     .replace(/^辛味加$/, "辛味珈")
     .replace(/^徐奕畅$/, "徐奕旸");
   return /向昱筱|cheryl/i.test(raw) ? "向昱筱" : raw;
@@ -448,18 +489,14 @@ function normalizePersonName(name) {
 
 function personIdForName(name, directory) {
   const actual = normalizePersonName(name);
-  if (directory.get(actual) || directory.get(name)) return directory.get(actual) || directory.get(name);
-  for (const [candidate, id] of directory.entries()) {
-    const normalized = normalizePersonName(candidate);
-    if (normalized === actual || normalized.startsWith(actual) || actual.startsWith(normalized)) return id;
-  }
-  return "";
+  const matches = [...directory.entries()].filter(([candidate]) => normalizePersonName(candidate) === actual).map(([, id]) => id);
+  return matches.length && matches.every(Boolean) && new Set(matches).size === 1 ? matches[0] : "";
 }
 
 function mention(name, directory) {
   return String(name || "负责人").split(/、|,|，|\//).map(item => item.trim()).filter(Boolean).map(person => {
     const id = personIdForName(person, directory);
-    return id ? `<at user_id="${escapeAtText(id)}">${escapeAtText(person)}</at>` : `@${person}`;
+    return id ? `<at user_id="${escapeAtText(id)}">${escapeAtText(person)}</at>` : `${person}（未匹配群成员）`;
   }).join(" ");
 }
 
@@ -496,7 +533,7 @@ async function bindProjectToChat(env, project, chatId, boundBy) {
 }
 
 async function bindAllProjectsToChat(env, chatId, boundBy) {
-  const projects = Object.keys(PROJECT_REMINDER_RULES);
+  const projects = Object.keys(PROJECT_REMINDER_RULES).filter(project => !PROJECT_REMINDER_RULES[project].inactive);
   for (const project of projects) await bindProjectToChat(env, project, chatId, boundBy);
   return projects;
 }
@@ -517,20 +554,24 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
   const slot = local.hour === 10 ? "morning" : "afternoon";
   const bindings = await activeBindings(env);
   if (!bindings.size) return { skipped: "no-project-groups" };
-  const token = await tenantToken(env);
-  const directory = await readPeopleDirectory(env, token);
+  const token = await botTenantToken(env);
+  const directories = new Map();
+  const directoryFor = async chatId => {
+    if (!directories.has(chatId)) directories.set(chatId, await readChatPeopleDirectory(token, chatId));
+    return directories.get(chatId);
+  };
   const sent = [];
   if (slot === "morning") {
     for (const candidate of reminderCandidates(now)) {
       const chatId = bindings.get(candidate.project);
       if (!chatId) continue;
+      const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|morning|${candidate.key}|${candidate.phase}`;
       if (!(await reserveDispatch(env, dispatchKey, candidate.project, slot))) continue;
-      if (candidate.phase !== "kpi") await ensureAutomatedTodo(env, candidate);
-      const prefix = candidate.phase === "lead" ? "【提前 7 天提醒】" : candidate.phase === "kpi" ? "【本周 KPI 快报】" : "【今日项目节点】";
-      const manager = candidate.manager && candidate.manager !== candidate.rule.owner ? `\n项目经理 ${mention(candidate.manager, directory)} 请同步 KPI 完成、差距、风险与下一步。` : "";
+      await ensureAutomatedTodo(env, candidate);
+      const prefix = candidate.phase === "lead" ? "【提前 7 天提醒】" : "【今日项目节点】";
       const phaseCopy = candidate.phase === "lead" ? `该事项 DDL 为 ${candidate.dueDate}` : "今天请完成并在 Checklist 勾选";
-      const text = `${prefix}\n${mention(candidate.rule.owner, directory)} ${candidate.project} · ${candidate.rule.title}\n${candidate.rule.detail || ""}\n${phaseCopy}${manager}`;
+      const text = `${prefix}\n${mention(candidate.rule.owner, directory)} ${candidate.project} · ${candidate.rule.title}\n${candidate.rule.detail || ""}\n${phaseCopy}`;
       await sendProjectGroupMessage(token, chatId, text);
       sent.push({ project: candidate.project, title: candidate.rule.title, phase: candidate.phase });
     }
@@ -538,6 +579,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       const project = canonicalProjectName(todo.project);
       const chatId = bindings.get(project);
       if (!chatId || String(todo.id || "").startsWith("auto-")) continue;
+      const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|morning|todo|${todo.id}`;
       if (!(await reserveDispatch(env, dispatchKey, project, slot))) continue;
       const text = `【今日 Checklist】\n${mention(todo.owner || "负责人", directory)} ${project} · ${todo.title}\n优先级 ${todo.priority || "P2"}${todo.description ? `\n${todo.description}` : ""}\n请在完成后勾选。`;
@@ -545,10 +587,24 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       sent.push({ project, title: todo.title, phase: "checklist" });
     }
   } else {
+    await ensureFixedChecksSchema(env);
+    for (const task of fixedTasksForDay(local.date)) {
+      const chatId = bindings.get(task.project);
+      if (!chatId) continue;
+      const directory = await directoryFor(chatId);
+      const check = await env.TODOS_DB.prepare("SELECT done FROM fixed_task_checks WHERE task_id = ?").bind(task.id).first();
+      if (check?.done) continue;
+      const dispatchKey = `${local.date}|afternoon|fixed|${task.id}`;
+      if (!(await reserveDispatch(env, dispatchKey, task.project, slot))) continue;
+      await sendProjectGroupMessage(token, chatId, `【15:00 未完成提醒】\n${mention(task.owner, directory)} ${task.project} · ${task.title}\n请在本周待办中更新状态。`);
+      sent.push({ project: task.project, title: task.title, phase: "fixed-overdue" });
+    }
     for (const todo of await openChecklistDueToday(env, local.date)) {
       const project = canonicalProjectName(todo.project);
+      if (String(todo.id || "").startsWith("auto-") && /西门子稿件交付与互审|赏会所稿件交付|赏会所审稿|哲库林稿件交付|影之刃稿件交付|提交周报/.test(todo.title)) continue;
       const chatId = bindings.get(project);
       if (!chatId) continue;
+      const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|afternoon|todo|${todo.id}`;
       if (!(await reserveDispatch(env, dispatchKey, project, slot))) continue;
       const text = `【15:00 未完成提醒】\n${mention(todo.owner || "负责人", directory)} ${project} · ${todo.title} 尚未在 Checklist 完成。\n请更新状态，或同步新的完成时间。`;
@@ -619,8 +675,37 @@ async function handleBotEvent(request, env) {
   const testAllMatch = /^(?:测试)(?:全部|所有)项目(?:提醒)?$/.test(command);
   const bindMatch = command.match(/(?:^|\s)绑定项目\s+(.+?)\s*$/);
   const unbindMatch = command.match(/(?:^|\s)解除项目\s+(.+?)\s*$/);
-  if (!bindAllMatch && !unbindAllMatch && !testAllMatch && !bindMatch && !unbindMatch) return json({ ok: true });
-  const token = await tenantToken(env);
+  if (!bindAllMatch && !unbindAllMatch && !testAllMatch && !bindMatch && !unbindMatch) {
+    if (!/(已提交|已完成|完成了|已交付)/.test(command) || /(未完成|没完成|尚未|未提交|还没|待完成|未交付)/.test(command) || !sender) return json({ ok: true });
+    const token = await botTenantToken(env);
+    await ensureReminderSchema(env);
+    const bindings = await activeBindings(env);
+    const directory = await readChatPeopleDirectory(token, chatId);
+    const owners = [...new Set([...directory.entries()].filter(([,id]) => id === sender).map(([name]) => normalizePersonName(name)))];
+    if (owners.length !== 1) return json({ ok: true });
+    const projects = Object.entries(PROJECT_NAME_ALIASES).filter(([alias,project]) => command.includes(alias) && bindings.get(project) === chatId).map(([,project]) => project);
+    for (const project of Object.keys(PROJECT_REMINDER_RULES)) if (command.includes(project) && bindings.get(project) === chatId) projects.push(project);
+    const uniqueProjects = [...new Set(projects)];
+    if (uniqueProjects.length !== 1) return json({ ok: true });
+    const tasks = fixedTasksForDay(chinaNow(new Date()).date).filter(task => task.owner === owners[0] && task.project === uniqueProjects[0]);
+    if (tasks.length !== 1) return json({ ok: true });
+    const task = tasks[0];
+    const explicit = task.kind === "周报" ? /周报/.test(command) : task.kind === "写稿" ? /写稿|稿件/.test(command) : task.kind === "审稿" ? /审稿|审核/.test(command) : /写稿|稿件/.test(command) && /审稿|审核/.test(command) && /(均已|都已|全部|分别)/.test(command);
+    if (!explicit) return json({ ok: true });
+    const eventId = String(payload.header?.event_id || event.message?.message_id || "").slice(0, 200);
+    if (!eventId) return json({ ok: true });
+    await ensureFixedChecksSchema(env);
+    await env.TODOS_DB.prepare("CREATE TABLE IF NOT EXISTS processed_submission_events (event_id TEXT PRIMARY KEY, processed_at TEXT NOT NULL)").run();
+    const now = new Date().toISOString();
+    const result = await env.TODOS_DB.batch([
+      env.TODOS_DB.prepare("INSERT OR IGNORE INTO processed_submission_events (event_id, processed_at) VALUES (?, ?)").bind(eventId, now),
+      env.TODOS_DB.prepare("INSERT INTO fixed_task_checks (task_id, done, updated_at, updated_by) SELECT ?, 1, ?, ? WHERE changes() = 1 ON CONFLICT(task_id) DO UPDATE SET done = 1, updated_at = excluded.updated_at, updated_by = excluded.updated_by").bind(task.id, now, owners[0])
+    ]);
+    if (!result[0]?.meta?.changes) return json({ ok: true, duplicate: true });
+    await sendProjectGroupMessage(token, chatId, `已记录：${owners[0]} · ${task.project} · ${task.title}。如有误，可在本周待办取消勾选。`);
+    return json({ ok: true, matched: task.id });
+  }
+  const token = await botTenantToken(env);
   await ensureReminderSchema(env);
 
   if (bindAllMatch) {
@@ -636,17 +721,16 @@ async function handleBotEvent(request, env) {
   }
 
   if (testAllMatch) {
-    const directory = await readPeopleDirectory(env, token);
+    const directory = await readChatPeopleDirectory(token, chatId);
     const bindings = await activeBindings(env);
-    const projects = Object.entries(PROJECT_REMINDER_RULES).filter(([project]) => bindings.get(project) === chatId);
+    const projects = Object.entries(PROJECT_REMINDER_RULES).filter(([project, config]) => !config.inactive && bindings.get(project) === chatId);
     if (!projects.length) {
       await sendProjectGroupMessage(token, chatId, "当前群尚未绑定项目。请先发送：绑定所有项目");
       return json({ ok: true });
     }
     for (const [project, config] of projects) {
       const rows = (config.rules || []).map(rule => `• ${rule.title}｜${mention(rule.owner, directory)}\n  ${rule.detail || ""}`).join("\n");
-      const kpi = project === "头道汤" ? "外包项目，不自动催 KPI" : `每周一由 ${mention(config.manager, directory)} 汇报 KPI 完成、差距、风险与下一步`;
-      await sendProjectGroupMessage(token, chatId, `【提醒配置测试】${project}\n项目经理：${mention(config.manager, directory)}\n${rows || "• 暂无固定周期节点"}\n• KPI 快报｜${kpi}`);
+      await sendProjectGroupMessage(token, chatId, `【提醒配置测试】${project}\n${rows || "• 暂无固定周期节点"}`);
     }
     await sendProjectGroupMessage(token, chatId, `【测试完成】已发送 ${projects.length} 个项目的提醒配置。后续为单独项目建群后，在新群发送「绑定项目 项目名」，该项目会自动迁移到新群。`);
     return json({ ok: true, tested: projects.map(([project]) => project) });
@@ -1340,6 +1424,33 @@ function peopleValue(value, directory) {
   const missing = names.filter(name => !directory.has(name));
   if (missing.length) throw new Error(`无法匹配飞书人员：${missing.join("、")}`);
   return names.map(name => ({ id: directory.get(name) }));
+}
+
+async function readChatPeopleDirectory(token, chatId) {
+  const directory = new Map();
+  let pageToken = "";
+  do {
+    const url = new URL(`https://open.feishu.cn/open-apis/im/v1/chats/${encodeURIComponent(chatId)}/members`);
+    url.searchParams.set("member_id_type", "open_id");
+    url.searchParams.set("page_size", "100");
+    if (pageToken) url.searchParams.set("page_token", pageToken);
+    const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const result = await response.json();
+    if (!response.ok || result.code) throw new Error(feishuErrorMessage(result, "读取群成员失败"));
+    for (const person of result.data?.items || []) {
+      if (person.name && person.member_id) {
+        if (!directory.has(person.name)) directory.set(person.name, person.member_id);
+        else if (directory.get(person.name) !== person.member_id) directory.set(person.name, "");
+      }
+    }
+    pageToken = result.data?.has_more ? result.data?.page_token : "";
+  } while (pageToken);
+  return directory;
+}
+
+async function botTenantToken(env) {
+  if (!env.FEISHU_BOT_APP_ID || !env.FEISHU_BOT_APP_SECRET) throw new Error("缺少机器人应用凭证 FEISHU_BOT_APP_ID / FEISHU_BOT_APP_SECRET");
+  return tenantToken({ FEISHU_APP_ID: env.FEISHU_BOT_APP_ID, FEISHU_APP_SECRET: env.FEISHU_BOT_APP_SECRET });
 }
 
 async function tenantToken(env) {
