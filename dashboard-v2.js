@@ -49,9 +49,9 @@
     {project:'西门子',label:'西门子',note:'对接：刘依晨 · 存稿：两周',members:[{name:'刘依晨',duties:['对接']} ]},
     {project:'赏·会所',label:'赏会所',note:'当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
-    {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 5 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
+    {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
     {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周一 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周','数据监测（每天）']}]},
-    {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['报告']}]}
+    {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['周报（每周一）']}]}
   ];
   const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
   const CURRENT_ASSIGNMENT_MEMBERS = ['刘依晨','彭安迪','杨帆','李正浩','向昱筱 Cheryl'];
@@ -76,7 +76,7 @@
   };
   const PROJECT_DELIVERY_RULES = {
     '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
-    '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 5 篇'}],
+    '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
     '咪咕体育': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 15 篇；杨帆每周约 5 篇，交稿日期待定'}],
     '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有两周存稿，刘依晨对接'}],
     '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
@@ -629,7 +629,7 @@
       if(kind==='publish')return {value:count||'负责',note:/\/\s*周/.test(duty)?'每周':'按项目排期'};
       if(kind==='monitor' && /每天/.test(duty))return {value:'负责',note:'每天'};
       if(kind==='monitor')return /\d+\s*次/.test(duty)?{value:(duty.match(/\d+\s*次/)||['待定'])[0].replace(/\s+/g,''),note:'每周 · 弹性'}:{value:'负责',note:'每工作日 · 10 分钟'};
-      if(/^周报/.test(duty))return {value:'周报',note:'每周三'};
+      if(/^周报/.test(duty))return {value:'周报',note:/每周一/.test(duty)?'每周一':'每周三'};
       if(/月报.*季报/.test(duty))return {value:'月报 / 季报',note:'每月 10 日'};
       if(/引擎数据审计/.test(duty))return {value:'引擎数据审计报告',note:'按月'};
       if(/月报/.test(duty))return {value:'月报',note:'每月'};
@@ -702,7 +702,8 @@
     const dayText=d=>`${d.getMonth()+1}月${d.getDate()}日 ${dayName(d)}`;
     const inWeek=d=>d>=monday&&d<=sunday;
     const deliverables=[
-      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
+      {day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交周报',note:''}]},
+      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
       {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
     ];
     const manual=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
