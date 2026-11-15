@@ -526,7 +526,7 @@
       <nav class="command-tabs"><button class="active" data-scroll="command-kpi">项目概览</button><button data-scroll="command-plan">交付计划</button><button data-scroll="command-data">数据分析</button><button data-scroll="command-files">资料入口</button></nav>
       <section class="project-command" id="command-kpi"><div class="command-eyebrow"><span>LIVE PROJECT CONTROL</span><b>第 ${c.week} 周 · ${e(c.weekRange)}</b></div><div class="project-command-main"><article class="publication-kpi"><small>累计有效发稿</small><strong>${c.total}<em> 篇</em></strong><p>完整订单导出 · 仅统计带有效发布链接的订单</p><span>数据更新：${e(c.updatedAt||'—')}</span></article><article class="target-kpi"><div><small>4 月起 KPI</small><strong>${c.achieved} <em>/ ${c.target}</em></strong></div><div class="kpi-track"><i style="width:${Math.min(100,pct)}%"></i></div><p>${pct}% 已达成 · ${gap?`尚差 ${gap} 篇`:'已完成目标'}</p></article><article class="next-kpi"><small>下一关键节点</small><b>${dayLabel(c.milestones[0].date)}</b><strong>${e(c.milestones[0].title)}</strong><span>${e(c.milestones[0].owner)} · ${Math.max(0,Math.ceil((c.milestones[0].date-new Date())/86400000))} 天后</span></article></div></section>
       <section class="delivery-grid" id="command-plan"><article class="delivery-visual"><div class="command-section-title"><div><h2>发布达成</h2><p>太太乐按项目要求分开核对 4 月前和 4 月起的订单，不混算。</p></div><a href="#/calendar?project=${encodeURIComponent(p.name)}">项目待办 ${icon('arrow',14)}</a></div><div class="publication-bars">${periods.map((item,i)=>`<div><span><i style="height:${Math.max(14,Math.round((Number(item.count)||0)/max*118))}px"></i></span><strong>${Number(item.count||0).toLocaleString()}</strong><small>${e(item.label)}</small></div>`).join('')}</div><p class="source-note-line">${e(c.special?.note||'以订单中的发布链接与发布节点作为统计口径。')}</p></article><aside class="milestone-panel"><div class="command-section-title"><div><h2>交付节点</h2><p>点击任一节点进入日历待办</p></div></div><div class="milestone-list">${schedule}</div></aside></section>
-      <section class="team-and-data" id="command-data"><article class="live-team"><div class="command-section-title"><div><h2>当前负责人</h2><p>以下字段在登录后由飞书项目表实时刷新。</p></div><a href="#/workload">成员视图 ${icon('arrow',14)}</a></div><div class="owner-chip-list">${c.members.length?c.members.map(([name,,job])=>`<a href="#/workload?member=${encodeURIComponent(name)}">${av(name)}<span><b>${e(name)}</b><small>${e(job)}</small></span></a>`).join(''):'<p class="chart-empty">飞书尚未填写项目负责人</p>'}</div></article><article class="data-explainer"><span>${icon('pulse',22)}</span><div><h2>数据口径</h2><p>本项目 KPI 使用每周同步的完整订单；拒稿、待发布和无链接订单均不进入有效发稿。</p><small>${e(c.source)} · 更新于 ${e(c.updatedAt||'—')}</small></div></article></section>
+      <section class="team-and-data" id="command-data"><article class="live-team"><div class="command-section-title"><div><h2>当前负责人</h2><p>以下字段在登录后由飞书项目表实时刷新。</p></div><a href="#/workload">成员视图 ${icon('arrow',14)}</a></div><div class="owner-chip-list">${c.members.length?c.members.map(([name,,job])=>`<a href="#/workload?member=${encodeURIComponent(name)}">${av(name)}<span><b>${e(name)}</b><small>${e(job)}</small></span></a>`).join(''):'<p class="chart-empty">飞书尚未填写项目负责人</p>'}</div></article><article class="data-explainer"><span>${icon('pulse',22)}</span><div><h2>数据口径</h2><p>发布数量按订单导出统计并去重；仅计已完成或已发布且有正式链接的记录。报告指标保留各自样本范围。</p><small>${e(c.source)} · 更新于 ${e(c.updatedAt||'—')}</small></div></article></section>
       ${dataSources(p)}<section class="command-files" id="command-files"><div class="command-section-title"><div><h2>资料入口</h2><p>文件不在网页内复制或预览，统一在飞书打开，保证权限、版本和协作一致。</p></div><span>${reports.length+brief.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',brief,'folder')}</div></section>`);
   }
   function kpiTarget(p){
@@ -552,28 +552,34 @@
   }
   function projectRecentDynamics(p,pub){
     const signal=activity[p.name];
-    const report=reportInsights[p.name];
+    const availableReports=window.OXYGEN_REPORT_UPDATES?.[p.name] || (reportInsights[p.name]?[reportInsights[p.name]]:[]);
+    const reportItems=availableReports.length?[{...availableReports[0],details:availableReports.slice(1)}]:[];
     const latest=(pub.months||[]).slice(-1)[0];
     const previous=(pub.months||[]).slice(-2,-1)[0];
     let items=[];
     if(signal){
       const composition=(signal.types||[]).map(([type,value])=>`${type} ${value}`).join(' · ');
       items=[
-        ...(report?[report]:[]),
+        ...reportItems,
         {label:signal.period||'近期工作记录',title:`${signal.main?.label||'项目'}推进`,text:`${signal.main?.detail||'已同步近期项目工作记录。'}${composition?` 本期任务构成：${composition}。`:''}`},
         ...(signal.next?.length?[{label:'下一步',title:'待推进事项',text:signal.next.join('、')}]:[])
       ];
     }else if(latest){
       const compared=previous ? `，较 ${previous.label} ${previous.value} 篇` : '';
       items=[
-        ...(report?[report]:[]),
+        ...reportItems,
         {label:`${latest.label} 发布订单`,title:'月度发布已更新',text:`已归集 ${latest.value.toLocaleString()} 篇有效发布${compared}；当前累计 ${pub.total.toLocaleString()} 篇。`},
         {label:`数据更新 ${pub.updatedAt||'—'}`,title:'等待周报任务同步',text:'该项目暂未匹配到可核验的飞书周报工作记录；周报同步后将自动补充人员与具体任务。'}
       ];
     }else{
-      items=[...(report?[report]:[]),{label:'近期工作记录',title:'等待飞书周报同步',text:'暂未匹配到该项目的有效发布订单或周报工作记录；不会以模板内容代替真实动态。'}];
+      items=[...reportItems,{label:'近期工作记录',title:'等待飞书周报同步',text:'暂未匹配到该项目的有效发布订单或周报工作记录；不会以模板内容代替真实动态。'}];
     }
-    return `<section class="project-dynamics" id="project-dynamics"><div class="section-head"><div><h2>近期动态</h2><p>优先展示飞书周报工作记录；没有周报时展示最近订单发布变化。</p></div><small>last update · ${e(pub.updatedAt||'—')}</small></div><div class="dynamics-rail">${items.map((item,index)=>`<article class="dynamic-item ${index===0?'is-current':''}"><i>${String(index+1).padStart(2,'0')}</i><div><small>${e(item.label)}</small><b>${e(item.title)}</b><p>${e(item.text)}</p></div></article>`).join('')}</div></section>`;
+    const stats=publicationSnapshot.projectStats?.[publicationSourceName(p.name)];
+    if(stats){
+      items.splice(reportItems.length,0,{label:'订单发布 · 截至 2026/11/15',title:`累计 ${pub.total.toLocaleString()} 条有效发布链接`,text:`11 月已归集 ${stats.november} 条，11/09–11/15 共 ${stats.lastWeek} 条；覆盖 ${stats.titles} 个标题，最近正式发布时间 ${stats.latestDate}。同一标题跨媒体发布分别计链接，订单号和正式发布链接均去重。`});
+      items=items.filter(item=>item.title!=='等待周报任务同步'||!reportItems.length);
+    }
+    return `<section class="project-dynamics" id="project-dynamics"><div class="section-head"><div><h2>近期动态</h2><p>按报告原周期呈现分析，发布数量按订单导出独立核对。</p></div><small>last update · ${e(pub.updatedAt||'—')}</small></div><div class="dynamics-rail">${items.map((item,index)=>`<article class="dynamic-item ${index===0?'is-current':''}"><i>${String(index+1).padStart(2,'0')}</i><div><small>${e(item.label)}</small><b>${e(item.title)}</b><p>${e(item.text)}</p>${item.source?`<small>来源：${e(item.source)}</small>`:''}</div></article>`).join('')}</div>${availableReports.length>1?`<details class="report-detail"><summary>展开专项分析与来源（${availableReports.length-1} 项）</summary><div class="report-detail-grid">${availableReports.slice(1).map(detail=>`<article><small>${e(detail.label)}</small><h3>${e(detail.title)}</h3><p>${e(detail.text)}</p><small>来源：${e(detail.source)}</small></article>`).join('')}</div></details>`:''}</section>`;
   }
   function deliveryRhythm(p){
     const rules=deliveryRulesFor(p);
