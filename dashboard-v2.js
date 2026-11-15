@@ -45,62 +45,28 @@
   // 飞书项目表中残留的历史负责人字段；其他项目仍继续读取飞书实时字段。
   // 审稿与发稿分开分配，避免把“审完即发布”误当作固定流程。
   const CONFIRMED_TEAM_ASSIGNMENTS = [
-    {project:'太太乐松茸鲜', label:'太太乐', members:[
-      {name:'刘依晨', duties:['周报（每周三）','月报 / 季报（每月 10 日）','引擎数据审计报告（按月）','写稿 10 篇 / 周','发稿 ≥20 篇 / 周']},
-      {name:'彭安迪', duties:['手动监测 2 次 / 周（弹性）']}
-    ]},
-    {project:'西门子', label:'西门子', members:[
-      {name:'徐奕旸', duties:['写稿 5 篇 / 周（周五 16:00 前）','审稿 5 篇（周五 18:00 前）','发稿 10 篇 / 周','数据监测（每工作日 10 分钟）']},
-      {name:'韩文静', duties:['写稿 5 篇 / 周（周五 16:00 前）','审稿 5 篇（周五 18:00 前）']}
-    ]},
-    {project:'赏·会所', label:'赏会所', members:[
-      {name:'徐奕旸', duties:['写稿 5 篇 / 周（周三 17:00 前）','发稿 5 篇 / 周','月报','视频 5 条 / 月']},
-      {name:'韩文静', duties:['审稿 5 篇（周三 18:00 前）','数据监测（每工作日 10 分钟）']}
-    ]},
-    {project:'广百', label:'广百', members:[
-      {name:'徐奕旸', duties:['写稿 ≥25 篇 / 周','发稿暂定','双周报','月报','每日数据巡检']}
-    ]},
-    {project:'华硕 新', label:'华硕新', members:[
-      {name:'向昱筱 Cheryl', duties:['写稿']},
-      {name:'徐奕旸', duties:['写稿 10 篇 / 周（时间待定）','审稿 20 篇']},
-      {name:'韩文静', duties:['写稿 20 篇 / 周（时间待定）','审稿 10 篇','发稿约 50 篇 / 周']},
-      {name:'彭安迪', duties:['写稿 10 篇 / 周（时间待定）','审稿 10 篇']},
-      {name:'刘依晨', duties:['核心稿件发布约 50 篇 / 周']},
-      {name:'李正浩', duties:['数据监测（每工作日 10 分钟）']}
-    ]},
-    {project:'哲库林 润喉糖', label:'哲库林', members:[
-      {name:'辛味珈', duties:['项目经理']},
-      {name:'彭安迪', duties:['写稿 5 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']},
-      {name:'徐奕旸', duties:['发稿 10 篇 / 周']},
-      {name:'韩文静', duties:['写稿 5 篇 / 周（周一 16:00 前）','审稿 5 篇']}
-    ]},
-    {project:'咪咕体育', label:'咪咕 · 影之刃', members:[
-      {name:'辛味珈', duties:['项目经理']},
-      {name:'彭安迪', duties:['写稿 15 篇 / 周（周一 16:00 前）','审稿 15 篇']},
-      {name:'徐奕旸', duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 10 篇']},
-      {name:'韩文静', duties:['写稿 5 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']},
-      {name:'刘依晨', duties:['发稿约 70 篇 / 周']}
-    ]},
-    {project:'头道汤', label:'头道汤', members:[
-      {name:'辛味珈', duties:['项目经理','项目已外包']}
-    ]}
+    {project:'太太乐松茸鲜',label:'太太乐',members:[{name:'刘依晨',duties:['周报（每周三）','月报 / 季报（每月 10 日）','引擎数据审计报告（按月）','写稿 10 篇 / 周']},{name:'彭安迪',duties:['手动监测 2 次 / 周（弹性）']}]},
+    {project:'西门子',label:'西门子',note:'对接：刘依晨 · 存稿：两周',members:[{name:'刘依晨',duties:['对接']} ]},
+    {project:'赏·会所',label:'赏会所',note:'当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
+    {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
+    {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 5 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
+    {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周一 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周']}]},
+    {project:'广麦',label:'广麦',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']}]}
   ];
   const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
-  const CURRENT_ASSIGNMENT_MEMBERS = ['刘依晨','徐奕旸','韩文静','彭安迪','李正浩','向昱筱 Cheryl'];
+  const CURRENT_ASSIGNMENT_MEMBERS = ['刘依晨','彭安迪','杨帆','李正浩','向昱筱 Cheryl'];
   // Checklist 是全员协作的执行面，只开放当前实际需要分配待办的六位成员。
   // 历史项目成员仍在项目成员区展示，但不会出现在待办分配器中。
   const CHECKLIST_MEMBERS = [
     {name:'刘依晨', avatar:avatars['刘依晨']},
     {name:'辛味珈', avatar:avatars['辛味珈'] || avatars['辛味加']},
-    {name:'徐奕旸', avatar:avatars['徐奕旸'] || avatars['徐奕畅']},
-    {name:'韩文静', avatar:avatars['韩文静']},
+    {name:'杨帆', avatar:avatars['杨帆']},
     {name:'李正浩', avatar:avatars['李正浩']},
     {name:'彭安迪', avatar:avatars['彭安迪']}
   ];
   const CHECKLIST_MEMBER_MAP = Object.fromEntries(CHECKLIST_MEMBERS.map(member=>[member.name,member]));
   // 兼容已保存的旧待办姓名，展示时统一回当前的正式姓名。
   CHECKLIST_MEMBER_MAP['辛味加']=CHECKLIST_MEMBER_MAP['辛味珈'];
-  CHECKLIST_MEMBER_MAP['徐奕畅']=CHECKLIST_MEMBER_MAP['徐奕旸'];
   // 固定交付节奏由小橙在 2026-11-09 逐项确认。它是 Checklist 的提醒依据，
   // 不从历史任务记录中推断，避免把一次性的旧任务误做成每周提醒。
   const REMINDER_POLICY = {
@@ -109,39 +75,12 @@
     monthly:'月报节点提前 7 天开始提醒'
   };
   const PROJECT_DELIVERY_RULES = {
-    '太太乐松茸鲜': [
-      {type:'weekly',weekday:1,title:'本周发布目标',owner:'刘依晨',detail:'本周写稿 10 篇、发稿至少 20 篇'},
-      {type:'weekly',weekday:1,title:'监测安排',owner:'彭安迪',detail:'本周完成 2 次手动监测；时间弹性安排'},
-      {type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交本周发布和数据情况'},
-      {type:'monthly',day:10,title:'提交月报',owner:'刘依晨',detail:'每月 10 日提交月报；提前 7 天进入提醒'}
-    ],
-    '西门子': [
-      {type:'weekly',weekday:5,title:'提交西门子项目稿件',owner:'徐奕旸、韩文静',detail:'两人各 5 篇，于 16:00 前交付并互相审核'},
-      {type:'weekly',weekday:5,title:'互审西门子稿件',owner:'徐奕旸、韩文静',detail:'18:00 前完成各 5 篇审核'},
-      {type:'daily',title:'数据监测',owner:'徐奕旸',detail:'每个工作日花约 10 分钟查看数据趋势'}
-    ],
-    '赏·会所': [
-      {type:'weekly',weekday:3,title:'完成本周写稿',owner:'徐奕旸',detail:'每周三 17:00 前完成写稿 5 篇'},
-      {type:'weekly',weekday:3,title:'完成审稿',owner:'韩文静',detail:'每周三 18:00 前完成审稿'},
-      {type:'daily',title:'数据监测',owner:'韩文静',detail:'每个工作日花约 10 分钟查看数据趋势'}
-    ],
-    '华硕 新': [
-      {type:'weekly',weekday:1,title:'本周写稿与审稿',owner:'徐奕旸、韩文静、彭安迪',detail:'徐奕旸写 10 篇、韩文静写 20 篇、彭安迪写 10 篇；三人分别完成对应审稿'},
-      {type:'daily',title:'数据监测',owner:'李正浩',detail:'每个工作日花约 10 分钟查看数据趋势'}
-    ],
-    '哲库林 润喉糖': [
-      {type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪、韩文静',detail:'两人各写 5 篇，周一 16:00 前交付'},
-      {type:'weekly',weekday:1,title:'完成审稿',owner:'彭安迪、韩文静',detail:'两人各审 5 篇'},
-      {type:'daily',title:'数据监测',owner:'彭安迪',detail:'每个工作日花约 10 分钟查看数据趋势'}
-    ],
-    '咪咕体育': [
-      {type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪、徐奕旸、韩文静',detail:'分别写 15 / 10 / 5 篇，均在周一 16:00 前交付'},
-      {type:'weekly',weekday:1,title:'完成交叉审稿',owner:'彭安迪、徐奕旸、韩文静',detail:'16:00 收稿，18:00 前分别审 15 / 10 / 5 篇'},
-      {type:'daily',title:'数据监测',owner:'韩文静',detail:'每个工作日花约 10 分钟查看数据趋势'}
-    ],
-    '头道汤': [
-      {type:'manual',title:'外包项目跟进',owner:'辛味珈',detail:'项目已外包；按外包方节点更新进度'}
-    ]
+    '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
+    '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 5 篇'}],
+    '咪咕体育': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 15 篇；杨帆每周约 5 篇，交稿日期待定'}],
+    '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有两周存稿，刘依晨对接'}],
+    '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
+    '赏·会所': [{type:'manual',title:'写稿安排',owner:'杨帆',detail:'当前待定，后续约 5 篇 / 周'}]
   };
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
@@ -666,8 +605,8 @@
       ${dataSources(p)}<section class="command-files" id="project-files"><div class="command-section-title"><div><h2>文件资料</h2><p>文件名保留飞书原始名称，点击整行进入对应飞书文件或源表。</p></div><span>${sourceFiles.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',[...briefs,...materials],'folder')}</div></section>${todoDialog(p)}`);
   }
   function workloadPage(){
-    const taskTypes=[['write','写稿','数量 / 周'],['review','审稿','数量 / 周'],['publish','发稿','数量 / 周'],['monitor','监测','项目归属'],['report','报告','周期节点']];
-    const taskKind=duty=>/审稿/.test(duty)?'review':/发稿|发布/.test(duty)?'publish':/监测|巡检|导数|数据表/.test(duty)?'monitor':/周报|月报|季报|报告|数据贴图|框架/.test(duty)?'report':/写稿|视频/.test(duty)?'write':'';
+    const taskTypes=[['write','写稿','数量 / 周'],['review','审稿','数量 / 周'],['monitor','监测','项目归属'],['report','报告','周期节点'],['contact','对接','项目联系']];
+    const taskKind=duty=>/审稿/.test(duty)?'review':/发稿|发布/.test(duty)?'publish':/监测|巡检|导数|数据表/.test(duty)?'monitor':/周报|月报|季报|报告|数据贴图|框架/.test(duty)?'report':/写稿|视频/.test(duty)?'write':/对接/.test(duty)?'contact':'';
     const actionable=duties=>duties.filter(duty=>taskKind(duty));
     const assignments=CONFIRMED_TEAM_ASSIGNMENTS.filter(project=>project.label!=='广百').flatMap(project=>project.members.map(member=>({project,member,duties:actionable(member.duties)})).filter(item=>item.duties.length));
     const roster=CURRENT_ASSIGNMENT_MEMBERS.map(name=>({name,assignments:assignments.filter(item=>item.member.name===name)})).filter(person=>person.assignments.length);
@@ -676,13 +615,15 @@
       const writing=allDuties.filter(duty=>taskKind(duty)==='write').reduce((total,duty)=>total+(Number((String(duty).match(/(\d+)\s*(篇|条)/)||[])[1])||0),0);
       const monitors=new Set(person.assignments.filter(item=>item.duties.some(duty=>taskKind(duty)==='monitor')).map(item=>item.project.label)).size;
       const publishes=new Set(person.assignments.filter(item=>item.duties.some(duty=>taskKind(duty)==='publish'||/发布/.test(duty))).map(item=>item.project.label)).size;
-      return [person.name,{writing:writing||'待定',monitors,publishes}];
+      return [person.name,{writing:writing||0,monitors,publishes}];
     }));
     const taskLabel=kind=>taskTypes.find(([key])=>key===kind)?.[1]||'';
     const countOf=duty=>{const m=String(duty).match(/(≥|约)?\s*(\d+)\s*(篇|条)(?:\s*\/\s*(周|月))?/);return m?`${m[1]||''}${m[2]}${m[3]}`:'';};
     const deadlineOf=duty=>{const m=String(duty).match(/周[一二三四五]\s*\d{1,2}(?::\d{2})?\s*前/);return m?m[0].replace(/\s+/g,' '):'';};
     const taskParts=(duty,kind)=>{
       const count=countOf(duty), deadline=deadlineOf(duty);
+      if(kind==='contact')return {value:'负责',note:''};
+      if(kind==='write' && /后续，当前待定/.test(duty))return {value:'待定',note:'后续约 5 篇 / 周'};
       if(kind==='write')return {value:count||'待定',note:/视频/.test(duty)?`视频 · ${/\/\s*月/.test(duty)?'每月':''}`.replace(/ · $/,''):deadline};
       if(kind==='review')return {value:count||'待定',note:deadline};
       if(kind==='publish')return {value:count||'负责',note:/\/\s*周/.test(duty)?'每周':'按项目排期'};
@@ -695,12 +636,12 @@
     };
     const cell=(duties,kind)=>{const items=duties.filter(duty=>taskKind(duty)===kind);return items.length?`<div class="task-stack">${items.map(duty=>{const part=taskParts(duty,kind);return `<span class="task-cell"><b>${e(part.value)}</b>${part.note?`<small>${e(part.note)}</small>`:''}</span>`;}).join('')}</div>`:'<span class="task-empty" aria-label="无此项任务"></span>';};
     const groupedAssignments=assignments.reduce((groups,item)=>{const previous=groups[groups.length-1];if(previous&&previous.project.project===item.project.project)previous.items.push(item);else groups.push({project:item.project,items:[item]});return groups;},[]);
-    const matrixRows=groupedAssignments.map(({project,items},projectIndex)=>items.map(({member,duties},index)=>{const kinds=[...new Set(duties.map(taskKind))].join(' '),projectKey=`project-${projectIndex}`,target=projects.find(item=>item.name===project.project);return `<tr data-task-row data-task-kinds="${kinds}" data-project-tone="${project.label}" data-matrix-project="${projectKey}">${index===0?`<th class="matrix-project" data-matrix-project-header="${projectKey}" rowspan="${items.length}"><a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b><small>查看项目 ${icon('arrow',11)}</small></a></th>`:''}<td class="matrix-person"><div class="matrix-person-name">${av(member.name)}<b>${e(member.name)}</b></div></td>${taskTypes.map(([kind])=>`<td data-task-cell-kind="${kind}">${cell(duties,kind)}</td>`).join('')}</tr>`;}).join('')).join('');
+    const matrixRows=groupedAssignments.map(({project,items},projectIndex)=>items.map(({member,duties},index)=>{const kinds=[...new Set(duties.map(taskKind))].join(' '),projectKey=`project-${projectIndex}`,target=projects.find(item=>item.name===project.project);return `<tr data-task-row data-task-kinds="${kinds}" data-project-tone="${project.label}" data-matrix-project="${projectKey}">${index===0?`<th class="matrix-project" data-matrix-project-header="${projectKey}" rowspan="${items.length}"><a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${project.note?`<small>${e(project.note)}</small>`:`<small>查看项目 ${icon('arrow',11)}</small>`}</a></th>`:''}<td class="matrix-person"><div class="matrix-person-name">${av(member.name)}<b>${e(member.name)}</b></div></td>${taskTypes.map(([kind])=>`<td data-task-cell-kind="${kind}">${cell(duties,kind)}</td>`).join('')}</tr>`;}).join('')).join('');
     const matrix=`<section class="assignment-matrix"><div class="assignment-matrix-head"><div><p class="matrix-eyebrow">WEEKLY DELIVERY</p><h2>本周交付看板</h2><p>同项目合并展示；数量默认按周统计，灰字为提交或发布节点。</p></div><div class="matrix-filters" aria-label="按任务类型筛选"><button class="active" data-task-filter="all">全部</button>${taskTypes.map(([kind,label])=>`<button data-task-filter="${kind}">${label}</button>`).join('')}</div></div><div class="matrix-scroll"><table><thead><tr><th>项目</th><th>人员</th>${taskTypes.map(([,label,unit])=>`<th>${label}<small>${unit}</small></th>`).join('')}</tr></thead><tbody>${matrixRows}</tbody></table></div></section>`;
     const dutyLine=duty=>{const kind=taskKind(duty),part=taskParts(duty,kind);return `<li><em>${e(taskLabel(kind))}</em><b>${e(part.value)}</b>${part.note?`<small>${e(part.note)}</small>`:''}</li>`;};
-    const card=person=>{const stats=personStats[person.name]||{};return `<article class="assignment-person-card"><header><div class="assignment-person-identity">${av(person.name)}<div><h2>${e(person.name)}</h2><p>${person.assignments.length} 个项目</p></div></div><div class="assignment-card-stats" aria-label="${e(person.name)} 的周度汇总"><span><b>${e(stats.writing)}<i>篇</i></b><small>写稿 / 周</small></span><span><b>${stats.monitors||0}<i>项</i></b><small>监测项目</small></span><span><b>${stats.publishes||0}<i>项</i></b><small>发稿项目</small></span></div></header><div class="assignment-projects">${person.assignments.map(({project,duties})=>{const target=projects.find(item=>item.name===project.project);return `<a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${icon('arrow',14)}<ul class="assignment-duties">${duties.map(dutyLine).join('')}</ul></a>`;}).join('')}</div></article>`;};
+    const card=person=>{const stats=personStats[person.name]||{};return `<article class="assignment-person-card"><header><div class="assignment-person-identity">${av(person.name)}<div><h2>${e(person.name)}</h2><p>${person.assignments.length} 个项目</p></div></div><div class="assignment-card-stats" aria-label="${e(person.name)} 的周度汇总"><span><b>${e(stats.writing)}<i>篇</i></b><small>写稿 / 周</small></span><span><b>${stats.monitors||0}<i>项</i></b><small>监测项目</small></span></div></header><div class="assignment-projects">${person.assignments.map(({project,duties})=>{const target=projects.find(item=>item.name===project.project);return `<a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${icon('arrow',14)}<ul class="assignment-duties">${duties.map(dutyLine).join('')}</ul></a>`;}).join('')}</div></article>`;};
     return shell(`${header('成员任务','一眼看清每个项目本周的写稿、审核、发布与数据监测。')}
-      <section class="assignment-summary"><span><b>${roster.length}</b> 位执行成员</span><span><b>${groupedAssignments.length}</b> 个进行中项目</span><span>审核后按节点发布</span><span>广百暂未启动，不纳入本周看板</span></section>
+      <section class="assignment-summary"><span><b>${roster.length}</b> 位执行成员</span><span><b>${groupedAssignments.length}</b> 个进行中项目</span><span>发稿由刘依晨统一负责</span></section>
       ${matrix}
       <section class="assignment-roster"><div class="assignment-roster-head"><div><h2>成员执行清单</h2><p>同一套任务按人归档；进入项目可查看 Checklist 与文件。</p></div></div><div class="assignment-grid">${roster.map(card).join('')}</div></section>`);
   }
@@ -737,8 +678,6 @@
     }));
     const routineRules=[
       {owner:'刘依晨',title:'发稿汇总',note:'10:00 前统计并同步当天发稿情况',days:[1,2,3,4,5]},
-      {owner:'徐奕旸',title:'公号输出',note:'本周完成 1–2 篇，自主安排交付日',days:[5]},
-      {owner:'韩文静',title:'公号输出',note:'本周完成 1–2 篇，自主安排交付日',days:[5]}
     ].flatMap((rule,index)=>rule.days.map(day=>{const date=new Date(monday);date.setDate(monday.getDate()+day-1);return {id:`routine-${index}-${iso(date)}`,date:iso(date),project:'日常运营',owner:rule.owner,title:rule.title,note:rule.note,kind:'日常任务'};}));
     const manual=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);}).map(item=>({...item,kind:'自建待办'}));
     const items=[...rules,...routineRules,...manual].sort((a,b)=>a.date.localeCompare(b.date)||String(a.owner).localeCompare(String(b.owner)));
@@ -761,15 +700,8 @@
     const dayText=d=>`${d.getMonth()+1}月${d.getDate()}日 ${dayName(d)}`;
     const inWeek=d=>d>=monday&&d<=sunday;
     const deliverables=[
-      {day:0,owner:'徐奕旸',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'另需在 18:00 前交叉审稿 10 篇；审谁的稿待确认'}]},
-      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 5 篇',note:'另需审稿 5 篇'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 15 篇',note:'另需在 18:00 前交叉审稿 15 篇；审谁的稿待确认'}]},
-      {day:0,owner:'韩文静',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 5 篇',note:'另需审稿 5 篇'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 5 篇',note:'另需在 18:00 前交叉审稿 5 篇；审谁的稿待确认'}]},
-      {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]},
-      {day:2,owner:'徐奕旸',tasks:[{project:'赏会所',key:'赏·会所',time:'17:00 前',title:'提交 5 篇稿件',note:'韩文静 18:00 前审核'}]},
-      {day:2,owner:'韩文静',tasks:[{project:'赏会所',key:'赏·会所',time:'18:00 前',title:'审核 5 篇稿件',note:'完成本周审核'}]},
-      {day:4,owner:'徐奕旸',tasks:[{project:'西门子',key:'西门子',time:'16:00 前',title:'提交 5 篇稿件',note:'审核韩文静 5 篇'},{project:'西门子',key:'西门子',time:'当日',title:'整理写稿需求',note:'本周内完成'},{project:'赏会所、哲库林',key:'赏·会所',time:'当日',title:'完成信源分析',note:'两项目分别输出'}]},
-      {day:4,owner:'韩文静',tasks:[{project:'西门子',key:'西门子',time:'16:00 前',title:'提交 5 篇稿件',note:'审核徐奕旸 5 篇'},{project:'华硕新',key:'华硕 新',time:'当日',title:'整理写稿需求',note:'本周内完成'},{project:'华硕新、西门子',key:'华硕 新',time:'当日',title:'完成信源分析',note:'两项目分别输出'}]},
-      {day:4,owner:'彭安迪',tasks:[{project:'哲库林、咪咕 · 影之刃',key:'哲库林 润喉糖',time:'当日',title:'整理写稿需求',note:'两个项目分别输出'}]}
+      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
+      {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
     ];
     const manual=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
     const days=Array.from({length:7},(_,index)=>{const date=new Date(monday);date.setDate(monday.getDate()+index);return {date,iso:iso(date),today:iso(date)===iso(today)};});
@@ -780,7 +712,7 @@
       <section class="operations-notice"><div class="notice-main"><span>运营公告</span><div><b>下周 ${shortDate(nextMonday)} 报销</b><p>刘依晨负责提交；本周已完成一轮，双周节奏下次进入报销节点。</p></div><details><summary>报销说明与文件入口</summary><p>请将报销文件放入指定飞书文件夹后关联到此处。报销系统或飞书文件链接尚未提供，收到链接后可配置为一键直达。</p></details></div><div class="attendance-rule"><b>考勤</b><span>09:00–10:00 打卡 · 18:00–19:00 下班打卡</span><small>每月 2 次补卡机会；超出后按公司考勤流程进入下一周期处理。</small></div><div class="leave-rule"><b>请假</b><span>OA 提交并写明请假时长</span><small>提交后同步刘依晨与负责人。</small></div></section>
       <section class="week-rhythm"><div><span>每日 10:00</span><b>刘依晨 · 发稿汇总</b></div></section>
       <section class="week-calendar"><div class="section-head"><div><h2>${dayText(monday)} — ${dayText(sunday)}</h2><p>按交付日查看，每人当天的任务汇总在一起，可勾选完成。</p></div></div><div class="week-calendar-scroll">${calendar}</div></section>
-      <section class="monitoring-board"><div class="section-head"><div><h2>每日监测数据</h2><p>工作日早上导出并查看负责项目的数据。</p></div></div><div class="monitoring-grid"><article><b>韩文静</b><p>赏会所 · 咪咕 · 影之刃</p></article><article><b>徐奕旸</b><p>西门子</p></article><article><b>彭安迪</b><p>哲库林；太太乐每周手动监测 2 次</p></article><article><b>李正浩</b><p>华硕新（远程）</p></article></div></section><section class="weekly-publications"><div class="section-head"><div><h2>每周公众号输出</h2><p>每周各完成 1–2 篇，具体交付日期自主安排。</p></div></div><div class="publication-people"><article>${av('徐奕旸')}<div><b>徐奕旸</b><span>公众号文章 1–2 篇 / 周</span></div></article><article>${av('韩文静')}<div><b>韩文静</b><span>公众号文章 1–2 篇 / 周</span></div></article></div></section>
+      <section class="monitoring-board"><div class="section-head"><div><h2>每日监测数据</h2><p>工作日早上导出并查看负责项目的数据。</p></div></div><div class="monitoring-grid"><article><b>彭安迪</b><p>哲库林；太太乐每周手动监测 2 次</p></article><article><b>李正浩</b><p>华硕新（远程）</p></article></div></section>
       <section class="week-list"><div class="section-head"><div><h2>自建 To-do</h2><p>仅放临时追加、需要勾选推进的事项；固定项目交付已经在上方日历中，不会在这里重复。</p></div><button class="quiet-reminder" type="button" data-add-todo>+ 添加临时事项</button></div><div class="week-list-body">${manual.map(item=>`<article class="manual-todo ${item.status==='done'?'is-done':''}"><label><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''}><span></span></label><div><small>${e(item.project||'日常运营')} · ${e(dayText(new Date(`${item.date}T00:00:00`)))}</small><b>${e(item.title)}</b>${item.description?`<p>${e(item.description)}</p>`:''}</div><em>${e(item.owner||'未分配')}</em></article>`).join('')||'<p class="week-empty">暂无临时事项。需要时点击“添加临时事项”。</p>'}</div></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>WEEKLY TODO</small><h2>新建本周待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：跟进客户反馈"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${iso(today)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">日常运营</option>${projects.map(p=>`<option value="${e(p.name)}">${e(p.name)}</option>`).join('')}</select></label><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
