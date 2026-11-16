@@ -46,8 +46,8 @@
   // 审稿与发稿分开分配，避免把“审完即发布”误当作固定流程。
   const CONFIRMED_TEAM_ASSIGNMENTS = [
     {project:'太太乐松茸鲜',label:'太太乐',members:[{name:'刘依晨',duties:['周报（每周三）','月报 / 季报（每月 10 日）','引擎数据审计报告（按月）','写稿 10 篇 / 周']},{name:'彭安迪',duties:['手动监测 2 次 / 周（弹性）']}]},
-    {project:'西门子',label:'西门子',note:'对接：刘依晨 · 存稿：两周',members:[{name:'刘依晨',duties:['对接']} ]},
-    {project:'赏·会所',label:'赏会所',note:'当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
+    {project:'西门子',label:'西门子',note:'对接：刘依晨 · 存稿：11 篇',members:[{name:'刘依晨',duties:['对接']} ]},
+    {project:'赏·会所',label:'赏会所',note:'存稿：9 篇 · 当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
     {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
     {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周一 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周','数据监测（每天）']}]},
@@ -78,9 +78,9 @@
     '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
     '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
     '咪咕体育': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 15 篇；杨帆每周约 5 篇，交稿日期待定'}],
-    '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有两周存稿，刘依晨对接'}],
+    '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有 11 篇存稿，刘依晨对接'}],
     '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
-    '赏·会所': [{type:'manual',title:'写稿安排',owner:'杨帆',detail:'当前待定，后续约 5 篇 / 周'}]
+    '赏·会所': [{type:'manual',title:'存稿与写稿安排',owner:'杨帆',detail:'现有 9 篇存稿；写稿安排当前待定，后续约 5 篇 / 周'}]
   };
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
