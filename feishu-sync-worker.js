@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261111-shared-checks-v1";
+const WORKER_VERSION = "20261116-guangbai-biweekly-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -37,14 +37,15 @@ const PROJECT_REMINDER_RULES = {
       { type: "monthly", day: 10, title: "提交月报", owner: "刘依晨", detail: "提交月度复盘与下月计划", leadDays: 7 }
     ]
   },
-  "西门子": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 5, title: "西门子稿件交付与互审", owner: "徐奕旸、韩文静", detail: "各写 5 篇，周五 16:00 前提交，18:00 前互审；徐奕旸负责发稿 10 篇/周" }] },
-  "赏·会所": { manager: "徐奕旸", rules: [{ type: "weekly", weekday: 3, title: "赏会所稿件交付", owner: "徐奕旸", detail: "17:00 前提交 5 篇，负责发稿 5 篇/周" }, { type: "weekly", weekday: 3, title: "赏会所审稿", owner: "韩文静", detail: "18:00 前审核 5 篇" }] },
-  "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪、韩文静", detail: "各写 5 篇，16:00 前提交；各审稿 5 篇" }, { type: "weekly", weekday: 1, title: "哲库林发稿", owner: "徐奕旸", detail: "负责发稿 10 篇/周" }] },
-  "广百": { manager: "徐奕旸", inactive: true, rules: [] },
-  "华硕 新": { manager: "向昱筱 Cheryl", rules: [{ type: "weekly", weekday: 1, title: "华硕本周写稿与发稿", owner: "徐奕旸、韩文静、彭安迪、刘依晨", detail: "徐奕旸写 10 篇、韩文静写 20 篇、彭安迪写 10 篇；韩文静和刘依晨各发约 50 篇/周" }] },
-  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "影之刃稿件交付", owner: "彭安迪、徐奕旸、韩文静", detail: "16:00 前分别提交 15、10、5 篇；18:00 前完成交叉审稿，刘依晨发稿约 70 篇/周" }] },
-  "头道汤": { manager: "辛味珈", rules: [] }
+  "西门子": { manager: "向昱筱 Cheryl", inactive: true, rules: [] },
+  "赏·会所": { manager: "刘依晨", inactive: true, rules: [] },
+  "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪", detail: "周一 16:00 前提交 10 篇；审稿安排待确认" }] },
+  "广百": { manager: "刘依晨", rules: [{ type: "weekly", weekday: 1, title: "AI搜写稿交稿与优化", owner: "刘依晨", detail: "提醒 AI 搜写稿交稿，开始优化" }, { type: "fortnightly", startDate: "2026-11-23", title: "提交广百双周报", owner: "杨帆", detail: "隔周周一提交双周报，11 月 23 日起", fixed: true }] },
+  "华硕 新": { manager: "向昱筱 Cheryl", inactive: true, rules: [] },
+  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪、杨帆", detail: "周四 16:00 前提交：彭安迪 15 篇，杨帆 5 篇", fixed: true }] },
+  "头道汤": { manager: "辛味珈", inactive: true, rules: [] }
 };
+function projectLabel(project) { return project === "咪咕体育" ? "咪咕影之刃" : project; }
 const PROJECT_NAME_ALIASES = {
   "太太乐": "太太乐松茸鲜", "太太乐松茸鲜": "太太乐松茸鲜",
   "赏会所": "赏·会所", "赏 会所": "赏·会所", "赏·会所": "赏·会所",
@@ -111,13 +112,13 @@ export default {
       }
       // 飞书事件回调不使用网页登录态；通过应用 Verification Token 校验来源。
       if (requestUrl.pathname === "/bot/events") {
-        return handleBotEvent(request, env);
+        return await handleBotEvent(request, env);
       }
       if (requestUrl.pathname === "/auth/start") {
-        return startAuth(request, env);
+        return await startAuth(request, env);
       }
       if (requestUrl.pathname === "/auth/callback") {
-        return finishAuth(request, env);
+        return await finishAuth(request, env);
       }
       if (requestUrl.pathname === "/projects") {
         const user = await authorizeRequest(request, env);
@@ -140,16 +141,16 @@ export default {
       if (requestUrl.pathname === "/download") {
         const user = await authorizeRequest(request, env);
         const token = await tenantToken(env);
-        return downloadFeishuFile(requestUrl, token, user, env);
+        return await downloadFeishuFile(requestUrl, token, user, env);
       }
       if (requestUrl.pathname === "/todos" || requestUrl.pathname.startsWith("/todos/")) {
-        return handleTodos(request, env, requestUrl);
+        return await handleTodos(request, env, requestUrl);
       }
       if (requestUrl.pathname === "/fixed-checks") {
         return await handleFixedChecks(request, env);
       }
       if (requestUrl.pathname === "/reminder-groups" || requestUrl.pathname.startsWith("/reminder-groups/")) {
-        return handleReminderGroups(request, env, requestUrl);
+        return await handleReminderGroups(request, env, requestUrl);
       }
       if (requestUrl.pathname === "/reminders/preview") {
         await authorizeRequest(request, env);
@@ -425,6 +426,10 @@ function reminderCandidates(now = new Date()) {
       if (rule.type === "weekly" && rule.weekday === local.weekday) {
         results.push({ key: `${project}|${local.date}|${rule.title}`, project, manager: config.manager, rule, dueDate: local.date, phase: "due" });
       }
+      if (rule.type === "fortnightly") {
+        const elapsed = (Date.parse(`${local.date}T00:00:00Z`) - Date.parse(`${rule.startDate}T00:00:00Z`)) / 86400000;
+        if (elapsed >= 0 && elapsed % 14 === 0) results.push({ key: `${project}|${local.date}|${rule.title}`, project, manager: config.manager, rule, dueDate: local.date, phase: "due" });
+      }
       if (rule.type === "monthly") {
         const dueDate = monthDueDate(local.date, rule.day);
         const leadDate = addChinaDays(dueDate, -Number(rule.leadDays || 0));
@@ -442,19 +447,19 @@ function reminderTodoId(candidate) {
 }
 
 // IDs match the dated owner/task slots rendered in the weekly calendar.
+function fortnightlyDue(date,startDate) {
+  const days = (Date.parse(`${date}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`)) / 86400000;
+  return days >= 0 && days % 14 === 0;
+}
+
 function fixedTasksForDay(date) {
   const weekday = new Date(`${date}T00:00:00+08:00`).getUTCDay();
   const templates = [
-    {day:0,owner:"徐奕旸",index:0,project:"咪咕体育",title:"提交写稿 10 篇并完成交叉审稿",kind:"稿件"},
-    {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 5 篇并完成审稿",kind:"稿件"},
-    {day:0,owner:"彭安迪",index:1,project:"咪咕体育",title:"提交写稿 15 篇并完成交叉审稿",kind:"稿件"},
-    {day:0,owner:"韩文静",index:0,project:"哲库林 润喉糖",title:"提交写稿 5 篇并完成审稿",kind:"稿件"},
-    {day:0,owner:"韩文静",index:1,project:"咪咕体育",title:"提交写稿 5 篇并完成交叉审稿",kind:"稿件"},
+    {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 10 篇",kind:"稿件"},
+    {day:3,owner:"彭安迪",index:0,project:"咪咕体育",title:"提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
+    {day:3,owner:"杨帆",index:0,project:"咪咕体育",title:"提交写稿 5 篇（周四 16:00 前）",kind:"稿件"},
+    ...(fortnightlyDue(date,"2026-11-23") ? [{day:0,owner:"杨帆",index:0,project:"广百",title:"提交双周报",kind:"报告"}] : []),
     {day:2,owner:"刘依晨",index:0,project:"太太乐松茸鲜",title:"提交周报",kind:"周报"},
-    {day:2,owner:"徐奕旸",index:0,project:"赏·会所",title:"提交写稿 5 篇",kind:"写稿"},
-    {day:2,owner:"韩文静",index:0,project:"赏·会所",title:"审核稿件 5 篇",kind:"审稿"},
-    {day:4,owner:"徐奕旸",index:0,project:"西门子",title:"提交写稿 5 篇并完成互审",kind:"稿件"},
-    {day:4,owner:"韩文静",index:0,project:"西门子",title:"提交写稿 5 篇并完成互审",kind:"稿件"}
   ];
   const localWeekday = (weekday + 1) % 7;
   return templates.filter(item=>item.day === (localWeekday+6)%7).map(item=>({...item,id:`${date}-${item.owner}-${item.index}`}));
@@ -466,6 +471,8 @@ async function ensureFixedChecksSchema(env) {
 }
 
 async function ensureAutomatedTodo(env, candidate) {
+  // Fixed calendar tasks already persist in fixed_task_checks; do not create a second checklist row.
+  if (candidate.rule.fixed) return;
   const id = reminderTodoId(candidate);
   const existing = await env.TODOS_DB.prepare("SELECT id FROM project_todos WHERE id = ?").bind(id).first();
   if (existing) return;
@@ -490,6 +497,7 @@ function normalizePersonName(name) {
 function personIdForName(name, directory) {
   const actual = normalizePersonName(name);
   const matches = [...directory.entries()].filter(([candidate]) => normalizePersonName(candidate) === actual).map(([, id]) => id);
+  if (actual === "刘依晨") return matches.find(Boolean) || "";
   return matches.length && matches.every(Boolean) && new Set(matches).size === 1 ? matches[0] : "";
 }
 
@@ -571,14 +579,14 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       await ensureAutomatedTodo(env, candidate);
       const prefix = candidate.phase === "lead" ? "【提前 7 天提醒】" : "【今日项目节点】";
       const phaseCopy = candidate.phase === "lead" ? `该事项 DDL 为 ${candidate.dueDate}` : "今天请完成并在 Checklist 勾选";
-      const text = `${prefix}\n${mention(candidate.rule.owner, directory)} ${candidate.project} · ${candidate.rule.title}\n${candidate.rule.detail || ""}\n${phaseCopy}`;
+      const text = `${prefix}\n${mention(candidate.rule.owner, directory)} ${projectLabel(candidate.project)} · ${candidate.rule.title}\n${candidate.rule.detail || ""}\n${phaseCopy}`;
       await sendProjectGroupMessage(token, chatId, text);
       sent.push({ project: candidate.project, title: candidate.rule.title, phase: candidate.phase });
     }
     for (const todo of await openChecklistDueToday(env, local.date)) {
       const project = canonicalProjectName(todo.project);
       const chatId = bindings.get(project);
-      if (!chatId || String(todo.id || "").startsWith("auto-")) continue;
+      if (!chatId || PROJECT_REMINDER_RULES[project]?.inactive || /徐奕旸|韩文静/.test(todo.owner || "") || String(todo.id || "").startsWith("auto-")) continue;
       const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|morning|todo|${todo.id}`;
       if (!(await reserveDispatch(env, dispatchKey, project, slot))) continue;
@@ -603,7 +611,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       const project = canonicalProjectName(todo.project);
       if (String(todo.id || "").startsWith("auto-") && /西门子稿件交付与互审|赏会所稿件交付|赏会所审稿|哲库林稿件交付|影之刃稿件交付|提交周报/.test(todo.title)) continue;
       const chatId = bindings.get(project);
-      if (!chatId) continue;
+      if (!chatId || PROJECT_REMINDER_RULES[project]?.inactive || /徐奕旸|韩文静/.test(todo.owner || "")) continue;
       const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|afternoon|todo|${todo.id}`;
       if (!(await reserveDispatch(env, dispatchKey, project, slot))) continue;
@@ -730,7 +738,7 @@ async function handleBotEvent(request, env) {
     }
     for (const [project, config] of projects) {
       const rows = (config.rules || []).map(rule => `• ${rule.title}｜${mention(rule.owner, directory)}\n  ${rule.detail || ""}`).join("\n");
-      await sendProjectGroupMessage(token, chatId, `【提醒配置测试】${project}\n${rows || "• 暂无固定周期节点"}`);
+      await sendProjectGroupMessage(token, chatId, `【提醒配置测试】${projectLabel(project)}\n${rows || "• 暂无固定周期节点"}`);
     }
     await sendProjectGroupMessage(token, chatId, `【测试完成】已发送 ${projects.length} 个项目的提醒配置。后续为单独项目建群后，在新群发送「绑定项目 项目名」，该项目会自动迁移到新群。`);
     return json({ ok: true, tested: projects.map(([project]) => project) });
@@ -1440,7 +1448,7 @@ async function readChatPeopleDirectory(token, chatId) {
     for (const person of result.data?.items || []) {
       if (person.name && person.member_id) {
         if (!directory.has(person.name)) directory.set(person.name, person.member_id);
-        else if (directory.get(person.name) !== person.member_id) directory.set(person.name, "");
+        else if (directory.get(person.name) !== person.member_id && normalizePersonName(person.name) !== "刘依晨") directory.set(person.name, "");
       }
     }
     pageToken = result.data?.has_more ? result.data?.page_token : "";

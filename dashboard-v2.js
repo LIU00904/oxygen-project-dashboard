@@ -51,7 +51,7 @@
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
     {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
     {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周四 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周（周四 16:00 前）','数据监测（每天）']}]},
-    {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['周报（每周一）']}]}
+    {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['双周报（隔周周一，11 月 23 日起）']}]}
   ];
   const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
   const CURRENT_ASSIGNMENT_MEMBERS = ['刘依晨','彭安迪','杨帆','李正浩','向昱筱 Cheryl'];
@@ -75,6 +75,7 @@
     monthly:'月报节点提前 7 天开始提醒'
   };
   const PROJECT_DELIVERY_RULES = {
+    '广百': [{type:'fortnightly',startDate:'2026-11-23',title:'提交双周报',owner:'杨帆',detail:'隔周周一提交双周报，11 月 23 日起'}],
     '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
     '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
     '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪、杨帆',detail:'周四 16:00 前提交：彭安迪 15 篇，杨帆 5 篇'}],
@@ -399,9 +400,16 @@
   function nextMonthDay(day){const today=new Date();today.setHours(0,0,0,0);let d=new Date(today.getFullYear(),today.getMonth(),day);if(d<=today)d=new Date(today.getFullYear(),today.getMonth()+1,day);return d}
   function dayLabel(d){return d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}).replace('周','周')}
   function shortDate(d){return `${d.getMonth()+1}月${d.getDate()}日`}
+  function fortnightlyDue(date,startDate){const days=Math.round((Date.parse(date+'T00:00:00Z')-Date.parse(startDate+'T00:00:00Z'))/86400000);return days>=0&&days%14===0;}
   function ruleDate(rule,{inclusive=true}={}){
     const today=new Date();today.setHours(0,0,0,0);
     if(rule.type==='daily') return today;
+    if(rule.type==='fortnightly'){
+      const elapsed=Math.round((Date.parse(localYmd(today)+'T00:00:00Z')-Date.parse(rule.startDate+'T00:00:00Z'))/86400000);
+      let weeks=Math.max(0,Math.ceil(elapsed/14));
+      if(!inclusive&&elapsed>=0&&elapsed%14===0)weeks++;
+      const due=new Date(rule.startDate+'T00:00:00');due.setDate(due.getDate()+weeks*14);return due;
+    }
     if(rule.type==='weekly'){
       const due=new Date(today);let delta=(rule.weekday-due.getDay()+7)%7;
       if(!inclusive&&delta===0)delta=7;due.setDate(due.getDate()+delta);return due;
@@ -421,6 +429,7 @@
     return projects.flatMap(project=>(PROJECT_DELIVERY_RULES[project.name]||[]).flatMap(rule=>{
       if(rule.type==='daily')return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'每日例行'}];
       if(rule.type==='weekly'&&today.getDay()===rule.weekday)return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'固定交付'}];
+      if(rule.type==='fortnightly'&&fortnightlyDue(localYmd(today),rule.startDate))return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'固定交付'}];
       if(rule.type==='monthly'){
         const due=ruleDate(rule,{inclusive:true});const days=Math.round((due-today)/86400000);
         if(days===7||days===0)return [{project:project.name,title:rule.title,owner:rule.owner,detail:days?`距月报 ${days} 天：${rule.detail}`:rule.detail,kind:'月报提醒'}];
@@ -649,6 +658,7 @@
       if(kind==='publish')return {value:count||'负责',note:/\/\s*周/.test(duty)?'每周':'按项目排期'};
       if(kind==='monitor' && /每天/.test(duty))return {value:'负责',note:'每天'};
       if(kind==='monitor')return /\d+\s*次/.test(duty)?{value:(duty.match(/\d+\s*次/)||['待定'])[0].replace(/\s+/g,''),note:'每周 · 弹性'}:{value:'负责',note:'每工作日 · 10 分钟'};
+      if(/^双周报/.test(duty))return {value:'双周报',note:'隔周周一 · 11 月 23 日起'};
       if(/^周报/.test(duty))return {value:'周报',note:/每周一/.test(duty)?'每周一':'每周三'};
       if(/月报.*季报/.test(duty))return {value:'月报 / 季报',note:'每月 10 日'};
       if(/引擎数据审计/.test(duty))return {value:'引擎数据审计报告',note:'按月'};
@@ -722,7 +732,7 @@
     const dayText=d=>`${d.getMonth()+1}月${d.getDate()}日 ${dayName(d)}`;
     const inWeek=d=>d>=monday&&d<=sunday;
     const deliverables=[
-      {day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交周报',note:''}]},
+      ...(fortnightlyDue(iso(monday),'2026-11-23')?[{day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交双周报',note:'隔周提交'}]}]:[]),
       {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'}]},
       {day:3,owner:'彭安迪',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
       {day:3,owner:'杨帆',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'}]},
