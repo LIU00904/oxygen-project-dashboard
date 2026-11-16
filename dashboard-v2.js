@@ -50,7 +50,7 @@
     {project:'赏·会所',label:'赏会所',note:'存稿：9 篇 · 当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
     {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
-    {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周一 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周','数据监测（每天）']}]},
+    {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周四 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周（周四 16:00 前）','数据监测（每天）']}]},
     {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['周报（每周一）']}]}
   ];
   const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
@@ -77,13 +77,20 @@
   const PROJECT_DELIVERY_RULES = {
     '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
     '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
-    '咪咕体育': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 15 篇；杨帆每周约 5 篇，交稿日期待定'}],
+    '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪、杨帆',detail:'周四 16:00 前提交：彭安迪 15 篇，杨帆 5 篇'}],
     '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有 11 篇存稿，刘依晨对接'}],
     '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
     '赏·会所': [{type:'manual',title:'存稿与写稿安排',owner:'杨帆',detail:'现有 9 篇存稿；写稿安排当前待定，后续约 5 篇 / 周'}]
   };
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
+  const DATA_SYNC_API = window.FEISHU_DATA_SYNC_API || SYNC_API;
+  async function dataSyncFetch(path,options={}){
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
+    try{return await fetch(`${DATA_SYNC_API}${path}`,{...options,signal:controller.signal});}
+    catch(error){throw new Error(error.name==='AbortError'?'同步连接超时，请稍后重试':'无法连接共享同步服务，请稍后重试');}
+    finally{clearTimeout(timer);}
+  }
   const TODO_KEY = 'oxygen-dashboard-local-todos-v1';
   const AUTH_KEY = 'oxygen-dashboard-feishu-session-v1';
   const USER_KEY = 'oxygen-dashboard-feishu-user-v1';
@@ -103,7 +110,7 @@
   async function refreshFixedChecks({rerender=false}={}){
     if(!session()||fixedChecksPromise)return fixedChecksPromise;
     fixedChecksPromise=(async()=>{try{
-      const response=await fetch(`${SYNC_API}/fixed-checks`,{headers:{Authorization:`Bearer ${session()}`}});
+      const response=await dataSyncFetch('/fixed-checks',{headers:{Authorization:`Bearer ${session()}`}});
       const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'固定任务同步失败');
       const checks=payload.checks||{},changed=JSON.stringify(sharedFixedChecks)!==JSON.stringify(checks)||!fixedChecksReady;
       sharedFixedChecks=checks;fixedChecksReady=true;
@@ -111,7 +118,7 @@
     }catch(error){fixedChecksReady=false;console.warn('固定任务同步失败',error);}finally{fixedChecksPromise=null;}})();return fixedChecksPromise;
   }
   async function setFixedCheck(id,done){
-    const response=await fetch(`${SYNC_API}/fixed-checks`,{method:'POST',headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:JSON.stringify({id,done})});
+    const response=await dataSyncFetch('/fixed-checks',{method:'POST',headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:JSON.stringify({id,done})});
     const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'固定任务同步失败');
     sharedFixedChecks={...sharedFixedChecks,[id]:done};
   }
@@ -159,7 +166,7 @@
     if(!session() || refreshProjectsPromise) return refreshProjectsPromise;
     refreshProjectsPromise=(async()=>{
       try{
-        const response=await fetch(`${SYNC_API}/projects?refresh=1`,{headers:{Authorization:`Bearer ${session()}`}});
+        const response=await dataSyncFetch('/projects?refresh=1',{headers:{Authorization:`Bearer ${session()}`}});
         if(!response.ok) return;
         const payload=await response.json();
         const cachedProjects=projects;
@@ -320,10 +327,17 @@
   function writeTodos(items){localStorage.setItem(TODO_KEY,JSON.stringify(items));}
   function todoFingerprint(items){return JSON.stringify((items||[]).map(item=>[item.id,item.status,item.updatedAt,item.revision]));}
   async function cloudTodos(method='GET',id='',body){
-    const response=await fetch(`${SYNC_API}/todos${id?`/${encodeURIComponent(id)}`:''}`,{method,headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(payload.error||'待办同步失败');
+    const response=await dataSyncFetch(`/todos${id?`/${encodeURIComponent(id)}`:''}`,{method,headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+    const payload=await response.json().catch(()=>null);
+    if(!response.ok||!payload?.ok) throw new Error(payload?.error||'待办同步失败，请稍后重试');
     return payload;
+  }
+  function showTodoError(message){
+    const dialog=document.querySelector('dialog[open]');
+    if(!dialog){alert(message);return;}
+    let notice=dialog.querySelector('[data-todo-error]');
+    if(!notice){notice=document.createElement('p');notice.dataset.todoError='';notice.setAttribute('role','alert');notice.style.cssText='color:#b42318;font-size:14px;line-height:1.6;margin:12px 0';dialog.querySelector('footer')?.before(notice);}
+    notice.textContent=`${message}。填写内容已保留，请确认后重试。`;
   }
   async function refreshTodosFromCloud({rerender=false}={}){
     if(!session()||todoSyncPromise)return todoSyncPromise;
@@ -349,19 +363,19 @@
     try{
       const payload=await cloudTodos('POST','',item);
       sharedTodos=[...(sharedTodos||[]),payload.todo];writeTodos(sharedTodos);return true;
-    }catch(error){alert(`待办未同步：${error.message}`);return false;}
+    }catch(error){showTodoError(`待办未保存：${error.message}`);return false;}
   }
   async function updateTodo(id, changes){
     try{
       const payload=await cloudTodos('PATCH',id,changes);
       sharedTodos=(sharedTodos||todos()).map(item=>item.id===id?payload.todo:item);writeTodos(sharedTodos);return true;
-    }catch(error){alert(`待办状态未同步：${error.message}`);return false;}
+    }catch(error){showTodoError(`待办状态未同步：${error.message}`);return false;}
   }
   async function deleteTodo(id){
     try{
       await cloudTodos('DELETE',id);
       sharedTodos=(sharedTodos||todos()).filter(item=>item.id!==id);writeTodos(sharedTodos);return true;
-    }catch(error){alert(`待办未删除：${error.message}`);return false;}
+    }catch(error){showTodoError(`待办未删除：${error.message}`);return false;}
   }
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
   // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
@@ -709,7 +723,9 @@
     const inWeek=d=>d>=monday&&d<=sunday;
     const deliverables=[
       {day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交周报',note:''}]},
-      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'},{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周一 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
+      {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'}]},
+      {day:3,owner:'彭安迪',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
+      {day:3,owner:'杨帆',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'}]},
       {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
     ];
     const manual=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
@@ -807,6 +823,7 @@
     document.querySelectorAll('#project-todo-dialog [data-owner-option]').forEach(button=>button.addEventListener('click',()=>selectTodoOwner(projectTodoDialog,button.dataset.ownerOption)));
     document.querySelector('#project-todo-form')?.addEventListener('submit',async event=>{
       event.preventDefault(); if(todoMutationInFlight)return;
+      projectTodoDialog?.querySelector('[data-todo-error]')?.remove();
       const form=event.currentTarget,data=new FormData(form),id=String(data.get('todoId')||'');
       const current=todos().find(item=>item.id===id);
       const item={title:String(data.get('title')||'未命名待办'),description:String(data.get('description')||''),date:String(data.get('date')||isoOffset(1)),owner:String(data.get('owner')||''),project:String(data.get('project')||'未归属项目'),priority:String(data.get('priority')||'P2'),status:current?.status||'todo'};
