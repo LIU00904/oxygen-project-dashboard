@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261119-tasks-and-manual-reminders-v1";
+const WORKER_VERSION = "20261119-rhythm-and-daily-reminders-v3";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -33,16 +33,17 @@ const PROJECT_REMINDER_RULES = {
     rules: [
       { type: "weekly", weekday: 1, title: "本周发布目标", owner: "刘依晨", detail: "本周写稿 10 篇、发稿至少 20 篇" },
       { type: "weekly", weekday: 1, title: "本周监测安排", owner: "彭安迪", detail: "本周完成 2 次监测并同步结果" },
+      { type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日 10:00 发稿汇总", owner: "刘依晨", detail: "汇总并同步当日发稿情况", routine: true },
       { type: "weekly", weekday: 3, title: "提交周报", owner: "刘依晨", detail: "整理本周发布、数据与审计进度" },
       { type: "monthly", day: 10, title: "提交月报", owner: "刘依晨", detail: "提交月度复盘与下月计划", leadDays: 7 }
     ]
   },
-  "西门子": { manager: "向昱筱 Cheryl", inactive: true, rules: [] },
-  "赏·会所": { manager: "刘依晨", inactive: true, rules: [] },
+  "西门子": { manager: "刘依晨", rules: [{ type: "weekly", startDate: "2026-11-23", weekday: 1, title: "西门子稿件交付", owner: "杨帆", detail: "每周一 18:00 前提交 10 篇", fixed: true }] },
+  "赏·会所": { manager: "刘依晨", rules: [{ type: "fortnightly", startDate: "2026-12-02", title: "赏会所稿件交付", owner: "杨帆", detail: "每两周周三 14:00 前提交 20 篇，12 月 2 日首次交付", fixed: true }] },
   "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪", detail: "周一 16:00 前提交 10 篇；审稿安排待确认" }] },
   "广百": { manager: "刘依晨", rules: [{ type: "weekly", weekday: 1, title: "AI搜写稿交稿与优化", owner: "刘依晨", detail: "提醒 AI 搜写稿交稿，开始优化" }, { type: "fortnightly", startDate: "2026-11-23", title: "提交广百双周报", owner: "杨帆", detail: "隔周周一提交双周报，11 月 23 日起", fixed: true }] },
-  "华硕 新": { manager: "向昱筱 Cheryl", inactive: true, rules: [] },
-  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪", detail: "周四 16:00 前提交 15 篇", fixed: true }] },
+  "华硕 新": { manager: "向昱筱 Cheryl", rules: [{ type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日监测数据（远程）", owner: "李正浩", detail: "查看并整理华硕新每日监测数据（远程）", routine: true }] },
+  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪", detail: "周四 16:00 前提交 15 篇", fixed: true }, { type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日监测数据", owner: "杨帆", detail: "导出并查看咪咕影之刃每日监测数据", routine: true }] },
   "头道汤": { manager: "辛味珈", inactive: true, rules: [] }
 };
 function projectLabel(project) { return project === "咪咕体育" ? "咪咕影之刃" : project; }
@@ -423,6 +424,10 @@ function reminderCandidates(now = new Date()) {
   for (const [project, config] of Object.entries(PROJECT_REMINDER_RULES)) {
     if (config.inactive) continue;
     for (const rule of config.rules || []) {
+      if (rule.startDate && local.date < rule.startDate) continue;
+      if (rule.type === "daily" && (!rule.weekdays || rule.weekdays.includes(local.weekday))) {
+        results.push({ key: `${project}|${local.date}|${rule.title}`, project, manager: config.manager, rule, dueDate: local.date, phase: "due" });
+      }
       if (rule.type === "weekly" && rule.weekday === local.weekday) {
         results.push({ key: `${project}|${local.date}|${rule.title}`, project, manager: config.manager, rule, dueDate: local.date, phase: "due" });
       }
@@ -457,6 +462,8 @@ function fixedTasksForDay(date) {
   const templates = [
     {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 10 篇",kind:"稿件"},
     {day:3,owner:"彭安迪",index:0,project:"咪咕体育",title:"提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
+    ...(date >= "2026-11-23" ? [{day:0,owner:"杨帆",index:"siemens-writing",project:"西门子",title:"提交写稿 10 篇（周一 18:00 前）",kind:"稿件"}] : []),
+    ...(fortnightlyDue(date,"2026-12-02") ? [{day:2,owner:"杨帆",index:"shang-writing",project:"赏·会所",title:"提交写稿 20 篇（周三 14:00 前，双周）",kind:"稿件"}] : []),
     ...(fortnightlyDue(date,"2026-11-23") ? [{day:0,owner:"杨帆",index:0,project:"广百",title:"提交双周报",kind:"报告"}] : []),
     {day:2,owner:"刘依晨",index:0,project:"太太乐松茸鲜",title:"提交周报",kind:"周报"},
   ];
@@ -471,7 +478,7 @@ async function ensureFixedChecksSchema(env) {
 
 async function ensureAutomatedTodo(env, candidate) {
   // Fixed calendar tasks already persist in fixed_task_checks; do not create a second checklist row.
-  if (candidate.rule.fixed) return;
+  if (candidate.rule.fixed || candidate.rule.routine) return;
   const id = reminderTodoId(candidate);
   const existing = await env.TODOS_DB.prepare("SELECT id FROM project_todos WHERE id = ?").bind(id).first();
   if (existing) return;
@@ -569,7 +576,24 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
   };
   const sent = [];
   if (slot === "morning") {
-    for (const candidate of reminderCandidates(now)) {
+    const candidates = reminderCandidates(now);
+    const routineGroups = new Map();
+    for (const candidate of candidates.filter(item => item.rule.routine)) {
+      const chatId = bindings.get(candidate.project);
+      if (!chatId) continue;
+      if (!routineGroups.has(chatId)) routineGroups.set(chatId, []);
+      routineGroups.get(chatId).push(candidate);
+    }
+    for (const [chatId, items] of routineGroups) {
+      const directory = await directoryFor(chatId);
+      for (const item of items) if (!personIdForName(item.rule.owner, directory)) throw new Error(`无法实际艾特负责人：${item.rule.owner}`);
+      const dispatchKey = `${local.date}|morning|daily-routines|${chatId}`;
+      if (!(await reserveDispatch(env, dispatchKey, "每日固定任务", slot))) continue;
+      const rows = items.map(item => `${mention(item.rule.owner, directory)}\n• ${projectLabel(item.project)} · ${item.rule.title}\n  ${item.rule.detail || ""}`);
+      await sendProjectGroupMessage(token, chatId, `【今日项目节点】${local.date}\n每日固定任务\n\n${rows.join("\n\n")}`);
+      sent.push(...items.map(item => ({ project: item.project, title: item.rule.title, phase: "daily" })));
+    }
+    for (const candidate of candidates.filter(item => !item.rule.routine)) {
       const chatId = bindings.get(candidate.project);
       if (!chatId) continue;
       const directory = await directoryFor(chatId);
@@ -577,7 +601,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       if (!(await reserveDispatch(env, dispatchKey, candidate.project, slot))) continue;
       await ensureAutomatedTodo(env, candidate);
       const prefix = candidate.phase === "lead" ? "【提前 7 天提醒】" : "【今日项目节点】";
-      const phaseCopy = candidate.phase === "lead" ? `该事项 DDL 为 ${candidate.dueDate}` : "今天请完成并在 Checklist 勾选";
+      const phaseCopy = candidate.rule.routine ? "请按日常安排完成。" : candidate.phase === "lead" ? `该事项 DDL 为 ${candidate.dueDate}` : "今天请完成并在 Checklist 勾选";
       const text = `${prefix}\n${mention(candidate.rule.owner, directory)} ${projectLabel(candidate.project)} · ${candidate.rule.title}\n${candidate.rule.detail || ""}\n${phaseCopy}`;
       await sendProjectGroupMessage(token, chatId, text);
       sent.push({ project: candidate.project, title: candidate.rule.title, phase: candidate.phase });
@@ -757,7 +781,7 @@ async function handleBotEvent(request, env) {
     const tasks = fixedTasksForDay(chinaNow(new Date()).date).filter(task => task.owner === owners[0] && task.project === uniqueProjects[0]);
     if (tasks.length !== 1) return json({ ok: true });
     const task = tasks[0];
-    const explicit = task.kind === "周报" ? /周报/.test(command) : task.kind === "写稿" ? /写稿|稿件/.test(command) : task.kind === "审稿" ? /审稿|审核/.test(command) : /写稿|稿件/.test(command) && /审稿|审核/.test(command) && /(均已|都已|全部|分别)/.test(command);
+    const explicit = task.kind === "周报" ? /周报/.test(command) : (task.kind === "写稿" || task.kind === "稿件") ? /写稿|稿件|交稿/.test(command) : task.kind === "审稿" ? /审稿|审核/.test(command) : /写稿|稿件/.test(command) && /审稿|审核/.test(command) && /(均已|都已|全部|分别)/.test(command);
     if (!explicit) return json({ ok: true });
     const eventId = String(payload.header?.event_id || event.message?.message_id || "").slice(0, 200);
     if (!eventId) return json({ ok: true });

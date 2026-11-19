@@ -46,8 +46,8 @@
   // 审稿与发稿分开分配，避免把“审完即发布”误当作固定流程。
   const CONFIRMED_TEAM_ASSIGNMENTS = [
     {project:'太太乐松茸鲜',label:'太太乐',members:[{name:'刘依晨',duties:['周报（每周三）','月报 / 季报（每月 10 日）','引擎数据审计报告（按月）','写稿 10 篇 / 周']},{name:'彭安迪',duties:['手动监测 2 次 / 周（弹性）']}]},
-    {project:'西门子',label:'西门子',note:'对接：刘依晨 · 存稿：11 篇',members:[{name:'刘依晨',duties:['对接']} ]},
-    {project:'赏·会所',label:'赏会所',note:'存稿：9 篇 · 当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
+    {project:'西门子',label:'西门子',note:'存稿：11 篇',members:[{name:'杨帆',duties:['写稿 10 篇 / 周（周一 18:00 前）']},{name:'刘依晨',duties:['对接']} ]},
+    {project:'赏·会所',label:'赏会所',note:'存稿：9 篇 · 12 月 2 日起双周交付',members:[{name:'杨帆',duties:['写稿 20 篇 / 双周（周三 14:00 前）']}]},
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
     {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
     {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周四 16:00 前）']},{name:'杨帆',duties:['数据监测（每天）']}]},
@@ -76,12 +76,12 @@
   };
   const PROJECT_DELIVERY_RULES = {
     '广百': [{type:'fortnightly',startDate:'2026-11-23',title:'提交双周报',owner:'杨帆',detail:'隔周周一提交双周报，11 月 23 日起'}],
-    '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
+    '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'},{type:'daily',startDate:'2026-11-20',weekdays:[1,2,3,4,5],title:'每日 10:00 发稿汇总',owner:'刘依晨',detail:'汇总并同步当日发稿情况'}],
     '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
-    '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪',detail:'周四 16:00 前提交 15 篇'}],
-    '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有 11 篇存稿，刘依晨对接'}],
-    '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
-    '赏·会所': [{type:'manual',title:'存稿与写稿安排',owner:'杨帆',detail:'现有 9 篇存稿；写稿安排当前待定，后续约 5 篇 / 周'}]
+    '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪',detail:'周四 16:00 前提交 15 篇'},{type:'daily',startDate:'2026-11-20',weekdays:[1,2,3,4,5],title:'每日监测数据',owner:'杨帆',detail:'咪咕影之刃每日监测'}],
+    '西门子': [{type:'weekly',startDate:'2026-11-23',weekday:1,title:'提交写稿 10 篇',owner:'杨帆',detail:'每周一 18:00 前提交 10 篇'}],
+    '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'},{type:'daily',startDate:'2026-11-20',weekdays:[1,2,3,4,5],title:'每日监测数据（远程）',owner:'李正浩',detail:'华硕新每日监测（远程）'}],
+    '赏·会所': [{type:'fortnightly',startDate:'2026-12-02',title:'提交写稿 20 篇',owner:'杨帆',detail:'每两周周三 14:00 前提交 20 篇，12 月 2 日首次交付'}]
   };
   const people = ((window.OXYGEN_MEMBER_WORKLOAD || {}).people || []).map(([name,total,working,last]) => ({name,total,working,last}));
   const SYNC_API = window.FEISHU_SYNC_API || 'https://oxygen-feishu-sync.liuyichen021231.workers.dev';
@@ -414,7 +414,11 @@
   function fortnightlyDue(date,startDate){const days=Math.round((Date.parse(date+'T00:00:00Z')-Date.parse(startDate+'T00:00:00Z'))/86400000);return days>=0&&days%14===0;}
   function ruleDate(rule,{inclusive=true}={}){
     const today=new Date();today.setHours(0,0,0,0);
-    if(rule.type==='daily') return today;
+    if(rule.type==='daily'){
+      const due=rule.startDate&&localYmd(today)<rule.startDate?new Date(rule.startDate+'T00:00:00'):new Date(today);
+      while(rule.weekdays&&!rule.weekdays.includes(due.getDay()))due.setDate(due.getDate()+1);
+      return due;
+    }
     if(rule.type==='fortnightly'){
       const elapsed=Math.round((Date.parse(localYmd(today)+'T00:00:00Z')-Date.parse(rule.startDate+'T00:00:00Z'))/86400000);
       let weeks=Math.max(0,Math.ceil(elapsed/14));
@@ -422,8 +426,8 @@
       const due=new Date(rule.startDate+'T00:00:00');due.setDate(due.getDate()+weeks*14);return due;
     }
     if(rule.type==='weekly'){
-      const due=new Date(today);let delta=(rule.weekday-due.getDay()+7)%7;
-      if(!inclusive&&delta===0)delta=7;due.setDate(due.getDate()+delta);return due;
+      const due=rule.startDate&&localYmd(today)<rule.startDate?new Date(rule.startDate+'T00:00:00'):new Date(today);let delta=(rule.weekday-due.getDay()+7)%7;
+      if(!inclusive&&delta===0&&due.getTime()===today.getTime())delta=7;due.setDate(due.getDate()+delta);return due;
     }
     if(rule.type==='monthly'){
       let due=new Date(today.getFullYear(),today.getMonth(),rule.day);
@@ -438,6 +442,8 @@
   function ruleReminderItems(now=new Date()){
     const today=new Date(now);today.setHours(0,0,0,0);
     return projects.flatMap(project=>(PROJECT_DELIVERY_RULES[project.name]||[]).flatMap(rule=>{
+      if(rule.startDate&&localYmd(today)<rule.startDate)return [];
+      if(rule.type==='daily'&&rule.weekdays&&!rule.weekdays.includes(today.getDay()))return [];
       if(rule.type==='daily')return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'每日例行'}];
       if(rule.type==='weekly'&&today.getDay()===rule.weekday)return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'固定交付'}];
       if(rule.type==='fortnightly'&&fortnightlyDue(localYmd(today),rule.startDate))return [{project:project.name,title:rule.title,owner:rule.owner,detail:rule.detail,kind:'固定交付'}];
@@ -645,14 +651,14 @@
       ${dataSources(p)}<section class="command-files" id="project-files"><div class="command-section-title"><div><h2>文件资料</h2><p>文件名保留飞书原始名称，点击整行进入对应飞书文件或源表。</p></div><span>${sourceFiles.length} 份</span></div><div class="command-file-grid">${files('周报 / 月报 / 监测报告',reports,'calendar')}${files('Brief 与项目资料',[...briefs,...materials],'folder')}</div></section>${todoDialog(p)}`);
   }
   function workloadPage(){
-    const taskTypes=[['write','写稿','数量 / 周'],['monitor','监测','项目归属'],['report','报告','周期节点']];
+    const taskTypes=[['write','写稿','数量 / 周期'],['monitor','监测','项目归属'],['report','报告','周期节点']];
     const taskKind=duty=>/审稿/.test(duty)?'review':/发稿|发布/.test(duty)?'publish':/监测|巡检|导数|数据表/.test(duty)?'monitor':/周报|月报|季报|报告|数据贴图|框架/.test(duty)?'report':/写稿|视频/.test(duty)?'write':/对接/.test(duty)?'contact':'';
-    const actionable=duties=>duties.filter(duty=>taskKind(duty) && taskKind(duty)!=='review');
+    const actionable=duties=>duties.filter(duty=>taskTypes.some(([kind])=>kind===taskKind(duty)));
     const assignments=CONFIRMED_TEAM_ASSIGNMENTS.flatMap(project=>project.members.map(member=>({project,member,duties:actionable(member.duties)})).filter(item=>item.duties.length));
     const roster=CURRENT_ASSIGNMENT_MEMBERS.map(name=>({name,assignments:assignments.filter(item=>item.member.name===name)})).filter(person=>person.assignments.length);
     const personStats=Object.fromEntries(roster.map(person=>{
       const allDuties=person.assignments.flatMap(item=>item.duties);
-      const writing=allDuties.filter(duty=>taskKind(duty)==='write').reduce((total,duty)=>total+(Number((String(duty).match(/(\d+)\s*(篇|条)/)||[])[1])||0),0);
+      const writing=allDuties.filter(duty=>taskKind(duty)==='write').reduce((total,duty)=>total+(Number((String(duty).match(/(\d+)\s*(篇|条)/)||[])[1])||0)/(/双周/.test(duty)?2:1),0);
       const monitors=new Set(person.assignments.filter(item=>item.duties.some(duty=>taskKind(duty)==='monitor')).map(item=>item.project.label)).size;
       const publishes=new Set(person.assignments.filter(item=>item.duties.some(duty=>taskKind(duty)==='publish'||/发布/.test(duty))).map(item=>item.project.label)).size;
       return [person.name,{writing:writing||0,monitors,publishes}];
@@ -664,7 +670,7 @@
       const count=countOf(duty), deadline=deadlineOf(duty);
       if(kind==='contact')return {value:'负责',note:''};
       if(kind==='write' && /后续，当前待定/.test(duty))return {value:'待定',note:'后续约 5 篇 / 周'};
-      if(kind==='write')return {value:count||'待定',note:/视频/.test(duty)?`视频 · ${/\/\s*月/.test(duty)?'每月':''}`.replace(/ · $/,''):deadline};
+      if(kind==='write')return {value:count||'待定',note:/视频/.test(duty)?`视频 · ${/\/\s*月/.test(duty)?'每月':''}`.replace(/ · $/,''):[/双周/.test(duty)?'双周':'',deadline].filter(Boolean).join(' · ')};
       if(kind==='review')return {value:count||'待定',note:deadline};
       if(kind==='publish')return {value:count||'负责',note:/\/\s*周/.test(duty)?'每周':'按项目排期'};
       if(kind==='monitor' && /每天/.test(duty))return {value:'负责',note:'每天'};
@@ -680,9 +686,9 @@
     const cell=(duties,kind)=>{const items=duties.filter(duty=>taskKind(duty)===kind);return items.length?`<div class="task-stack">${items.map(duty=>{const part=taskParts(duty,kind);return `<span class="task-cell"><b>${e(part.value)}</b>${part.note?`<small>${e(part.note)}</small>`:''}</span>`;}).join('')}</div>`:'<span class="task-empty" aria-label="无此项任务"></span>';};
     const groupedAssignments=assignments.reduce((groups,item)=>{const previous=groups[groups.length-1];if(previous&&previous.project.project===item.project.project)previous.items.push(item);else groups.push({project:item.project,items:[item]});return groups;},[]);
     const matrixRows=groupedAssignments.map(({project,items},projectIndex)=>items.map(({member,duties},index)=>{const kinds=[...new Set(duties.map(taskKind))].join(' '),projectKey=`project-${projectIndex}`,target=projects.find(item=>item.name===project.project);return `<tr data-task-row data-task-kinds="${kinds}" data-project-tone="${project.label}" data-matrix-project="${projectKey}">${index===0?`<th class="matrix-project" data-matrix-project-header="${projectKey}" rowspan="${items.length}"><a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${project.note?`<small>${e(project.note)}</small>`:`<small>查看项目 ${icon('arrow',11)}</small>`}</a></th>`:''}<td class="matrix-person"><div class="matrix-person-name">${av(member.name)}<b>${e(member.name)}</b></div></td>${taskTypes.map(([kind])=>`<td data-task-cell-kind="${kind}">${cell(duties,kind)}</td>`).join('')}</tr>`;}).join('')).join('');
-    const matrix=`<section class="assignment-matrix"><div class="assignment-matrix-head"><div><p class="matrix-eyebrow">WEEKLY DELIVERY</p><h2>本周交付看板</h2><p>同项目合并展示；数量默认按周统计，灰字为提交或发布节点。</p></div><div class="matrix-filters" aria-label="按任务类型筛选"><button class="active" data-task-filter="all">全部</button>${taskTypes.map(([kind,label])=>`<button data-task-filter="${kind}">${label}</button>`).join('')}</div></div><div class="matrix-scroll"><table><thead><tr><th>项目</th><th>人员</th>${taskTypes.map(([,label,unit])=>`<th>${label}<small>${unit}</small></th>`).join('')}</tr></thead><tbody>${matrixRows}</tbody></table></div></section>`;
+    const matrix=`<section class="assignment-matrix"><div class="assignment-matrix-head"><div><p class="matrix-eyebrow">WEEKLY DELIVERY</p><h2>本周交付看板</h2><p>同项目合并展示；灰字标注交付周期与截止时间。</p></div><div class="matrix-filters" aria-label="按任务类型筛选"><button class="active" data-task-filter="all">全部</button>${taskTypes.map(([kind,label])=>`<button data-task-filter="${kind}">${label}</button>`).join('')}</div></div><div class="matrix-scroll"><table><thead><tr><th>项目</th><th>人员</th>${taskTypes.map(([,label,unit])=>`<th>${label}<small>${unit}</small></th>`).join('')}</tr></thead><tbody>${matrixRows}</tbody></table></div></section>`;
     const dutyLine=duty=>{const kind=taskKind(duty),part=taskParts(duty,kind);return `<li><em>${e(taskLabel(kind))}</em><b>${e(part.value)}</b>${part.note?`<small>${e(part.note)}</small>`:''}</li>`;};
-    const card=person=>{const stats=personStats[person.name]||{};return `<article class="assignment-person-card"><header><div class="assignment-person-identity">${av(person.name)}<div><h2>${e(person.name)}</h2><p>${person.assignments.length} 个项目</p></div></div><div class="assignment-card-stats" aria-label="${e(person.name)} 的周度汇总"><span><b>${e(stats.writing)}<i>篇</i></b><small>写稿 / 周</small></span><span><b>${stats.monitors||0}<i>项</i></b><small>监测项目</small></span></div></header><div class="assignment-projects">${person.assignments.map(({project,duties})=>{const target=projects.find(item=>item.name===project.project);return `<a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${icon('arrow',14)}<ul class="assignment-duties">${duties.map(dutyLine).join('')}</ul></a>`;}).join('')}</div></article>`;};
+    const card=person=>{const stats=personStats[person.name]||{};return `<article class="assignment-person-card"><header><div class="assignment-person-identity">${av(person.name)}<div><h2>${e(person.name)}</h2><p>${person.assignments.length} 个项目</p></div></div><div class="assignment-card-stats" aria-label="${e(person.name)} 的周度汇总"><span><b>${e(stats.writing)}<i>篇</i></b><small>周均写稿</small></span><span><b>${stats.monitors||0}<i>项</i></b><small>监测项目</small></span></div></header><div class="assignment-projects">${person.assignments.map(({project,duties})=>{const target=projects.find(item=>item.name===project.project);return `<a href="#/project/${encodeURIComponent(target?.id||project.project)}"><b>${e(project.label)}</b>${icon('arrow',14)}<ul class="assignment-duties">${duties.map(dutyLine).join('')}</ul></a>`;}).join('')}</div></article>`;};
     return shell(`${header('成员任务','一眼看清每个项目的写稿、监测与报告安排。')}
       <section class="assignment-summary"><span><b>${roster.length}</b> 位执行成员</span><span><b>${groupedAssignments.length}</b> 个进行中项目</span><span>发稿由刘依晨统一负责</span></section>
       ${matrix}
@@ -744,6 +750,8 @@
     const inWeek=d=>d>=monday&&d<=sunday;
     const deliverables=[
       ...(fortnightlyDue(iso(monday),'2026-11-23')?[{day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交双周报',note:'隔周提交'}]}]:[]),
+      ...(iso(monday)>='2026-11-23'?[{day:0,owner:'杨帆',tasks:[{project:'西门子',key:'西门子',slot:'siemens-writing',time:'周一 18:00 前',title:'提交写稿 10 篇',note:'每周交付'}]}]:[]),
+      ...(fortnightlyDue(iso(new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+2)),'2026-12-02')?[{day:2,owner:'杨帆',tasks:[{project:'赏会所',key:'赏·会所',slot:'shang-writing',time:'周三 14:00 前',title:'提交写稿 20 篇',note:'双周交付'}]}]:[]),
       {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'}]},
       {day:3,owner:'彭安迪',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
       {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
@@ -764,7 +772,7 @@
       const matchedCompletions=new Set();
       for(const person of deliverables.filter(person=>person.day===index)){
         person.tasks.forEach((task,taskIndex)=>{
-          const fixedId=`${day.iso}-${person.owner}-${taskIndex}`;
+          const fixedId=`${day.iso}-${person.owner}-${task.slot||taskIndex}`;
           const completion=/写稿|稿件/.test(task.title)?completedWriting.find(item=>item.date===day.iso&&item.owner===person.owner&&item.project===task.key):null;
           if(completion)matchedCompletions.add(completion.id);
           const actual=completion?writingCount(completion):0;
@@ -967,5 +975,25 @@
     startTodoPolling();
     startReminderPolling();
   }
+  // Long-lived tabs check the deployed build without interrupting a form or checkbox save.
+  let updateCheckInFlight=false;
+  async function checkDashboardUpdate(){
+    if(localPreview||updateCheckInFlight||todoMutationInFlight||document.querySelector('dialog[open]'))return;
+    if(document.activeElement?.matches('input:not([type="checkbox"]),textarea,select,[contenteditable="true"]'))return;
+    const script=[...document.scripts].find(item=>item.src.includes('/dashboard-v2.js?'));
+    const current=script?new URL(script.src).searchParams.get('v'):'';
+    if(!current)return;
+    updateCheckInFlight=true;
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      const response=await fetch(new URL('./index.html',location.href),{cache:'no-store',signal:controller.signal});
+      if(!response.ok)return;
+      const next=(await response.text()).match(/dashboard-v2\.js\?v=([a-zA-Z0-9_-]+)/)?.[1];
+      if(next&&next!==current){const target=new URL(location.href);target.searchParams.set('release',next);location.replace(target.href);}
+    }catch{}finally{clearTimeout(timer);updateCheckInFlight=false;}
+  }
+  setInterval(checkDashboardUpdate,60000);
+  addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkDashboardUpdate();});
+  addEventListener('focus',checkDashboardUpdate);
   addEventListener('hashchange',render);render();
 })();
