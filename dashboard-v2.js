@@ -50,7 +50,7 @@
     {project:'赏·会所',label:'赏会所',note:'存稿：9 篇 · 当前待定 · 杨帆后续写稿约 5 篇 / 周',members:[{name:'杨帆',duties:['写稿 5 篇 / 周（后续，当前待定）']}]},
     {project:'华硕 新',label:'华硕新',note:'稿件安排待定 · 存稿：5 篇',members:[{name:'向昱筱 Cheryl',duties:['写稿待定']},{name:'李正浩',duties:['数据监测（每工作日 10 分钟）']}]},
     {project:'哲库林 润喉糖',label:'哲库林',members:[{name:'彭安迪',duties:['写稿 10 篇 / 周（周一 16:00 前）','审稿 5 篇','数据监测（每工作日 10 分钟）']}]},
-    {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周四 16:00 前）']},{name:'杨帆',duties:['写稿 5 篇 / 周（周四 16:00 前）','数据监测（每天）']}]},
+    {project:'咪咕体育',label:'咪咕 · 影之刃',members:[{name:'彭安迪',duties:['写稿 15 篇 / 周（周四 16:00 前）']},{name:'杨帆',duties:['数据监测（每天）']}]},
     {project:'广百',label:'广百',note:'外包 · 对接：刘依晨',members:[{name:'刘依晨',duties:['对接']},{name:'杨帆',duties:['双周报（隔周周一，11 月 23 日起）']}]}
   ];
   const confirmedAssignmentFor = project => CONFIRMED_TEAM_ASSIGNMENTS.find(item=>item.project===project?.name);
@@ -78,7 +78,7 @@
     '广百': [{type:'fortnightly',startDate:'2026-11-23',title:'提交双周报',owner:'杨帆',detail:'隔周周一提交双周报，11 月 23 日起'}],
     '太太乐松茸鲜': [{type:'weekly',weekday:3,title:'周报',owner:'刘依晨',detail:'每周三提交周报'}],
     '哲库林 润喉糖': [{type:'weekly',weekday:1,title:'提交本周稿件',owner:'彭安迪',detail:'周一 16:00 前提交 10 篇'}],
-    '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪、杨帆',detail:'周四 16:00 前提交：彭安迪 15 篇，杨帆 5 篇'}],
+    '咪咕体育': [{type:'weekly',weekday:4,title:'提交本周稿件',owner:'彭安迪',detail:'周四 16:00 前提交 15 篇'}],
     '西门子': [{type:'manual',title:'存稿',owner:'刘依晨',detail:'现有 11 篇存稿，刘依晨对接'}],
     '华硕 新': [{type:'manual',title:'存稿',owner:'向昱筱 Cheryl',detail:'现有 5 篇存稿，稿件安排待定'}],
     '赏·会所': [{type:'manual',title:'存稿与写稿安排',owner:'杨帆',detail:'现有 9 篇存稿；写稿安排当前待定，后续约 5 篇 / 周'}]
@@ -746,7 +746,6 @@
       ...(fortnightlyDue(iso(monday),'2026-11-23')?[{day:0,owner:'杨帆',tasks:[{project:'广百',key:'广百',time:'周一',title:'提交双周报',note:'隔周提交'}]}]:[]),
       {day:0,owner:'彭安迪',tasks:[{project:'哲库林',key:'哲库林 润喉糖',time:'周一 16:00 前',title:'提交写稿 10 篇',note:'审稿安排待定'}]},
       {day:3,owner:'彭安迪',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 15 篇',note:'审稿安排待定'}]},
-      {day:3,owner:'杨帆',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'}]},
       {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
     ];
     const weekTodos=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
@@ -754,7 +753,8 @@
     const completedWriting=weekTodos.filter(item=>item.status==='done'&&writingCount(item));
     const writingTotals=completedWriting.reduce((totals,item)=>{totals[item.owner]=(totals[item.owner]||0)+writingCount(item);return totals;},{});
     const completionSummary=Object.entries(writingTotals).map(([name,count])=>`${name} ${count} 篇`).join(' · ');
-    const completedOnCalendar=weekTodos.filter(item=>!item.id.startsWith('auto-')&&!/监测/.test(item.title)&&(item.status==='done'||item.id.startsWith('completion-')));
+    const completedOnCalendar=weekTodos.filter(item=>!item.id.startsWith('auto-')&&!/每日监测/.test(item.title));
+    const calendarPending=completedOnCalendar.filter(item=>item.status!=='done').length;
     const manual=weekTodos.filter(item=>!item.id.startsWith('auto-')&&!completedOnCalendar.includes(item)&&item.status!=='done');
     const days=Array.from({length:7},(_,index)=>{const date=new Date(monday);date.setDate(monday.getDate()+index);return {date,iso:iso(date),today:iso(date)===iso(today)};});
     const projectHref=key=>{const project=projects.find(item=>item.name===key);return `#/project/${encodeURIComponent(project?.id||key)}`;};
@@ -765,7 +765,7 @@
       for(const person of deliverables.filter(person=>person.day===index)){
         person.tasks.forEach((task,taskIndex)=>{
           const fixedId=`${day.iso}-${person.owner}-${taskIndex}`;
-          const completion=completedWriting.find(item=>item.date===day.iso&&item.owner===person.owner&&item.project===task.key);
+          const completion=/写稿|稿件/.test(task.title)?completedWriting.find(item=>item.date===day.iso&&item.owner===person.owner&&item.project===task.key):null;
           if(completion)matchedCompletions.add(completion.id);
           const actual=completion?writingCount(completion):0;
           add(person.owner,{...task,fixedId,done:fixedCheckDone(fixedId),title:actual?`写稿 ${actual} 篇`:task.title,note:actual?`原计划 ${task.title.match(/\d+\s*篇/)?.[0]||''}`:task.note});
@@ -774,7 +774,7 @@
       for(const item of completedOnCalendar.filter(item=>item.date===day.iso&&!matchedCompletions.has(item.id))){
         const count=writingCount(item);
         const assignment=CONFIRMED_TEAM_ASSIGNMENTS.find(project=>project.project===item.project);
-        add(item.owner,{project:assignment?.label||item.project,key:item.project,todoId:item.id,done:item.status==='done',title:count?`写稿 ${count} 篇`:item.title.replace(/^广百重新开标[：:]?/, '重新开标 · '),time:'',note:''});
+        add(item.owner,{project:assignment?.label||item.project,key:item.project,todoId:item.id,done:item.status==='done',title:count?`写稿 ${count} 篇`:item.title.replace(/^广百重新开标[：:]?/, '重新开标 · '),time:'',note:item.status==='done'?'':item.description||''});
       }
       return `<section class="calendar-date ${day.today?'is-today':''}"><header><span>${dayName(day.date)}</span><b>${day.date.getDate()}</b></header><div class="calendar-people">${[...grouped].map(([owner,tasks])=>`<article class="calendar-person"><div class="calendar-person-heading">${av(owner)}<b>${e(owner)}</b></div><div class="calendar-person-tasks">${tasks.map(task=>`<label class="calendar-person-task ${task.done?'is-done':''}"><input type="checkbox" ${task.todoId?`data-todo-toggle="${e(task.todoId)}"`:`data-fixed-toggle="${e(task.fixedId)}"`} ${task.done?'checked':''} ${syncNeedsLogin||!task.todoId&&!fixedChecksReady?'disabled':''}><span><b>${e(task.project)} · ${e(task.title)}</b><small>${[task.done?'已完成':'',task.time,task.note].filter(Boolean).map(e).join(' · ')}</small></span></label>`).join('')}</div></article>`).join('')||'<span class="calendar-no-tasks">暂无交付</span>'}</div></section>`;
     }).join('')}</div>`;
@@ -786,7 +786,7 @@
       <section class="week-rhythm"><div><span>每日 10:00</span><b>刘依晨 · 发稿汇总</b></div></section>
       <section class="week-calendar"><div class="section-head"><div><h2>${dayText(monday)} — ${dayText(sunday)}</h2><p>按交付日查看，每人当天的任务汇总在一起，可勾选完成。</p>${completionSummary?`<p class="week-completion-summary">本周已完成写稿：${e(completionSummary)}</p>`:''}</div></div><div class="week-calendar-scroll">${calendar}</div></section>
       <section class="monitoring-board"><div class="section-head"><div><h2>每日监测数据</h2><p>工作日早上导出并查看负责项目的数据。</p></div></div><div class="monitoring-grid"><article><b>彭安迪</b><p>哲库林；太太乐每周手动监测 2 次</p>${andyMonitoring?'<small class="monitor-completed">✓ 太太乐本周已完成 2 次监测</small>':''}</article><article><b>杨帆</b><p>咪咕 · 影之刃（每天）</p>${yangMonitoring?`<small class="monitor-completed">✓ 每日监测已登记至 ${e(shortDate(new Date(`${yangMonitoring.date}T00:00:00`)))}</small>`:''}</article><article><b>李正浩</b><p>华硕新（远程）</p></article></div></section>
-      <section class="week-list"><div class="section-head"><div><h2>自建 To-do</h2><p>临时追加的待办放在这里，完成后按日期归入上方日历。</p></div><button class="quiet-reminder" type="button" data-add-todo>+ 添加临时事项</button></div><div class="week-list-body">${manual.map(item=>`<article class="manual-todo"><label><input type="checkbox" data-todo-toggle="${e(item.id)}" ${syncNeedsLogin?'disabled':''}><span></span></label><div><small>${e(item.project||'日常运营')} · ${e(dayText(new Date(`${item.date}T00:00:00`)))}</small><b>${e(item.title)}</b>${item.description?`<p>${e(item.description)}</p>`:''}</div><em>${e(item.owner||'未分配')}</em></article>`).join('')||`<p class="week-empty">${todoSyncState==='ready'?'本周暂无未完成的临时事项。':syncNeedsLogin?'请重新登录飞书，读取本周共享待办。':'共享待办尚未加载，请查看上方同步状态。'}</p>`}</div></section>
+      <section class="week-list"><div class="section-head"><div><h2>自建 To-do</h2><p>新增事项直接列入对应日期，可在日历里勾选完成。</p></div><button class="quiet-reminder" type="button" data-add-todo>+ 添加临时事项</button></div><div class="week-list-body">${manual.map(item=>`<article class="manual-todo"><label><input type="checkbox" data-todo-toggle="${e(item.id)}" ${syncNeedsLogin?'disabled':''}><span></span></label><div><small>${e(item.project||'日常运营')} · ${e(dayText(new Date(`${item.date}T00:00:00`)))}</small><b>${e(item.title)}</b>${item.description?`<p>${e(item.description)}</p>`:''}</div><em>${e(item.owner||'未分配')}</em></article>`).join('')||`<p class="week-empty">${todoSyncState==='ready'?(calendarPending?`${calendarPending} 项临时待办已列入上方日历。`:'本周暂无未完成的临时事项。'):syncNeedsLogin?'请重新登录飞书，读取本周共享待办。':'共享待办尚未加载，请查看上方同步状态。'}</p>`}</div></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>WEEKLY TODO</small><h2>新建本周待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：跟进客户反馈"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${iso(today)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">日常运营</option>${projects.map(p=>`<option value="${e(p.name)}">${e(p.name)}</option>`).join('')}</select></label><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
   function setTodoDialogBusy(dialog,busy){

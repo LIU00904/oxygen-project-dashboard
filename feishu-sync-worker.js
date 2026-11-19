@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261116-guangbai-biweekly-v1";
+const WORKER_VERSION = "20261119-tasks-and-manual-reminders-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -42,7 +42,7 @@ const PROJECT_REMINDER_RULES = {
   "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪", detail: "周一 16:00 前提交 10 篇；审稿安排待确认" }] },
   "广百": { manager: "刘依晨", rules: [{ type: "weekly", weekday: 1, title: "AI搜写稿交稿与优化", owner: "刘依晨", detail: "提醒 AI 搜写稿交稿，开始优化" }, { type: "fortnightly", startDate: "2026-11-23", title: "提交广百双周报", owner: "杨帆", detail: "隔周周一提交双周报，11 月 23 日起", fixed: true }] },
   "华硕 新": { manager: "向昱筱 Cheryl", inactive: true, rules: [] },
-  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪、杨帆", detail: "周四 16:00 前提交：彭安迪 15 篇，杨帆 5 篇", fixed: true }] },
+  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪", detail: "周四 16:00 前提交 15 篇", fixed: true }] },
   "头道汤": { manager: "辛味珈", inactive: true, rules: [] }
 };
 function projectLabel(project) { return project === "咪咕体育" ? "咪咕影之刃" : project; }
@@ -457,7 +457,6 @@ function fixedTasksForDay(date) {
   const templates = [
     {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 10 篇",kind:"稿件"},
     {day:3,owner:"彭安迪",index:0,project:"咪咕体育",title:"提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
-    {day:3,owner:"杨帆",index:0,project:"咪咕体育",title:"提交写稿 5 篇（周四 16:00 前）",kind:"稿件"},
     ...(fortnightlyDue(date,"2026-11-23") ? [{day:0,owner:"杨帆",index:0,project:"广百",title:"提交双周报",kind:"报告"}] : []),
     {day:2,owner:"刘依晨",index:0,project:"太太乐松茸鲜",title:"提交周报",kind:"周报"},
   ];
@@ -508,11 +507,11 @@ function mention(name, directory) {
   }).join(" ");
 }
 
-async function sendProjectGroupMessage(token, chatId, text) {
+async function sendProjectGroupMessage(token, chatId, text, uuid) {
   const response = await fetch("https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ receive_id: chatId, msg_type: "text", content: JSON.stringify({ text }) })
+    body: JSON.stringify({ receive_id: chatId, msg_type: "text", content: JSON.stringify({ text }), ...(uuid ? { uuid } : {}) })
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result.code) throw new Error(feishuErrorMessage(result, "项目群消息发送失败"));
@@ -655,11 +654,71 @@ async function handleReminderGroups(request, env, requestUrl) {
   return json({ error: "Method not allowed" }, 405);
 }
 
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+// An operator with D1 access authorizes one dispatch using a short-lived hashed nonce.
+// The public event proxy can only trigger that pre-authorized job; it cannot create jobs,
+// choose recipients, or supply message text. Feishu event processing remains unchanged.
+async function handleManualReminderDispatch(payload, env) {
+  const key = String(payload.run_key || ""), nonce = String(payload.nonce || "");
+  if (!/^[a-z0-9-]{12,100}$/.test(key) || !/^[a-f0-9]{64}$/.test(nonce)) return json({ error: "Invalid dispatch authorization" }, 401);
+  const job = await env.TODOS_DB.prepare("SELECT * FROM manual_reminder_runs WHERE run_key = ?").bind(key).first();
+  if (!job || job.nonce_hash !== await sha256Hex(nonce) || Date.parse(job.expires_at) < Date.now()) return json({ error: "Invalid dispatch authorization" }, 401);
+  const local = chinaNow();
+  if (job.day !== local.date) return json({ error: "Dispatch date does not match today" }, 400);
+  if (job.status === "sent") return json({ ok: true, duplicate: true });
+  const claimed = await env.TODOS_DB.prepare("UPDATE manual_reminder_runs SET status='sending',updated_at=? WHERE run_key=? AND status='pending'").bind(new Date().toISOString(), key).run();
+  if (!claimed.meta?.changes) return json({ ok: true, pending: true }, 202);
+  const sent = [];
+  try {
+    await ensureFixedChecksSchema(env);
+    const bindings = await activeBindings(env), groups = new Map();
+    const add = task => {
+      const chatId = bindings.get(canonicalProjectName(task.project));
+      if (!chatId || PROJECT_REMINDER_RULES[task.project]?.inactive || /徐奕旸|韩文静/.test(task.owner || "")) return;
+      if (!groups.has(chatId)) groups.set(chatId, []);
+      groups.get(chatId).push(task);
+    };
+    for (const task of fixedTasksForDay(local.date)) {
+      const check = await env.TODOS_DB.prepare("SELECT done FROM fixed_task_checks WHERE task_id = ?").bind(task.id).first();
+      if (!check?.done) add(task);
+    }
+    for (const task of await openChecklistDueToday(env, local.date)) {
+      if (!String(task.id).startsWith("auto-")) add(task);
+    }
+    const token = groups.size ? await botTenantToken(env) : "";
+    for (const [chatId, tasks] of groups) {
+      const directory = await readChatPeopleDirectory(token, chatId);
+      const owners = new Map();
+      for (const task of tasks) {
+        if (!personIdForName(task.owner, directory)) throw new Error(`无法实际艾特负责人：${task.owner}`);
+        if (!owners.has(task.owner)) owners.set(task.owner, []);
+        owners.get(task.owner).push(task);
+      }
+      const lines = [...owners].map(([owner, list]) => `${mention(owner, directory)}\n${list.map(task => `• ${projectLabel(task.project)} · ${task.title}${task.description ? `\n  ${task.description}` : ""}`).join("\n")}`);
+      const text = `【今日待提交｜${local.date}】\n${lines.join("\n\n")}\n\n完成后请在网页勾选：https://liu00904.github.io/oxygen-project-dashboard/#/week`;
+      const uuid = (await sha256Hex(`${key}|${chatId}`)).slice(0, 32);
+      const result = await sendProjectGroupMessage(token, chatId, text, uuid);
+      sent.push({ chatId, messageId: result.message_id, owners: [...owners.keys()], taskIds: tasks.map(task => task.id), text });
+      await env.TODOS_DB.prepare("UPDATE manual_reminder_runs SET result=?,updated_at=? WHERE run_key=?").bind(JSON.stringify(sent), new Date().toISOString(), key).run();
+    }
+    await env.TODOS_DB.prepare("UPDATE manual_reminder_runs SET status='sent',result=?,updated_at=? WHERE run_key=?").bind(JSON.stringify(sent), new Date().toISOString(), key).run();
+    return json({ ok: true, groups: sent.length });
+  } catch (error) {
+    await env.TODOS_DB.prepare("UPDATE manual_reminder_runs SET status='failed',result=?,updated_at=? WHERE run_key=?").bind(JSON.stringify({ sent, error: String(error.message || error) }), new Date().toISOString(), key).run();
+    throw error;
+  }
+}
+
 async function handleBotEvent(request, env) {
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
   const raw = await request.text();
   let payload;
   try { payload = JSON.parse(raw); } catch { return json({ error: "Invalid event body" }, 400); }
+  if (payload.type === "oxygen.manual_reminder") return await handleManualReminderDispatch(payload, env);
   // 首次保存回调地址时飞书使用 url_verification 握手；该响应必须原样回传 challenge。
   if (payload.type === "url_verification") return json({ challenge: payload.challenge || "" });
   const verificationToken = payload.header?.token || payload.token || "";
