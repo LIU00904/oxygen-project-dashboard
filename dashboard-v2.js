@@ -99,6 +99,9 @@
   let todoSyncPromise = null;
   let todoPoll = null;
   let todoSyncState = 'connecting';
+  let todoSyncError = '';
+  let fixedSyncError = '';
+  let syncNeedsLogin = false;
   let todoMutationInFlight = false;
   let sharedFixedChecks = {};
   let fixedChecksReady = false;
@@ -112,11 +115,11 @@
     if(!session()||fixedChecksPromise)return fixedChecksPromise;
     fixedChecksPromise=(async()=>{try{
       const response=await dataSyncFetch('/fixed-checks',{headers:{Authorization:`Bearer ${session()}`}});
-      const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'固定任务同步失败');
+      const payload=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(new Error(payload.error||'固定任务同步失败'),{status:response.status});
       const checks=payload.checks||{},changed=JSON.stringify(sharedFixedChecks)!==JSON.stringify(checks)||!fixedChecksReady;
-      sharedFixedChecks=checks;fixedChecksReady=true;
+      sharedFixedChecks=checks;fixedChecksReady=true;fixedSyncError='';
       if(rerender&&changed&&!document.querySelector('dialog[open]'))render();
-    }catch(error){fixedChecksReady=false;console.warn('固定任务同步失败',error);}finally{fixedChecksPromise=null;}})();return fixedChecksPromise;
+    }catch(error){const changed=fixedChecksReady||fixedSyncError!==error.message;fixedChecksReady=false;fixedSyncError=error.message;if(error.status===401)syncNeedsLogin=true;console.warn('固定任务同步失败',error);if(rerender&&changed&&!document.querySelector('dialog[open]'))render();}finally{fixedChecksPromise=null;}})();return fixedChecksPromise;
   }
   async function setFixedCheck(id,done){
     const response=await dataSyncFetch('/fixed-checks',{method:'POST',headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:JSON.stringify({id,done})});
@@ -128,6 +131,7 @@
     const current=new URL(location.href), session=current.searchParams.get('feishu_session'), encodedUser=current.searchParams.get('feishu_user');
     if(!session)return;
     localStorage.setItem(AUTH_KEY,session);
+    syncNeedsLogin=false;todoSyncError='';fixedSyncError='';
     const user=decodeUser(encodedUser||''); if(user)localStorage.setItem(USER_KEY,JSON.stringify(user));
     current.searchParams.delete('feishu_session'); current.searchParams.delete('feishu_user');
     history.replaceState({},'',`${current.pathname}${current.search}${current.hash}`);
@@ -330,7 +334,7 @@
   async function cloudTodos(method='GET',id='',body){
     const response=await dataSyncFetch(`/todos${id?`/${encodeURIComponent(id)}`:''}`,{method,headers:{Authorization:`Bearer ${session()}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
     const payload=await response.json().catch(()=>null);
-    if(!response.ok||!payload?.ok) throw new Error(payload?.error||'待办同步失败，请稍后重试');
+    if(!response.ok||!payload?.ok) throw Object.assign(new Error(payload?.error||'待办同步失败，请稍后重试'),{status:response.status});
     return payload;
   }
   function showTodoError(message){
@@ -348,9 +352,9 @@
         const changed=todoFingerprint(sharedTodos)!==todoFingerprint(payload.todos);
         sharedTodos=Array.isArray(payload.todos)?payload.todos:[];
         writeTodos(sharedTodos);
-        const stateChanged=todoSyncState!=='ready';todoSyncState='ready';
+        const stateChanged=todoSyncState!=='ready';todoSyncState='ready';todoSyncError='';
         if(rerender&&(changed||stateChanged)&&!document.querySelector('dialog[open]'))render();
-      }catch(error){const stateChanged=todoSyncState!=='unavailable';todoSyncState='unavailable';console.warn('Unable to refresh shared todos',error);if(rerender&&stateChanged&&!document.querySelector('dialog[open]'))render();}
+      }catch(error){const nextState=error.status===401?'auth-required':'unavailable';const stateChanged=todoSyncState!==nextState||todoSyncError!==error.message;todoSyncState=nextState;todoSyncError=error.message;if(error.status===401)syncNeedsLogin=true;console.warn('Unable to refresh shared todos',error);if(rerender&&stateChanged&&!document.querySelector('dialog[open]'))render();}
       finally{todoSyncPromise=null;}
     })();
     return todoSyncPromise;
@@ -381,6 +385,13 @@
   function isoOffset(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
   // 项目待办只显示用户创建的事项；不再把旧工作记录或模板节点误写给某个成员。
   function todos(){return Array.isArray(sharedTodos)?sharedTodos:readTodos();}
+  function weeklySyncNotice(){
+    const ready=todoSyncState==='ready'&&fixedChecksReady;
+    const failed=Boolean(todoSyncError||fixedSyncError);
+    const title=syncNeedsLogin?'飞书登录已失效，完成记录尚未同步':ready?'任务与完成状态已同步':failed?'共享完成记录加载失败':'正在读取共享任务与完成记录…';
+    const copy=syncNeedsLogin?'请重新登录飞书后查看最新完成情况。':failed?(todoSyncError||fixedSyncError):'';
+    return `<section class="weekly-sync ${ready?'is-ready':failed?'is-error':'is-loading'}" role="${failed?'alert':'status'}"><div><b>${e(title)}</b>${copy?`<p>${e(copy)}</p>`:''}</div><div>${syncNeedsLogin?'<button type="button" data-feishu-login>重新登录飞书</button>':''}<button type="button" data-retry-shared-sync>${ready?'刷新状态':'重新同步'}</button></div></section>`;
+  }
   function todoSyncNote(){
     if(todoSyncState==='ready')return {title:'全员 Checklist 已同步',copy:'待办保存在受飞书企业登录保护的共享库中，其他成员约 15 秒内即可看到新增或勾选状态。',action:'重新登录'};
     if(todoSyncState==='unavailable')return {title:'同步服务连接中',copy:'共享待办服务暂未就绪；当前页面不会把本机修改当作全员数据。请稍后刷新或重新登录飞书。',action:'重新登录'};
@@ -738,17 +749,44 @@
       {day:3,owner:'杨帆',tasks:[{project:'咪咕 · 影之刃',key:'咪咕体育',time:'周四 16:00 前',title:'提交写稿 5 篇',note:'审稿安排待定'}]},
       {day:2,owner:'刘依晨',tasks:[{project:'太太乐',key:'太太乐松茸鲜',time:'当日',title:'提交周报',note:'同步本周发布与数据情况'}]}
     ];
-    const manual=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
+    const weekTodos=todos().filter(item=>{const date=new Date(`${item.date}T00:00:00`);return inWeek(date);});
+    const writingCount=item=>Number(item.title.match(/写稿完成\s*(\d+)\s*篇/)?.[1]||0);
+    const completedWriting=weekTodos.filter(item=>item.status==='done'&&writingCount(item));
+    const writingTotals=completedWriting.reduce((totals,item)=>{totals[item.owner]=(totals[item.owner]||0)+writingCount(item);return totals;},{});
+    const completionSummary=Object.entries(writingTotals).map(([name,count])=>`${name} ${count} 篇`).join(' · ');
+    const completedOnCalendar=weekTodos.filter(item=>!item.id.startsWith('auto-')&&!/监测/.test(item.title)&&(item.status==='done'||item.id.startsWith('completion-')));
+    const manual=weekTodos.filter(item=>!item.id.startsWith('auto-')&&!completedOnCalendar.includes(item)&&item.status!=='done');
     const days=Array.from({length:7},(_,index)=>{const date=new Date(monday);date.setDate(monday.getDate()+index);return {date,iso:iso(date),today:iso(date)===iso(today)};});
     const projectHref=key=>{const project=projects.find(item=>item.name===key);return `#/project/${encodeURIComponent(project?.id||key)}`;};
-    const calendar=`<div class="calendar-days">${days.slice(0,5).map((day,index)=>{const people=deliverables.filter(person=>person.day===index).map(person=>({...person,tasks:person.tasks.map((task,taskIndex)=>({...task,taskIndex})).filter(task=>!(/整理写稿需求|完成信源分析/.test(task.title)&&iso(monday)!=='2026-11-09'))})).filter(person=>person.tasks.length);return `<section class="calendar-date ${day.today?'is-today':''}"><header><span>${dayName(day.date)}</span><b>${day.date.getDate()}</b></header><div class="calendar-people">${people.map(person=>`<article class="calendar-person"><div class="calendar-person-heading">${av(person.owner)}<b>${e(person.owner)}</b></div><div class="calendar-person-tasks">${person.tasks.map(task=>{const id=`${iso(day.date)}-${person.owner}-${task.taskIndex}`;return `<label class="calendar-person-task ${fixedCheckDone(id)?'is-done':''}"><input type="checkbox" data-fixed-toggle="${e(id)}" ${fixedCheckDone(id)?'checked':''}><span><b>${e(task.project)} · ${e(task.title)}</b><small>${e(task.time)}${task.note?' · '+e(task.note):''}</small></span></label>`;}).join('')}</div></article>`).join('')||'<span class="calendar-no-tasks">暂无交付</span>'}</div></section>`;}).join('')}</div>`;
+    const calendar=`<div class="calendar-days">${days.slice(0,5).map((day,index)=>{
+      const grouped=new Map();
+      const add=(owner,task)=>{if(!grouped.has(owner))grouped.set(owner,[]);grouped.get(owner).push(task);};
+      const matchedCompletions=new Set();
+      for(const person of deliverables.filter(person=>person.day===index)){
+        person.tasks.forEach((task,taskIndex)=>{
+          const fixedId=`${day.iso}-${person.owner}-${taskIndex}`;
+          const completion=completedWriting.find(item=>item.date===day.iso&&item.owner===person.owner&&item.project===task.key);
+          if(completion)matchedCompletions.add(completion.id);
+          const actual=completion?writingCount(completion):0;
+          add(person.owner,{...task,fixedId,done:fixedCheckDone(fixedId),title:actual?`写稿 ${actual} 篇`:task.title,note:actual?`原计划 ${task.title.match(/\d+\s*篇/)?.[0]||''}`:task.note});
+        });
+      }
+      for(const item of completedOnCalendar.filter(item=>item.date===day.iso&&!matchedCompletions.has(item.id))){
+        const count=writingCount(item);
+        const assignment=CONFIRMED_TEAM_ASSIGNMENTS.find(project=>project.project===item.project);
+        add(item.owner,{project:assignment?.label||item.project,key:item.project,todoId:item.id,done:item.status==='done',title:count?`写稿 ${count} 篇`:item.title.replace(/^广百重新开标[：:]?/, '重新开标 · '),time:'',note:''});
+      }
+      return `<section class="calendar-date ${day.today?'is-today':''}"><header><span>${dayName(day.date)}</span><b>${day.date.getDate()}</b></header><div class="calendar-people">${[...grouped].map(([owner,tasks])=>`<article class="calendar-person"><div class="calendar-person-heading">${av(owner)}<b>${e(owner)}</b></div><div class="calendar-person-tasks">${tasks.map(task=>`<label class="calendar-person-task ${task.done?'is-done':''}"><input type="checkbox" ${task.todoId?`data-todo-toggle="${e(task.todoId)}"`:`data-fixed-toggle="${e(task.fixedId)}"`} ${task.done?'checked':''} ${syncNeedsLogin||!task.todoId&&!fixedChecksReady?'disabled':''}><span><b>${e(task.project)} · ${e(task.title)}</b><small>${[task.done?'已完成':'',task.time,task.note].filter(Boolean).map(e).join(' · ')}</small></span></label>`).join('')}</div></article>`).join('')||'<span class="calendar-no-tasks">暂无交付</span>'}</div></section>`;
+    }).join('')}</div>`;
+    const andyMonitoring=weekTodos.some(item=>item.project==='太太乐松茸鲜'&&item.owner==='彭安迪'&&item.status==='done'&&/监测完成\s*2\s*次/.test(item.title));
+    const yangMonitoring=weekTodos.find(item=>item.project==='咪咕体育'&&item.owner==='杨帆'&&item.status==='done'&&/每日监测/.test(item.title));
     const nextMonday=new Date(sunday);nextMonday.setDate(sunday.getDate()+1);
-    return shell(`${header('本周待办','固定项目交付在日历中；临时事项单独进入下方 To-do，不再重复展示。',`<button class="primary-action" data-add-todo>+ 新建待办</button>`)}
+    return shell(`${header('本周待办','按日期查看交付计划和实际完成情况；每人当天的任务放在一起。',`<button class="primary-action" data-add-todo>+ 新建待办</button>`)}${weeklySyncNotice()}
       <section class="operations-notice"><div class="notice-main"><span>运营公告</span><div><b>下周 ${shortDate(nextMonday)} 报销</b><p>刘依晨负责提交；本周已完成一轮，双周节奏下次进入报销节点。</p></div><details><summary>报销说明与文件入口</summary><p>请将报销文件放入指定飞书文件夹后关联到此处。报销系统或飞书文件链接尚未提供，收到链接后可配置为一键直达。</p></details></div><div class="attendance-rule"><b>考勤</b><span>09:00–10:00 打卡 · 18:00–19:00 下班打卡</span><small>每月 2 次补卡机会；超出后按公司考勤流程进入下一周期处理。</small></div><div class="leave-rule"><b>请假</b><span>OA 提交并写明请假时长</span><small>提交后同步刘依晨与负责人。</small></div></section>
       <section class="week-rhythm"><div><span>每日 10:00</span><b>刘依晨 · 发稿汇总</b></div></section>
-      <section class="week-calendar"><div class="section-head"><div><h2>${dayText(monday)} — ${dayText(sunday)}</h2><p>按交付日查看，每人当天的任务汇总在一起，可勾选完成。</p></div></div><div class="week-calendar-scroll">${calendar}</div></section>
-      <section class="monitoring-board"><div class="section-head"><div><h2>每日监测数据</h2><p>工作日早上导出并查看负责项目的数据。</p></div></div><div class="monitoring-grid"><article><b>彭安迪</b><p>哲库林；太太乐每周手动监测 2 次</p></article><article><b>杨帆</b><p>咪咕 · 影之刃（每天）</p></article><article><b>李正浩</b><p>华硕新（远程）</p></article></div></section>
-      <section class="week-list"><div class="section-head"><div><h2>自建 To-do</h2><p>仅放临时追加、需要勾选推进的事项；固定项目交付已经在上方日历中，不会在这里重复。</p></div><button class="quiet-reminder" type="button" data-add-todo>+ 添加临时事项</button></div><div class="week-list-body">${manual.map(item=>`<article class="manual-todo ${item.status==='done'?'is-done':''}"><label><input type="checkbox" data-todo-toggle="${e(item.id)}" ${item.status==='done'?'checked':''}><span></span></label><div><small>${e(item.project||'日常运营')} · ${e(dayText(new Date(`${item.date}T00:00:00`)))}</small><b>${e(item.title)}</b>${item.description?`<p>${e(item.description)}</p>`:''}</div><em>${e(item.owner||'未分配')}</em></article>`).join('')||'<p class="week-empty">暂无临时事项。需要时点击“添加临时事项”。</p>'}</div></section>
+      <section class="week-calendar"><div class="section-head"><div><h2>${dayText(monday)} — ${dayText(sunday)}</h2><p>按交付日查看，每人当天的任务汇总在一起，可勾选完成。</p>${completionSummary?`<p class="week-completion-summary">本周已完成写稿：${e(completionSummary)}</p>`:''}</div></div><div class="week-calendar-scroll">${calendar}</div></section>
+      <section class="monitoring-board"><div class="section-head"><div><h2>每日监测数据</h2><p>工作日早上导出并查看负责项目的数据。</p></div></div><div class="monitoring-grid"><article><b>彭安迪</b><p>哲库林；太太乐每周手动监测 2 次</p>${andyMonitoring?'<small class="monitor-completed">✓ 太太乐本周已完成 2 次监测</small>':''}</article><article><b>杨帆</b><p>咪咕 · 影之刃（每天）</p>${yangMonitoring?`<small class="monitor-completed">✓ 每日监测已登记至 ${e(shortDate(new Date(`${yangMonitoring.date}T00:00:00`)))}</small>`:''}</article><article><b>李正浩</b><p>华硕新（远程）</p></article></div></section>
+      <section class="week-list"><div class="section-head"><div><h2>自建 To-do</h2><p>临时追加的待办放在这里，完成后按日期归入上方日历。</p></div><button class="quiet-reminder" type="button" data-add-todo>+ 添加临时事项</button></div><div class="week-list-body">${manual.map(item=>`<article class="manual-todo"><label><input type="checkbox" data-todo-toggle="${e(item.id)}" ${syncNeedsLogin?'disabled':''}><span></span></label><div><small>${e(item.project||'日常运营')} · ${e(dayText(new Date(`${item.date}T00:00:00`)))}</small><b>${e(item.title)}</b>${item.description?`<p>${e(item.description)}</p>`:''}</div><em>${e(item.owner||'未分配')}</em></article>`).join('')||`<p class="week-empty">${todoSyncState==='ready'?'本周暂无未完成的临时事项。':syncNeedsLogin?'请重新登录飞书，读取本周共享待办。':'共享待办尚未加载，请查看上方同步状态。'}</p>`}</div></section>
       <dialog class="todo-dialog" id="todo-dialog"><form method="dialog" id="todo-form"><header><div><small>WEEKLY TODO</small><h2>新建本周待办</h2></div><button type="button" data-todo-close aria-label="关闭">×</button></header><label>事项<input required name="title" placeholder="例如：跟进客户反馈"></label><label>说明<textarea name="description" placeholder="补充交付要求或上下文"></textarea></label><div class="form-two"><label>截止日期<input required type="date" name="date" value="${iso(today)}"></label><label>负责人<input name="owner" placeholder="输入成员姓名"></label></div><label>项目<select name="project"><option value="">日常运营</option>${projects.map(p=>`<option value="${e(p.name)}">${e(p.name)}</option>`).join('')}</select></label><footer><button type="button" data-todo-close class="ghost-action">取消</button><button type="submit" class="primary-action">创建待办</button></footer></form></dialog>`);
   }
   function setTodoDialogBusy(dialog,busy){
@@ -800,6 +838,7 @@
       target?.classList.add('is-focus');setTimeout(()=>target?.classList.remove('is-focus'),1200);
     }));
     document.querySelectorAll('[data-enable-reminders]').forEach(button=>button.addEventListener('click',enableBrowserReminders));
+    document.querySelectorAll('[data-retry-shared-sync]').forEach(button=>button.addEventListener('click',()=>{syncNeedsLogin=false;todoSyncError='';fixedSyncError='';todoSyncState='connecting';render();}));
     document.querySelectorAll('[data-fixed-toggle]').forEach(input=>input.addEventListener('change',async()=>{input.disabled=true;try{if(!fixedChecksReady)throw new Error('请先登录飞书并等待共享状态加载');await setFixedCheck(input.dataset.fixedToggle,input.checked);}catch(error){input.checked=!input.checked;alert(`勾选未同步：${error.message}`);}finally{input.disabled=false;render();}}));
     document.querySelectorAll('.period button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.period button').forEach(x=>x.classList.toggle('active',x===b))));
     document.querySelectorAll('[data-todo-toggle]').forEach(input=>input.addEventListener('change',async()=>{
