@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261119-rhythm-and-daily-reminders-v3";
+const WORKER_VERSION = "20261122-week-corrections-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -216,12 +216,15 @@ async function handleFixedChecks(request, env) {
   await ensureFixedChecksSchema(env);
   if (request.method === "GET") {
     const { results = [] } = await env.TODOS_DB.prepare("SELECT task_id, done FROM fixed_task_checks").all();
-    return json({ ok: true, checks: Object.fromEntries(results.map(row => [row.task_id, !!row.done])) });
+    const { results: excluded = [] } = await env.TODOS_DB.prepare("SELECT task_id FROM fixed_task_exclusions ORDER BY task_id").all();
+    return json({ ok: true, checks: Object.fromEntries(results.map(row => [row.task_id, !!row.done])), excludedTaskIds: excluded.map(row => row.task_id) });
   }
   if (request.method === "POST") {
     const body = await request.json();
     const id = String(body.id || "");
     if (!/^\d{4}-\d{2}-\d{2}-.{1,160}$/.test(id) || typeof body.done !== "boolean") return json({ error: "无效的任务状态" }, 400);
+    const excluded = await env.TODOS_DB.prepare("SELECT task_id FROM fixed_task_exclusions WHERE task_id = ?").bind(id).first();
+    if (excluded) return json({ error: "该任务已删除，请刷新页面" }, 410);
     await env.TODOS_DB.prepare("INSERT INTO fixed_task_checks (task_id, done, updated_at, updated_by) VALUES (?, ?, ?, ?) ON CONFLICT(task_id) DO UPDATE SET done = excluded.done, updated_at = excluded.updated_at, updated_by = excluded.updated_by").bind(id, body.done ? 1 : 0, new Date().toISOString(), todoActor(user)).run();
     return json({ ok: true, id, done: body.done });
   }
@@ -473,7 +476,23 @@ function fixedTasksForDay(date) {
 
 async function ensureFixedChecksSchema(env) {
   if (!env.TODOS_DB) throw new HttpError("待办同步库尚未绑定", 503);
-  await env.TODOS_DB.prepare("CREATE TABLE IF NOT EXISTS fixed_task_checks (task_id TEXT PRIMARY KEY, done INTEGER NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL)").run();
+  await env.TODOS_DB.batch([
+    env.TODOS_DB.prepare("CREATE TABLE IF NOT EXISTS fixed_task_checks (task_id TEXT PRIMARY KEY, done INTEGER NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL)"),
+    env.TODOS_DB.prepare("CREATE TABLE IF NOT EXISTS fixed_task_exclusions (task_id TEXT PRIMARY KEY, task_date TEXT NOT NULL, project TEXT NOT NULL, owner TEXT NOT NULL, reason TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL, updated_by TEXT NOT NULL)")
+  ]);
+}
+
+async function activeFixedTasksForDay(env, date) {
+  await ensureFixedChecksSchema(env);
+  const { results = [] } = await env.TODOS_DB.prepare("SELECT task_id FROM fixed_task_exclusions WHERE task_date = ?").bind(date).all();
+  const excluded = new Set(results.map(row => row.task_id));
+  return fixedTasksForDay(date).filter(task => !excluded.has(task.id));
+}
+
+function fixedCandidateActive(candidate, activeTasks) {
+  if (!candidate.rule.fixed) return true;
+  const planned = fixedTasksForDay(candidate.dueDate).filter(task => task.project === candidate.project);
+  return !planned.length || planned.some(task => activeTasks.some(active => active.id === task.id));
 }
 
 async function ensureAutomatedTodo(env, candidate) {
@@ -577,6 +596,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
   const sent = [];
   if (slot === "morning") {
     const candidates = reminderCandidates(now);
+    const activeFixed = await activeFixedTasksForDay(env, local.date);
     const routineGroups = new Map();
     for (const candidate of candidates.filter(item => item.rule.routine)) {
       const chatId = bindings.get(candidate.project);
@@ -594,6 +614,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       sent.push(...items.map(item => ({ project: item.project, title: item.rule.title, phase: "daily" })));
     }
     for (const candidate of candidates.filter(item => !item.rule.routine)) {
+      if (!fixedCandidateActive(candidate, activeFixed)) continue;
       const chatId = bindings.get(candidate.project);
       if (!chatId) continue;
       const directory = await directoryFor(chatId);
@@ -619,7 +640,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
     }
   } else {
     await ensureFixedChecksSchema(env);
-    for (const task of fixedTasksForDay(local.date)) {
+    for (const task of await activeFixedTasksForDay(env, local.date)) {
       const chatId = bindings.get(task.project);
       if (!chatId) continue;
       const directory = await directoryFor(chatId);
@@ -649,7 +670,8 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
 async function previewProjectReminders(env, now = new Date()) {
   const local = chinaNow(now);
   const bindings = await activeBindings(env);
-  return reminderCandidates(now).map(item => ({ ...item, bound: bindings.has(item.project), local })).filter(item => item.bound);
+  const activeFixed = await activeFixedTasksForDay(env, local.date);
+  return reminderCandidates(now).filter(item => fixedCandidateActive(item, activeFixed)).map(item => ({ ...item, bound: bindings.has(item.project), local })).filter(item => item.bound);
 }
 
 async function handleReminderGroups(request, env, requestUrl) {
@@ -706,7 +728,7 @@ async function handleManualReminderDispatch(payload, env) {
       if (!groups.has(chatId)) groups.set(chatId, []);
       groups.get(chatId).push(task);
     };
-    for (const task of fixedTasksForDay(local.date)) {
+    for (const task of await activeFixedTasksForDay(env, local.date)) {
       const check = await env.TODOS_DB.prepare("SELECT done FROM fixed_task_checks WHERE task_id = ?").bind(task.id).first();
       if (!check?.done) add(task);
     }
@@ -778,7 +800,7 @@ async function handleBotEvent(request, env) {
     for (const project of Object.keys(PROJECT_REMINDER_RULES)) if (command.includes(project) && bindings.get(project) === chatId) projects.push(project);
     const uniqueProjects = [...new Set(projects)];
     if (uniqueProjects.length !== 1) return json({ ok: true });
-    const tasks = fixedTasksForDay(chinaNow(new Date()).date).filter(task => task.owner === owners[0] && task.project === uniqueProjects[0]);
+    const tasks = (await activeFixedTasksForDay(env, chinaNow(new Date()).date)).filter(task => task.owner === owners[0] && task.project === uniqueProjects[0]);
     if (tasks.length !== 1) return json({ ok: true });
     const task = tasks[0];
     const explicit = task.kind === "周报" ? /周报/.test(command) : (task.kind === "写稿" || task.kind === "稿件") ? /写稿|稿件|交稿/.test(command) : task.kind === "审稿" ? /审稿|审核/.test(command) : /写稿|稿件/.test(command) && /审稿|审核/.test(command) && /(均已|都已|全部|分别)/.test(command);

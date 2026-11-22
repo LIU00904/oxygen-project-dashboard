@@ -104,6 +104,7 @@
   let syncNeedsLogin = false;
   let todoMutationInFlight = false;
   let sharedFixedChecks = {};
+  let excludedFixedTasks = [];
   let fixedChecksReady = false;
   let fixedChecksPromise = null;
   let reminderPoll = null;
@@ -116,8 +117,8 @@
     fixedChecksPromise=(async()=>{try{
       const response=await dataSyncFetch('/fixed-checks',{headers:{Authorization:`Bearer ${session()}`}});
       const payload=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(new Error(payload.error||'固定任务同步失败'),{status:response.status});
-      const checks=payload.checks||{},changed=JSON.stringify(sharedFixedChecks)!==JSON.stringify(checks)||!fixedChecksReady;
-      sharedFixedChecks=checks;fixedChecksReady=true;fixedSyncError='';
+      const checks=payload.checks||{},excluded=payload.excludedTaskIds||[],changed=JSON.stringify(sharedFixedChecks)!==JSON.stringify(checks)||JSON.stringify(excludedFixedTasks)!==JSON.stringify(excluded)||!fixedChecksReady;
+      sharedFixedChecks=checks;excludedFixedTasks=excluded;fixedChecksReady=true;fixedSyncError='';
       if(rerender&&changed&&!document.querySelector('dialog[open]'))render();
     }catch(error){const changed=fixedChecksReady||fixedSyncError!==error.message;fixedChecksReady=false;fixedSyncError=error.message;if(error.status===401)syncNeedsLogin=true;console.warn('固定任务同步失败',error);if(rerender&&changed&&!document.querySelector('dialog[open]'))render();}finally{fixedChecksPromise=null;}})();return fixedChecksPromise;
   }
@@ -773,6 +774,7 @@
       for(const person of deliverables.filter(person=>person.day===index)){
         person.tasks.forEach((task,taskIndex)=>{
           const fixedId=`${day.iso}-${person.owner}-${task.slot||taskIndex}`;
+          if(excludedFixedTasks.includes(fixedId))return;
           const completion=/写稿|稿件/.test(task.title)?completedWriting.find(item=>item.date===day.iso&&item.owner===person.owner&&item.project===task.key):null;
           if(completion)matchedCompletions.add(completion.id);
           const actual=completion?writingCount(completion):0;
