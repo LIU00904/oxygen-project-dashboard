@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261122-week-corrections-v1";
+const WORKER_VERSION = "20261123-weekly-preview-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -31,14 +31,14 @@ const PROJECT_REMINDER_RULES = {
   "太太乐松茸鲜": {
     manager: "刘依晨",
     rules: [
-      { type: "weekly", weekday: 1, title: "本周发布目标", owner: "刘依晨", detail: "本周写稿 10 篇、发稿至少 20 篇" },
-      { type: "weekly", weekday: 1, title: "本周监测安排", owner: "彭安迪", detail: "本周完成 2 次监测并同步结果" },
+      { type: "weekly", startDate: "2026-11-23", weekday: 3, title: "太太乐稿件交付", owner: "刘依晨", detail: "每周三 15:00 前提交 10 篇", fixed: true },
+      { type: "weekly", weekday: 1, title: "本周监测安排", owner: "彭安迪", detail: "本周完成 2 次监测并同步结果", flexible: true },
       { type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日 10:00 发稿汇总", owner: "刘依晨", detail: "汇总并同步当日发稿情况", routine: true },
       { type: "weekly", weekday: 3, title: "提交周报", owner: "刘依晨", detail: "整理本周发布、数据与审计进度" },
       { type: "monthly", day: 10, title: "提交月报", owner: "刘依晨", detail: "提交月度复盘与下月计划", leadDays: 7 }
     ]
   },
-  "西门子": { manager: "刘依晨", rules: [{ type: "weekly", startDate: "2026-11-23", weekday: 1, title: "西门子稿件交付", owner: "杨帆", detail: "每周一 18:00 前提交 10 篇", fixed: true }] },
+  "西门子": { manager: "刘依晨", rules: [{ type: "weekly", startDate: "2026-11-23", weekday: 1, title: "西门子稿件交付", owner: "杨帆", detail: "每周一 18:00 前提交 10 篇", fixed: true }, { type: "weekly", startDate: "2026-11-23", weekday: 1, title: "提交西门子周报", owner: "杨帆", detail: "每周一 11:00 前提交西门子周报", fixed: true }] },
   "赏·会所": { manager: "刘依晨", rules: [{ type: "fortnightly", startDate: "2026-12-02", title: "赏会所稿件交付", owner: "杨帆", detail: "每两周周三 14:00 前提交 20 篇，12 月 2 日首次交付", fixed: true }] },
   "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪", detail: "周一 16:00 前提交 10 篇；审稿安排待确认" }] },
   "广百": { manager: "刘依晨", rules: [{ type: "weekly", weekday: 1, title: "AI搜写稿交稿与优化", owner: "刘依晨", detail: "提醒 AI 搜写稿交稿，开始优化" }, { type: "fortnightly", startDate: "2026-11-23", title: "提交广百双周报", owner: "杨帆", detail: "隔周周一提交双周报，11 月 23 日起", fixed: true }] },
@@ -466,6 +466,7 @@ function fixedTasksForDay(date) {
     {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 10 篇",kind:"稿件"},
     {day:3,owner:"彭安迪",index:0,project:"咪咕体育",title:"提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
     ...(date >= "2026-11-23" ? [{day:0,owner:"杨帆",index:"siemens-writing",project:"西门子",title:"提交写稿 10 篇（周一 18:00 前）",kind:"稿件"}] : []),
+    ...(date >= "2026-11-23" ? [{day:0,owner:"杨帆",index:"siemens-report",project:"西门子",title:"提交周报（周一 11:00 前）",kind:"周报"},{day:2,owner:"刘依晨",index:"taitale-writing",project:"太太乐松茸鲜",title:"提交写稿 10 篇（周三 15:00 前）",kind:"稿件"}] : []),
     ...(fortnightlyDue(date,"2026-12-02") ? [{day:2,owner:"杨帆",index:"shang-writing",project:"赏·会所",title:"提交写稿 20 篇（周三 14:00 前，双周）",kind:"稿件"}] : []),
     ...(fortnightlyDue(date,"2026-11-23") ? [{day:0,owner:"杨帆",index:0,project:"广百",title:"提交双周报",kind:"报告"}] : []),
     {day:2,owner:"刘依晨",index:0,project:"太太乐松茸鲜",title:"提交周报",kind:"周报"},
@@ -579,6 +580,47 @@ async function openChecklistDueToday(env, ymd) {
   return results.map(todoResponse);
 }
 
+function weeklyPreviewCandidates(now = new Date()) {
+  const local = chinaNow(now), monday = addChinaDays(local.date, -((local.weekday + 6) % 7));
+  return Array.from({length:7}, (_, index) => addChinaDays(monday, index))
+    .flatMap(date => reminderCandidates(new Date(`${date}T10:00:00+08:00`)))
+    .filter(item => !item.rule.routine && item.phase === "due")
+    .sort((a,b) => a.dueDate.localeCompare(b.dueDate) || (a.rule.detail?.match(/\d{2}:\d{2}/)?.[0] || '23:59').localeCompare(b.rule.detail?.match(/\d{2}:\d{2}/)?.[0] || '23:59'));
+}
+
+async function dispatchWeeklyPreview(env, now, bindings, token, directoryFor) {
+  const local = chinaNow(now);
+  if (local.weekday !== 1) return [];
+  const groups = new Map(), activeByDate = new Map(), covered = [];
+  for (const item of weeklyPreviewCandidates(now)) {
+    const chatId = bindings.get(item.project);if (!chatId) continue;
+    if (!activeByDate.has(item.dueDate)) activeByDate.set(item.dueDate, await activeFixedTasksForDay(env,item.dueDate));
+    if (!fixedCandidateActive(item,activeByDate.get(item.dueDate))) continue;
+    covered.push(item.key);
+    if (!groups.has(chatId)) groups.set(chatId,[]);groups.get(chatId).push(item);
+  }
+  const dayNames=['周日','周一','周二','周三','周四','周五','周六'];
+  for (const [chatId,items] of groups) {
+    const directory=await directoryFor(chatId), byOwner=new Map();
+    for (const item of items) {
+      if (!personIdForName(item.rule.owner,directory)) throw new Error(`无法实际艾特负责人：${item.rule.owner}`);
+      if (!byOwner.has(item.rule.owner)) byOwner.set(item.rule.owner,[]);byOwner.get(item.rule.owner).push(item);
+    }
+    const rows=[...byOwner].map(([owner,list])=>`${mention(owner,directory)}\n${list.map(item=>{
+      const weekday=dayNames[new Date(item.dueDate+'T12:00:00+08:00').getUTCDay()];
+      return `• ${item.rule.flexible?'本周弹性':weekday}｜${projectLabel(item.project)} · ${item.rule.title}\n  ${item.rule.detail || ''}`;
+    }).join('\n')}`);
+    const key=`${local.date}|weekly-preview|${chatId}`;
+    if (!(await reserveDispatch(env,key,'本周固定任务','weekly-preview'))) continue;
+    try {
+      await sendProjectGroupMessage(token,chatId,`【本周固定任务预告】${local.date} — ${addChinaDays(local.date,6)}\n\n${rows.join('\n\n')}\n\n按截止时间交付，完成后在网页勾选：https://liu00904.github.io/oxygen-project-dashboard/#/week`,(await sha256Hex(key)).slice(0,32));
+    } catch (error) {
+      await env.TODOS_DB.prepare('DELETE FROM reminder_dispatches WHERE dispatch_key = ?').bind(key).run();throw error;
+    }
+  }
+  return covered;
+}
+
 async function dispatchProjectGroupReminders(env, now = new Date()) {
   await ensureReminderSchema(env);
   await pruneReminderDispatches(env);
@@ -597,6 +639,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
   if (slot === "morning") {
     const candidates = reminderCandidates(now);
     const activeFixed = await activeFixedTasksForDay(env, local.date);
+    const previewed = new Set(await dispatchWeeklyPreview(env,now,bindings,token,directoryFor));
     const routineGroups = new Map();
     for (const candidate of candidates.filter(item => item.rule.routine)) {
       const chatId = bindings.get(candidate.project);
@@ -617,6 +660,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
       if (!fixedCandidateActive(candidate, activeFixed)) continue;
       const chatId = bindings.get(candidate.project);
       if (!chatId) continue;
+      if (previewed.has(candidate.key)) { await ensureAutomatedTodo(env,candidate);continue; }
       const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|morning|${candidate.key}|${candidate.phase}`;
       if (!(await reserveDispatch(env, dispatchKey, candidate.project, slot))) continue;
