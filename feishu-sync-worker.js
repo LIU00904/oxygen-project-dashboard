@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261123-guangbai-review-data-v1";
+const WORKER_VERSION = "20261126-migu-friday-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -43,7 +43,7 @@ const PROJECT_REMINDER_RULES = {
   "哲库林 润喉糖": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 1, title: "哲库林稿件交付", owner: "彭安迪", detail: "周一 16:00 前提交 10 篇；审稿安排待确认" }] },
   "广百": { manager: "刘依晨", rules: [{ type: "weekly", weekday: 1, title: "AI搜写稿交稿与优化", owner: "刘依晨", detail: "提醒 AI 搜写稿交稿，开始优化" }, { type: "fortnightly", startDate: "2026-11-23", title: "广百审稿+数据表", owner: "杨帆", detail: "隔周周一完成审稿并提交数据表，11 月 23 日起", fixed: true }] },
   "华硕 新": { manager: "向昱筱 Cheryl", rules: [{ type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日监测数据（远程）", owner: "李正浩", detail: "查看并整理华硕新每日监测数据（远程）", routine: true }] },
-  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 4, title: "影之刃稿件交付", owner: "彭安迪", detail: "周四 16:00 前提交 15 篇", fixed: true }, { type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日监测数据", owner: "杨帆", detail: "导出并查看咪咕影之刃每日监测数据", routine: true }] },
+  "咪咕体育": { manager: "辛味珈", rules: [{ type: "weekly", weekday: 5, title: "影之刃稿件交付", owner: "彭安迪", detail: "周五 16:00 前提交 15 篇", fixed: true }, { type: "daily", startDate: "2026-11-20", weekdays: [1,2,3,4,5], title: "每日监测数据", owner: "杨帆", detail: "导出并查看咪咕影之刃每日监测数据", routine: true }] },
   "头道汤": { manager: "辛味珈", inactive: true, rules: [] }
 };
 function projectLabel(project) { return project === "咪咕体育" ? "咪咕影之刃" : project; }
@@ -464,7 +464,7 @@ function fixedTasksForDay(date) {
   const weekday = new Date(`${date}T00:00:00+08:00`).getUTCDay();
   const templates = [
     {day:0,owner:"彭安迪",index:0,project:"哲库林 润喉糖",title:"提交写稿 10 篇",kind:"稿件"},
-    {day:3,owner:"彭安迪",index:0,project:"咪咕体育",title:"提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
+    {day:date >= "2026-11-26" ? 4 : 3,owner:"彭安迪",index:0,project:"咪咕体育",title:date >= "2026-11-26" ? "提交写稿 15 篇（周五 16:00 前）" : "提交写稿 15 篇（周四 16:00 前）",kind:"稿件"},
     ...(date >= "2026-11-23" ? [{day:1,owner:"杨帆",index:"siemens-writing",project:"西门子",title:"提交写稿 10 篇（周二 18:00 前）",kind:"稿件"}] : []),
     ...(date >= "2026-11-23" ? [{day:0,owner:"杨帆",index:"siemens-report",project:"西门子",title:"提交周报（周一 11:00 前）",kind:"周报"},{day:2,owner:"刘依晨",index:"taitale-writing",project:"太太乐松茸鲜",title:"提交写稿 10 篇（周三 15:00 前）",kind:"稿件"}] : []),
     ...(fortnightlyDue(date,"2026-12-02") ? [{day:2,owner:"杨帆",index:"shang-writing",project:"赏·会所",title:"提交写稿 20 篇（周三 14:00 前，双周）",kind:"稿件"}] : []),
