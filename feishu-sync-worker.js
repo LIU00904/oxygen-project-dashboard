@@ -17,7 +17,7 @@ const FIELD_MAP = {
 };
 
 const PERSON_KEYS = new Set(["manager", "writer", "publisher", "monitor"]);
-const WORKER_VERSION = "20261126-migu-friday-v1";
+const WORKER_VERSION = "20261127-scoped-reminders-v1";
 const PROJECT_CACHE_SECONDS = 30 * 60;
 const PROJECT_STALE_CACHE_SECONDS = 8 * 24 * 60 * 60;
 const TABLE_URL = "https://jcnquengglen.feishu.cn/base/SRjgbQqBMa6L1isu8CFcuUAAnEb?table=tbl8o6BzxfDpqxMX&view=vew234Y6ro";
@@ -557,6 +557,15 @@ async function activeBindings(env) {
   return new Map(results.map(row => [row.project, row.chat_id]));
 }
 
+// Cross-project team tasks go to the single shared group, without inventing a project.
+function reminderChatFor(project, bindings) {
+  const canonical = canonicalProjectName(project), direct = bindings.get(canonical);
+  if (direct) return direct;
+  if (!["", "未归属项目", "日常运营"].includes(canonical)) return "";
+  const chats = [...new Set(bindings.values())];
+  return chats.length === 1 ? chats[0] : "";
+}
+
 async function bindProjectToChat(env, project, chatId, boundBy) {
   await ensureReminderSchema(env);
   const now = new Date().toISOString();
@@ -673,7 +682,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
     }
     for (const todo of await openChecklistDueToday(env, local.date)) {
       const project = canonicalProjectName(todo.project);
-      const chatId = bindings.get(project);
+      const chatId = reminderChatFor(project, bindings);
       if (!chatId || PROJECT_REMINDER_RULES[project]?.inactive || /徐奕旸|韩文静/.test(todo.owner || "") || String(todo.id || "").startsWith("auto-")) continue;
       const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|morning|todo|${todo.id}`;
@@ -698,7 +707,7 @@ async function dispatchProjectGroupReminders(env, now = new Date()) {
     for (const todo of await openChecklistDueToday(env, local.date)) {
       const project = canonicalProjectName(todo.project);
       if (String(todo.id || "").startsWith("auto-") && /西门子稿件交付与互审|赏会所稿件交付|赏会所审稿|哲库林稿件交付|影之刃稿件交付|提交周报/.test(todo.title)) continue;
-      const chatId = bindings.get(project);
+      const chatId = reminderChatFor(project, bindings);
       if (!chatId || PROJECT_REMINDER_RULES[project]?.inactive || /徐奕旸|韩文静/.test(todo.owner || "")) continue;
       const directory = await directoryFor(chatId);
       const dispatchKey = `${local.date}|afternoon|todo|${todo.id}`;
@@ -757,6 +766,8 @@ async function handleManualReminderDispatch(payload, env) {
   if (!/^[a-z0-9-]{12,100}$/.test(key) || !/^[a-f0-9]{64}$/.test(nonce)) return json({ error: "Invalid dispatch authorization" }, 401);
   const job = await env.TODOS_DB.prepare("SELECT * FROM manual_reminder_runs WHERE run_key = ?").bind(key).first();
   if (!job || job.nonce_hash !== await sha256Hex(nonce) || Date.parse(job.expires_at) < Date.now()) return json({ error: "Invalid dispatch authorization" }, 401);
+  const options = JSON.parse(job.result || "[]");
+  const taskIds = Array.isArray(options.taskIds) ? new Set(options.taskIds.map(String)) : null;
   const local = chinaNow();
   if (job.day !== local.date) return json({ error: "Dispatch date does not match today" }, 400);
   if (job.status === "sent") return json({ ok: true, duplicate: true });
@@ -767,7 +778,8 @@ async function handleManualReminderDispatch(payload, env) {
     await ensureFixedChecksSchema(env);
     const bindings = await activeBindings(env), groups = new Map();
     const add = task => {
-      const chatId = bindings.get(canonicalProjectName(task.project));
+      if (taskIds && !taskIds.has(String(task.id))) return;
+      const chatId = reminderChatFor(task.project, bindings);
       if (!chatId || PROJECT_REMINDER_RULES[task.project]?.inactive || /徐奕旸|韩文静/.test(task.owner || "")) return;
       if (!groups.has(chatId)) groups.set(chatId, []);
       groups.get(chatId).push(task);
